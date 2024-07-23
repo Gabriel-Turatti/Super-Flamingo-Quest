@@ -1,0 +1,75 @@
+## Correção de Bugs
+( ) [B] Standing on the right-upper-corner teleports you outside, why?
+
+## Alterações gerais futuras
+( ) [+] Different levels of jumping
+( ) [+] Soaring
+( ) [+] Fricção por bloco
+( ) [+] Aceleração Horizontal
+( ) [+] Aprender a fazer conversão int pra string e printar pra debuggar
+
+## Refatoração
+( ) [R] Usar muita constante definida no começo
+( ) [R] Separar em arquivos e fazer import bonitinho
+( ) [R] Melhorar as animações de caminhada
+( ) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
+
+
+
+
+
+## Big Updates
+(X) 0.0 - Please Just Compile Update
+    (X) [+] Compiling ^^
+
+(X) 0.1 - Platformers need Platforms Update
+    (X) [+] Blocos
+    (X) [+] Level-file
+    (X) [+] Scaling
+    (X) [B] Only blocks Close to the left have hitboxes??
+
+( ) 0.2 - Aliveness Update
+    (X) [+] Coyote time
+    (X) [+] Better landing hitbox -> Break Flamingo into 3 rectangles
+    (X) [+] Camera Movement
+    (X) [+] Fluid Movements...?
+    (X) [+] Movement
+    (X) [+] Jump Logic
+    (X) [R] Int to Float
+    (X) [R] Encaixar variáveis no estilo raylib (vectors, Rectangles)
+    (X) [R] Generalizar Rectangle size SCALE
+    (X) [+] Bounceness
+    (X) [R] Changed how bounce and jump affect each other
+    (X) [B] Collision being really weird with some blocks. (forgot to reset hitbox x-coordinate)
+    ( ) [+] Github
+
+( ) 0.3 - Flamingos Have Five-Lives Update
+    ( ) [+] Barras de Vidas
+    ( ) [+] First damage source: Falling
+    ( ) [+] Regeneração de vida
+
+( ) 0.4 - Collector's Edition Update
+    ( ) [+] Fruits
+    ( ) [+] Coins (+Counter)
+    ( ) [+] Heart Shards
+
+( ) 0.5 - Mapping Update
+    ( ) [+] Blocos fakes e Background
+    ( ) [+] Blocos com colisão unitária (platform)
+    ( ) [+] Key and Lock Block
+
+( ) 0.6 - Enemies and Lovers Update
+    ( ) [+] 5 Enemies (each color)
+    ( ) [+] Spikes
+    ( ) [+] Spikes
+
+
+( ) ??? - Flamingo Magic Update
+( ) ??? - Inflating Blocks Update??
+
+( ) ??? - Planes of Paris Update
+    ( ) Planes of Paris I
+    ( ) Planes of Paris II
+
+( ) ??? - Dialogue Update
+( ) ??? - Inventory Update
