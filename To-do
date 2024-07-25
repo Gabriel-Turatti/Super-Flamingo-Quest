@@ -1,52 +1,21 @@
 ## Correção de Bugs
-( ) [B] Standing on the right-upper-corner teleports you outside, why?
 
 ## Alterações gerais futuras
 ( ) [+] Different levels of jumping
 ( ) [+] Soaring
-( ) [+] Fricção por bloco
-( ) [+] Aceleração Horizontal
 ( ) [+] Aprender a fazer conversão int pra string e printar pra debuggar
+( ) [+] Mais um frame de Flamingo caindo.
+( ) [+] Animação de tomar dano (indicação com cor?) (som?)
 
 ## Refatoração
 ( ) [R] Usar muita constante definida no começo
 ( ) [R] Separar em arquivos e fazer import bonitinho
 ( ) [R] Melhorar as animações de caminhada
 ( ) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
-
-
-
+( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric?).
 
 
 ## Big Updates
-(X) 0.0 - Please Just Compile Update
-    (X) [+] Compiling ^^
-
-(X) 0.1 - Platformers need Platforms Update
-    (X) [+] Blocos
-    (X) [+] Level-file
-    (X) [+] Scaling
-    (X) [B] Only blocks Close to the left have hitboxes??
-
-( ) 0.2 - Aliveness Update
-    (X) [+] Coyote time
-    (X) [+] Better landing hitbox -> Break Flamingo into 3 rectangles
-    (X) [+] Camera Movement
-    (X) [+] Fluid Movements...?
-    (X) [+] Movement
-    (X) [+] Jump Logic
-    (X) [R] Int to Float
-    (X) [R] Encaixar variáveis no estilo raylib (vectors, Rectangles)
-    (X) [R] Generalizar Rectangle size SCALE
-    (X) [+] Bounceness
-    (X) [R] Changed how bounce and jump affect each other
-    (X) [B] Collision being really weird with some blocks. (forgot to reset hitbox x-coordinate)
-    ( ) [+] Github
-
-( ) 0.3 - Flamingos Have Five-Lives Update
-    ( ) [+] Barras de Vidas
-    ( ) [+] First damage source: Falling
-    ( ) [+] Regeneração de vida
 
 ( ) 0.4 - Collector's Edition Update
     ( ) [+] Fruits
@@ -64,12 +33,53 @@
     ( ) [+] Spikes
 
 
+( ) ??? - Sea of Sound Update
 ( ) ??? - Flamingo Magic Update
 ( ) ??? - Inflating Blocks Update??
+( ) ??? - Level Editor Update
 
 ( ) ??? - Planes of Paris Update
     ( ) Planes of Paris I
     ( ) Planes of Paris II
 
-( ) ??? - Dialogue Update
 ( ) ??? - Inventory Update
+( ) ??? - Dialogue Update
+
+
+
+(X) 0.0 - Please Just Compile Update
+    (X) [+] Compiling ^^
+
+(X) 0.1 - Platformers need Platforms Update
+    (X) [+] Blocos
+    (X) [+] Level-file
+    (X) [+] Scaling
+    (X) [B] Only blocks Close to the left have hitboxes??
+
+(X) 0.2 - Aliveness Update
+    (X) [+] Coyote time
+    (X) [+] Better landing hitbox -> Break Flamingo into 3 rectangles
+    (X) [+] Camera Movement
+    (X) [+] Fluid Movements...?
+    (X) [+] Movement
+    (X) [+] Jump Logic
+    (X) [R] Int to Float
+    (X) [R] Encaixar variáveis no estilo raylib (vectors, Rectangles)
+    (X) [R] Generalizar Rectangle size SCALE
+    (X) [+] Bounceness
+    (X) [R] Changed how bounce and jump affect each other
+    (X) [B] Collision being really weird with some blocks. (forgot to reset hitbox x-coordinate)
+    (X) [+] Github
+
+(X) 0.3 - Flamingos Have Five-Lives Update
+    (X) [+] Barras de Vidas
+    (X) [+] First damage source: Falling
+    (X) [+] Regeneração de vida
+    (X) [+] Hitbox Espelhada
+    (X) [+] Sprite Caindo
+    (X) [+] Agachar
+    (X) [B] Standing on the right-upper-corner teleports you outside, why? -> float glitch, just reduced Flamingo's size in 1 pixel
+    (X) [B] Crouch-teleport bug, not updating hitbox properly? -> It wasn't updating hitbox in Y direction, only X.
+    (X) [B] Crouch-sliding... -> Crouching first time should teleport you 7 pixels down, but it was doing that every frame
+    (X) [B] Updating Ground hitboxes -> Break na colisão, ajustado nova checagem de ground
+    (X) [+] Fricção por bloco
