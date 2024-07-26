@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <random>
 
 
 class Block {
@@ -38,6 +39,7 @@ public:
     Rectangle rect;
     float cx, cy;
     std::string name;
+    char category;
     Texture2D image;
     int SCALE;
     Item(int x, int y, std::string namer, int SCALER) {
@@ -51,18 +53,91 @@ public:
             rect.height = 11;
             rect.x += 2*SCALE;
             rect.y += 1*SCALE;
+            category = 'C';
         } else if (name == "silver-coin") {
             image = LoadTexture("images/silver-coin.png");
             rect.width = 9;
             rect.height = 11;
             rect.x += 2*SCALE;
             rect.y += 1*SCALE;
+            category = 'C';
         } else if (name == "gold-coin") {
             image = LoadTexture("images/gold-coin.png");
             rect.width = 9;
             rect.height = 11;
             rect.x += 2*SCALE;
             rect.y += 1*SCALE;
+            category = 'C';
+        } else if (name == "food-banana") {
+            image = LoadTexture("images/food-banana.png");
+            rect.width = 11;
+            rect.height = 11;
+            rect.x += 1*SCALE;
+            rect.y += 1*SCALE;
+            category = 'F';
+        } else if (name == "food-pear") {
+            image = LoadTexture("images/food-pear.png");
+            rect.width = 13;
+            rect.height = 13;
+            rect.x += 0*SCALE;
+            rect.y += 0*SCALE;
+            category = 'F';
+        } else if (name == "food-blueberry") {
+            image = LoadTexture("images/food-blueberry.png");
+            rect.width = 9;
+            rect.height = 11;
+            rect.x += 2*SCALE;
+            rect.y += 1*SCALE;
+            category = 'F';
+        } else if (name == "food-pepper") {
+            image = LoadTexture("images/food-pepper.png");
+            rect.width = 11;
+            rect.height = 11;
+            rect.x += 1*SCALE;
+            rect.y += 1*SCALE;
+            category = 'F';
+        } else if (name == "food-orange") {
+            image = LoadTexture("images/food-orange.png");
+            rect.width = 11;
+            rect.height = 12;
+            rect.x += 1*SCALE;
+            rect.y += 0*SCALE;
+            category = 'F';
+        } else if (name == "Hshard-hope") {
+            image = LoadTexture("images/Hshard-hope.png");
+            rect.width = 7;
+            rect.height = 9;
+            rect.x += 3*SCALE;
+            rect.y += 2*SCALE;
+            category = 'H';
+        } else if (name == "Hshard-resilience") {
+            image = LoadTexture("images/Hshard-resilience.png");
+            rect.width = 7;
+            rect.height = 9;
+            rect.x += 3*SCALE;
+            rect.y += 2*SCALE;
+            category = 'H';
+        } else if (name == "Hshard-power") {
+            image = LoadTexture("images/Hshard-power.png");
+            rect.width = 7;
+            rect.height = 9;
+            rect.x += 3*SCALE;
+            rect.y += 2*SCALE;
+            category = 'H';
+        } else if (name == "Hshard-courage") {
+            image = LoadTexture("images/Hshard-courage.png");
+            rect.width = 7;
+            rect.height = 9;
+            rect.x += 3*SCALE;
+            rect.y += 2*SCALE;
+            category = 'H';
+        } else if (name == "Hshard-wisdom") {
+            image = LoadTexture("images/Hshard-wisdom.png");
+            rect.width = 7;
+            rect.height = 9;
+            rect.x += 3*SCALE;
+            rect.y += 2*SCALE;
+            category = 'H';
         }
         cx = x+rect.width*SCALE/2;
         cy = y+rect.height*SCALE/2;
@@ -90,7 +165,7 @@ public:
 
     Texture2D HeartGrid = LoadTexture("Images/heart_health.png"); // Corações de vida, cada coração tem 7 pontos de vida
     int MHH = 4*7; // Hope Health
-    int MRH = 8*7; // Resilience Health
+    int MRH = 3*7; // Resilience Health
     int MPH = 2*7; // Power Health
     int MCH = 2*7; // Courage Health
     int MWH = 1*7; // Wisdom Health
@@ -101,8 +176,17 @@ public:
     int CH = 2*7;
     int WH = 1*7;
 
+    int PHH = 0;
+    int PRH = 0;
+    int PPH = 0;
+    int PCH = 0;
+    int PWH = 0;
+
     Rectangle HB1;
     Sound sfxCoin = LoadSound("sfx/coin.wav"); 
+    Sound sfxFood = LoadSound("sfx/eat.wav"); 
+    Sound sfxJump = LoadSound("sfx/jump.wav");
+    Sound sfxHeartPiece = LoadSound("sfx/HeartPiece.wav");
 
 
 
@@ -120,6 +204,7 @@ public:
     int jumpQueue = 0;
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale) {
+        SetSoundVolume(sfxJump, 0.5);
         SCALE = imagescale;
 
         rect.x = x;
@@ -218,6 +303,7 @@ public:
             } else {
                 vy -= 2.0f*SCALE;
             }
+            PlaySound(sfxJump);
             canJump = false;
             crouch = false;
             imageCount = 4;
@@ -317,7 +403,10 @@ public:
                 if (DYspace.y != 0) {
                     HitboxA.y += DYspace.y;
                     vy = -vy/temp.friction;
-                    // break;
+                    if (abs(vy) > 7*SCALE) {
+                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
+                    }
+                    break;
                 }
             } else {
                 DYspace = colision(Hitbox1, temp.rect);
@@ -333,7 +422,7 @@ public:
                         canJump = true;
                     }
                     if (abs(vy) > 7*SCALE) {
-                        RH -= ((int)abs(vy) - 7*SCALE)/2;
+                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
                     }
                     vy = -vy/temp.friction;
                     break;
@@ -352,7 +441,7 @@ public:
                         canJump = true;
                     }
                     if (abs(vy) > 7*SCALE) {
-                        RH -= ((int)abs(vy) - 7*SCALE)/2;
+                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
                     }
                     vy = -vy/temp.friction;
                     break;
@@ -371,7 +460,7 @@ public:
                         canJump = true;
                     }
                     if (abs(vy) > 7*SCALE) {
-                        RH -= ((int)abs(vy) - 7*SCALE)/2;
+                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
                     }
                     vy = -vy/temp.friction;
                     break;
@@ -485,15 +574,69 @@ public:
     }
 
     void collect(Item item) {
+        switch(item.category) {
+            case 'C':
+                PlaySound(sfxCoin);
+                break;
+            case 'F':
+                PlaySound(sfxFood);
+                Health(1, 'P');
+                break;
+            case 'H':
+                PlaySound(sfxHeartPiece);
+                break;
+        }
         if (item.name == "copper-coin") {
             score += 5;
-            PlaySound(sfxCoin);
         } else if (item.name == "silver-coin") {
-            score += 15;
-            PlaySound(sfxCoin);
+            score += 25;
         } else if (item.name == "gold-coin") {
-            score += 50;
-            PlaySound(sfxCoin);
+            score += 100;
+        } else if (item.name == "food-banana") {
+            score += 2;
+        } else if (item.name == "food-pear") {
+            score += 3;
+        } else if (item.name == "food-blueberry") {
+            score += 4;
+        } else if (item.name == "food-pepper") {
+            score += 6;
+        } else if (item.name == "food-orange") {
+            score += 8;
+        } else if (item.name == "Hshard-hope") {
+            PHH += 1;
+            if (PHH == 3) {
+                MHH += 7;
+                HH += 7;
+                PHH = 0;
+            }
+        } else if (item.name == "Hshard-resilience") {
+            PRH += 1;
+            if (PRH == 3) {
+                MRH += 7;
+                RH += 7;
+                PRH = 0;
+            }
+        } else if (item.name == "Hshard-power") {
+            PPH += 1;
+            if (PPH == 3) {
+                MPH += 7;
+                PH += 7;
+                PPH = 0;
+            }
+        } else if (item.name == "Hshard-courage") {
+            PCH += 1;
+            if (PCH == 3) {
+                MCH += 7;
+                CH += 7;
+                PCH = 0;
+            }
+        } else if (item.name == "Hshard-wisdom") {
+            PWH += 1;
+            if (PWH == 3) {
+                MWH += 7;
+                WH += 7;
+                PWH = 0;
+            }
         }
     }
 
@@ -524,6 +667,51 @@ public:
         // return false;
         return {dx, dy};
     }
+
+    void Health(int qtd, char type) {
+        switch(type) {
+            case 'H':
+                HH += qtd;
+                break;
+            case 'R':
+                RH += qtd;
+                break;
+            case 'P':
+                PH += qtd;
+                break;
+            case 'C':
+                CH += qtd;
+                break;
+            case 'W':
+                WH += qtd;
+                break;
+        }
+
+
+        // Fun-mode
+        if (RH < HH) {
+            RH += 1;
+            HH -= 1;
+        }
+        if (RH < PH) {
+            RH += 1;
+            PH -= 1;
+        }
+        if (RH < CH) {
+            RH += 1;
+            CH -= 1;
+        }
+        if (RH < WH) {
+            RH += 1;
+            WH -= 1;
+        }
+
+        if (type == 'P') {
+            if (PH > MPH) {
+                PH = MPH;
+            }
+        }
+    }
 };
 
 void DesenharHeart(Flamingo player) {
@@ -546,6 +734,9 @@ void DesenharHeart(Flamingo player) {
         DrawTexturePro(player.HeartGrid, {12.0f*7, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         HHEmptyTemp--;
+    }
+    if (player.PHH > 0) {
+        DrawText(TextFormat("+%d", player.PHH), PHud.x, PHud.y, 35, YELLOW);
     }
 
     PHud.x = 10.0f;
@@ -571,6 +762,9 @@ void DesenharHeart(Flamingo player) {
         PHud.x += 12*SCALE;
         RHEmptyTemp--;
     }
+    if (player.PRH > 0) {
+        DrawText(TextFormat("+%d", player.PRH), PHud.x, PHud.y, 35, GREEN);
+    }
 
     PHud.x = 10.0f;
     PHud.y += 12.0f*SCALE;
@@ -594,6 +788,9 @@ void DesenharHeart(Flamingo player) {
         DrawTexturePro(player.HeartGrid, {12.0f*7, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         PHEmptyTemp--;
+    }
+    if (player.PPH > 0) {
+        DrawText(TextFormat("+%d", player.PPH), PHud.x, PHud.y, 35, DARKBLUE);
     }
 
     PHud.x = 10.0f;
@@ -619,6 +816,9 @@ void DesenharHeart(Flamingo player) {
         PHud.x += 12*SCALE;
         CHEmptyTemp--;
     }
+    if (player.PCH > 0) {
+        DrawText(TextFormat("+%d", player.PCH), PHud.x, PHud.y, 35, RED);
+    }
 
     PHud.x = 10.0f;
     PHud.y += 12.0f*SCALE;
@@ -642,6 +842,9 @@ void DesenharHeart(Flamingo player) {
         DrawTexturePro(player.HeartGrid, {12.0f*7, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         WHEmptyTemp--;
+    }
+    if (player.PWH > 0) {
+        DrawText(TextFormat("+%d", player.PWH), PHud.x, PHud.y, 35, ORANGE);
     }
 }
 
@@ -755,7 +958,6 @@ int main(void) {
     }
     level.close();
 
-
     int sizeB = map.size();
     int sizeI = itens.size();
     Vector2 mousePosition;
@@ -764,6 +966,15 @@ int main(void) {
     float maxV = 0;
     SetTargetFPS(30);
     PlayMusicStream(songMainTheme);
+
+
+
+
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> RNG100(0, 100);
+    std::uniform_int_distribution<std::mt19937::result_type> RNGWidth(0, widthLevel);
+    std::uniform_int_distribution<std::mt19937::result_type> RNGHeight(0, heightLevel);
     while (!WindowShouldClose()) {
         UpdateMusicStream(songMainTheme);
         // Player Collision
@@ -835,15 +1046,61 @@ int main(void) {
             DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
         }
         // Desenhando itens
+        sizeI = itens.size();
         for (int i = 0; i < sizeI; i++) {
             Vector2 relativePos;
             relativePos.x = center.x +itens[i].rect.x -player.rect.x;
             relativePos.y = center.y +itens[i].rect.y -player.rect.y;
             DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
         }
+
+
+
+        // fun-mode
         
-
-
+        if (tick % 50 == 0) {
+            int RNG_X = (RNGWidth(rng))*(BS-1)*SCALE;
+            int RNG_Y = (RNGHeight(rng))*(BS-1)*SCALE;
+            bool freespace = true;
+            for (int i = 0; i < sizeB; i++) {
+                Block temp = map[i];
+                if (temp.rect.x == RNG_X and temp.rect.y == RNG_Y) { 
+                    freespace = false;
+                    break;
+                }
+            }
+            if (freespace) {
+                int value = RNG100(rng);
+                if (value <= 1) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE));
+                } else if (value <= 4) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-harder", SCALE));
+                } else if (value <= 7) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE));
+                } else if (value <= 10) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE));
+                } else if (value <= 14) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE));
+                } else if (value <= 16) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "gold-coin", SCALE));
+                } else if (value <= 18) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "silver-coin", SCALE));
+                } else if (value <= 25) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "copper-coin", SCALE));
+                } else if (value <= 33) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE));
+                } else if (value <= 48) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE));
+                } else if (value <= 65) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE));
+                } else if (value <= 80) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE));
+                } else if (value <= 100) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE));
+                }
+                sizeI += 1;
+            }
+        }
 
 
         // Desenhando HUD
@@ -866,10 +1123,11 @@ int main(void) {
 
 
         // DEBUG
-        if (colisionItens.size() > 0) {
-            DrawText(TextFormat("item Prox: %d", colisionItens[0]), GetScreenWidth()-300, 220, 20, WHITE);
-            DrawText(TextFormat("Tamanho itens: %d", itens.size()), GetScreenWidth()-300, 280, 20, WHITE);
-        }
+        // if (colisionItens.size() > 0) {
+        //     DrawText(TextFormat("item Prox: %d", colisionItens[0]), GetScreenWidth()-300, 220, 20, WHITE);
+        //     DrawText(TextFormat("Tamanho itens: %d", itens.size()), GetScreenWidth()-300, 280, 20, WHITE);
+        // }
+        DrawText(TextFormat("itens no mapa: %d", itens.size()), GetScreenWidth()-300, 220, 20, WHITE);
         // DrawText(TextFormat("CURRENT FPS: %i", (int)(1.0f/deltaTime)), GetScreenWidth() - 220, 40, 20, GREEN);
         
         // DrawRectangle(250, 250, 120, 60, RED);

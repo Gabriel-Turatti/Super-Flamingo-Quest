@@ -1,5 +1,4 @@
 ## Correção de Bugs
-( ) [B] Last coin, last position bug -> Improvision
 
 ## Alterações gerais
 ( ) [+] Different levels of jumping
@@ -13,17 +12,13 @@
 ( ) [R] Melhorar as animações de caminhada
 ( ) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric?).
+( ) [R] Separar itens em categorias
+( ) [R] Looks like modulo is bad cause of division, find alternatives.
+
 
 
 ## Big Updates
 
-( ) 0.4 - Collector's Edition Update
-    ( ) [+] Fruits
-    (X) [+] Coins
-    (X) [+] Counters for points and time
-    (X) [+] Moedas e Itens terem efeito de som
-    ( ) [+] Heart Shards
-    (X) [+] Main Theme
 
 ( ) 0.5 - Mapping Update
     ( ) [+] Blocos fakes e Background
@@ -38,6 +33,8 @@
 
 ( ) ??? - Sea of Sound Update
 ( ) ??? - Flamingo Magic Update
+    ( ) [+] Pearl Shards
+    ( ) [+] Pearl bars
 ( ) ??? - Inflating Blocks Update??
 ( ) ??? - Level Editor Update
 
@@ -94,3 +91,12 @@
     (X) [B] Updating Ground hitboxes -> Break na colisão, ajustado nova checagem de ground
     (X) [+] Fricção por bloco
     (X) [+] Aprender a fazer conversão int pra string e printar pra debuggar
+
+(X) 0.4 - Collector's Edition Update
+    (X) [B] Last coin, last position bug -> variable with size of vector wasn't being updated in main scope
+    (X) [+] Fruits
+    (X) [+] Coins
+    (X) [+] Counters for points and time
+    (X) [+] Moedas e Itens terem efeito de som
+    (X) [+] Heart Shards + upgrade
+    (X) [+] Main Theme
