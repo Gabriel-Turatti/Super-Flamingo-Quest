@@ -1,13 +1,13 @@
 ## Correção de Bugs
+( ) [B] Last coin, last position bug -> Improvision
 
-## Alterações gerais futuras
+## Alterações gerais
 ( ) [+] Different levels of jumping
 ( ) [+] Soaring
-( ) [+] Aprender a fazer conversão int pra string e printar pra debuggar
-( ) [+] Mais um frame de Flamingo caindo.
-( ) [+] Animação de tomar dano (indicação com cor?) (som?)
 
 ## Refatoração
+( ) [R] Deixar a moeda de cobre mais cobre
+( ) [R] Usar smart pointers e parar de deixar tudo na stack como um cavalo
 ( ) [R] Usar muita constante definida no começo
 ( ) [R] Separar em arquivos e fazer import bonitinho
 ( ) [R] Melhorar as animações de caminhada
@@ -19,8 +19,11 @@
 
 ( ) 0.4 - Collector's Edition Update
     ( ) [+] Fruits
-    ( ) [+] Coins (+Counter)
+    (X) [+] Coins
+    (X) [+] Counters for points and time
+    (X) [+] Moedas e Itens terem efeito de som
     ( ) [+] Heart Shards
+    (X) [+] Main Theme
 
 ( ) 0.5 - Mapping Update
     ( ) [+] Blocos fakes e Background
@@ -44,6 +47,13 @@
 
 ( ) ??? - Inventory Update
 ( ) ??? - Dialogue Update
+
+
+## Alterações aleatórias futuras
+( ) [+] Mais um frame de Flamingo caindo.
+( ) [+] Animação de tomar dano (indicação com cor?) (som?)
+( ) [+] Moedas e Itens terem animação de brilho e giro
+( ) [+] Moeda de Ouro Envenenada -> Tira Hope
 
 
 
@@ -83,3 +93,4 @@
     (X) [B] Crouch-sliding... -> Crouching first time should teleport you 7 pixels down, but it was doing that every frame
     (X) [B] Updating Ground hitboxes -> Break na colisão, ajustado nova checagem de ground
     (X) [+] Fricção por bloco
+    (X) [+] Aprender a fazer conversão int pra string e printar pra debuggar

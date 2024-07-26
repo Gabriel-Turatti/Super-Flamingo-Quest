@@ -33,6 +33,42 @@ public:
     Block() {}
 };
 
+class Item {
+public:
+    Rectangle rect;
+    float cx, cy;
+    std::string name;
+    Texture2D image;
+    int SCALE;
+    Item(int x, int y, std::string namer, int SCALER) {
+        name = namer;
+        rect.x = x;
+        rect.y = y;
+        SCALE = SCALER;
+        if (name == "copper-coin") {
+            image = LoadTexture("images/copper-coin.png");
+            rect.width = 9;
+            rect.height = 11;
+            rect.x += 2*SCALE;
+            rect.y += 1*SCALE;
+        } else if (name == "silver-coin") {
+            image = LoadTexture("images/silver-coin.png");
+            rect.width = 9;
+            rect.height = 11;
+            rect.x += 2*SCALE;
+            rect.y += 1*SCALE;
+        } else if (name == "gold-coin") {
+            image = LoadTexture("images/gold-coin.png");
+            rect.width = 9;
+            rect.height = 11;
+            rect.x += 2*SCALE;
+            rect.y += 1*SCALE;
+        }
+        cx = x+rect.width*SCALE/2;
+        cy = y+rect.height*SCALE/2;
+    }
+};
+
 class Flamingo {
 public:
     Rectangle rect;
@@ -66,12 +102,14 @@ public:
     int WH = 1*7;
 
     Rectangle HB1;
+    Sound sfxCoin = LoadSound("sfx/coin.wav"); 
 
 
 
     int WT, HT, SCALE;
-    int naturalSpeed = 3;
+    int naturalSpeed = 6;
     int tick = 1;
+    int score = 0;
 
     bool W, A, S, D;
     bool canJump = true;
@@ -106,10 +144,11 @@ public:
         HB1 = {Hitbox1.x, Hitbox1.y+2, 6.0f, 9.0f};
     }
 
-    void update(std::vector<int> CBs, std::vector<Block> map) {
+    void update(std::vector<int> CBs, std::vector<Block> map, std::vector<int> CIs, std::vector<Item> &itens) {
         keyPress();
         gravity();
         Physics(CBs, map);
+        ItemColision(CIs, itens);
         if (tick % 300 == 0) {
             if (RH < MRH) {
                 RH += 1;
@@ -398,6 +437,66 @@ public:
         }
     }
 
+    void ItemColision (std::vector<int> CIs, std::vector<Item> &itens) {
+        int isize = CIs.size();
+        for (int i = 0; i < isize; i++) {
+            Item temp = itens[CIs[i]];
+            Vector2 Dspace;
+            std::vector<Item>::iterator pos = itens.begin();
+            pos += CIs[i];
+            if (CIs[i]+1 == itens.size()) {
+                break;
+            }
+
+            if (crouch) {
+                Dspace = colision(HitboxA, temp.rect);
+                if ((Dspace.x+Dspace.y) != 0) {
+                    collect(temp);
+                    itens.erase(pos);
+                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
+                    break;
+                }
+            } else {
+                Dspace = colision(Hitbox1, temp.rect);
+                if ((Dspace.x+Dspace.y) != 0) {
+                    collect(temp);
+                    itens.erase(pos);
+                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
+                    break;
+                }
+
+                Dspace = colision(Hitbox2, temp.rect);
+                if ((Dspace.x+Dspace.y) != 0) {
+                    collect(temp);
+                    itens.erase(pos);
+                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
+                    break;
+                }
+
+                Dspace = colision(Hitbox3, temp.rect);
+                if ((Dspace.x+Dspace.y) != 0) {
+                    collect(temp);
+                    itens.erase(pos);
+                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
+                    break;
+                }
+            }
+        }
+    }
+
+    void collect(Item item) {
+        if (item.name == "copper-coin") {
+            score += 5;
+            PlaySound(sfxCoin);
+        } else if (item.name == "silver-coin") {
+            score += 15;
+            PlaySound(sfxCoin);
+        } else if (item.name == "gold-coin") {
+            score += 50;
+            PlaySound(sfxCoin);
+        }
+    }
+
     Vector2 colision(Rectangle hitbox, Rectangle B) {
         float dx = 0, dy = 0;
         if (
@@ -556,15 +655,18 @@ int main(void) {
     const float FH = 23;
     int tickBlockUpdate = 5;
     int tick = 1;
+    int seconds = 0;
 
     InitWindow(WT, HT, "Super Flamingo Quest 0.3 - Flamingos Have Five-Lives");
-    SetTargetFPS(30);
+
+
+    InitAudioDevice();
+    Music songMainTheme = LoadMusicStream("songs/MainTheme.wav");
 
     Flamingo player(400, 400, FW, FH, WT, HT, SCALE);
 
-
-
     std::vector<Block> map;
+    std::vector<Item> itens;
     std::ifstream level("levels/teste.txt");
     // std::ifstream level("levels/testeSimplao.txt");
     if (!level) {
@@ -581,45 +683,89 @@ int main(void) {
     std::getline(level, line);
     widthLevel = std::stoi(line);
 
+    int RenderPhase = 0; // 1 = Blocks; 2 = Itens;
     while (!level.eof()) {
         std::getline(level, line);
         if (line[0] == 'P') {
             CHL = 0;
+            RenderPhase += 1;
             continue;
         }
-        for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
-            if (line[CWL] == '-' or line[CWL] == '|') {
-                continue;
+        if (RenderPhase == 1) {
+            for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
+                if (line[CWL] == '-' or line[CWL] == '|') {
+                    continue;
+                }
+                if (line[CWL] == 'F') {
+                    player.rect.x = CWL*(BS-1)*SCALE;
+                    player.rect.y = CHL*(BS-1)*SCALE;
+                    continue;
+                }
+                Block tile;
+                if (line[CWL] == 'G') {
+                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "grass", SCALE);
+                } else if (line[CWL] == 'D') {
+                    if (line[CWL+1] == '2') {
+                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS*2-1, BS*2-1, "dirt2", SCALE);
+                        CWL++;
+                    } else {
+                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "dirt", SCALE);
+                    }
+                }
+                map.push_back(tile);
             }
-            if (line[CWL] == 'F') {
-                player.rect.x = CWL*(BS-1)*SCALE;
-                player.rect.y = CHL*(BS-1)*SCALE;
-                continue;
-            }
-            Block tile;
-            if (line[CWL] == 'G') {
-                tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "grass", SCALE);
-            }
-            if (line[CWL] == 'D') {
-                if (line[CWL+1] == '2') {
-                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS*2-1, BS*2-1, "dirt2", SCALE);
-                    CWL++;
-                } else {
-                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "dirt", SCALE);
+            CHL++;
+        } else if (RenderPhase == 2) {
+            int i = 0;
+            int CWL;
+            std::string text = "";
+            std::string name = "";
+            for (; line[i] != '-'; i++) {
+                if (isdigit(line[i])) {
+                    text += line[i];
                 }
             }
-            map.push_back(tile);
+            i++;
+            CWL = std::stoi(text);
+            text = "";
+
+
+            for (; line[i] != '-'; i++) {
+                if (isdigit(line[i])) {
+                    text += line[i];
+                }
+            }
+            i++;
+            CHL = std::stoi(text);
+            text = "";
+
+
+            for (; line[i] != '\0'; i++) {
+                if (line[i] == '\"') {
+                    continue;
+                }
+                text += line[i];
+            }
+            name = text;
+
+            Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE);
+            itens.push_back(novoItem);
         }
-        CHL++;
+
     }
     level.close();
 
 
     int sizeB = map.size();
+    int sizeI = itens.size();
     Vector2 mousePosition;
     std::vector<int> colisionBlocks; // List of blocks that can collide with player
+    std::vector<int> colisionItens; // List of itens that can collide with player
     float maxV = 0;
+    SetTargetFPS(30);
+    PlayMusicStream(songMainTheme);
     while (!WindowShouldClose()) {
+        UpdateMusicStream(songMainTheme);
         // Player Collision
         if (tick % tickBlockUpdate == 0) {
             colisionBlocks.clear();
@@ -632,10 +778,23 @@ int main(void) {
                     }
                 }
             }
+
+
+            colisionItens.clear();
+            for (int i = 0; i < sizeI; i++) {
+                int dx = abs(itens[i].cx - player.cx);
+                if (dx < player.rect.width*2*SCALE) {
+                    int dy = abs(itens[i].cy - player.cy);
+                    if (dy < player.rect.height*2*SCALE) {
+                        colisionItens.push_back(i);
+                    }
+                }
+            }
         }
 
+
         // Entities Updates
-        player.update(colisionBlocks, map);
+        player.update(colisionBlocks, map, colisionItens, itens);
 
         if (abs(player.vy) > 12) {
             tickBlockUpdate = 2;
@@ -650,6 +809,9 @@ int main(void) {
             player.rect.y = mousePosition.y;
         }
 
+        if (tick % 30 == 0) {
+            seconds += 1;
+        }
 
 
 
@@ -672,6 +834,13 @@ int main(void) {
             relativePos.y = center.y +map[i].rect.y -player.rect.y;
             DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
         }
+        // Desenhando itens
+        for (int i = 0; i < sizeI; i++) {
+            Vector2 relativePos;
+            relativePos.x = center.x +itens[i].rect.x -player.rect.x;
+            relativePos.y = center.y +itens[i].rect.y -player.rect.y;
+            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
+        }
         
 
 
@@ -679,6 +848,8 @@ int main(void) {
 
         // Desenhando HUD
         DesenharHeart(player);
+        DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()-200, 0, 20, WHITE);
+        DrawText(TextFormat("Time: %d", seconds), GetScreenWidth()/2-100, 0, 20, WHITE);
 
 
 
@@ -695,6 +866,10 @@ int main(void) {
 
 
         // DEBUG
+        if (colisionItens.size() > 0) {
+            DrawText(TextFormat("item Prox: %d", colisionItens[0]), GetScreenWidth()-300, 220, 20, WHITE);
+            DrawText(TextFormat("Tamanho itens: %d", itens.size()), GetScreenWidth()-300, 280, 20, WHITE);
+        }
         // DrawText(TextFormat("CURRENT FPS: %i", (int)(1.0f/deltaTime)), GetScreenWidth() - 220, 40, 20, GREEN);
         
         // DrawRectangle(250, 250, 120, 60, RED);
@@ -730,6 +905,10 @@ int main(void) {
         EndDrawing();
         tick++;
     }
+
+
+    UnloadMusicStream(songMainTheme);
+    CloseAudioDevice();
 
     CloseWindow();
     return 0;
