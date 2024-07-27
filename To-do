@@ -6,28 +6,33 @@
 
 ## Refatoração
 ( ) [R] Deixar a moeda de cobre mais cobre
-( ) [R] Usar smart pointers e parar de deixar tudo na stack como um cavalo
 ( ) [R] Usar muita constante definida no começo
-( ) [R] Separar em arquivos e fazer import bonitinho
 ( ) [R] Melhorar as animações de caminhada
 ( ) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric?).
-( ) [R] Separar itens em categorias
 ( ) [R] Looks like modulo is bad cause of division, find alternatives.
+(X) [R] Cancelado pois aparentemente usar no stack é mais eficiente que pointers -> ~Usar smart pointers e parar de deixar tudo na stack como um cavalo~
 
 
 
 ## Big Updates
 
-
 ( ) 0.5 - Mapping Update
-    ( ) [+] Blocos fakes e Background
+    (X) [R] Rework de como a falta de uma vida afeta as outras (ciclo)
+    (X) [+] Blocos Background
+    (X) [+] Mudar cor de blocos background
+    (X) [+] Blocos Fake
+    ( ) [R] Separar itens em categorias
+    ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
+    ( ) [R] Separar em arquivos e fazer import bonitinho
+    ( ) [R] Reciclar código repetido em função na colisão.
     ( ) [+] Blocos com colisão unitária (platform)
-    ( ) [+] Key and Lock Block
+    (X) [+] Key and Lock Block (hope)
+    (X) [+] Key and Lock Block for other Quests
+
 
 ( ) 0.6 - Enemies and Lovers Update
     ( ) [+] 5 Enemies (each color)
-    ( ) [+] Spikes
     ( ) [+] Spikes
 
 

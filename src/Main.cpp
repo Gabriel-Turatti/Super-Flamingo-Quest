@@ -12,22 +12,34 @@ public:
     float friction;
     Texture2D image;
     int SCALE;
-    Block(int x, int y, int w, int h, std::string name, int SCALER) {
-        if (name == "grass") {
+    bool background = false, secret = false, rotate = false;
+    std::string name;
+
+    Block(int x, int y, int w, int h, std::string namer, int SCALER, bool rotator = false) {
+        if (namer == "grass") {
             image = LoadTexture("images/block_grass.png");
             friction = 2.5;
-        } else if (name == "dirt2") {
+        } else if (namer == "dirt2") {
             image = LoadTexture("images/block_dirt2x2.png");
             friction = 4;
-        } else if (name == "dirt") {
+        } else if (namer == "dirt") {
             image = LoadTexture("images/block_dirt.png");
             friction = 4;
+        } else if (namer == "gate-hope") {
+            image = LoadTexture("images/block_gates.png");
+            friction = 1.5;
+            rotate = rotator;
         }
         rect.x = x;
         rect.y = y;
         SCALE = SCALER;
         rect.width = w;
         rect.height = h;
+        name = namer;
+        if (rotate) {
+            rect.height = w;
+            rect.width = h;
+        }
         cx = x+w*SCALE/2;
         cy = y+h*SCALE/2;
     }
@@ -138,6 +150,13 @@ public:
             rect.x += 3*SCALE;
             rect.y += 2*SCALE;
             category = 'H';
+        } else if (name == "key-hope") {
+            image = LoadTexture("images/key-hope.png");
+            rect.width = 7;
+            rect.height = 11;
+            rect.x += 3*SCALE;
+            rect.y += 1*SCALE;
+            category = 'K';
         }
         cx = x+rect.width*SCALE/2;
         cy = y+rect.height*SCALE/2;
@@ -187,7 +206,9 @@ public:
     Sound sfxFood = LoadSound("sfx/eat.wav"); 
     Sound sfxJump = LoadSound("sfx/jump.wav");
     Sound sfxHeartPiece = LoadSound("sfx/HeartPiece.wav");
-
+    Sound sfxSecret = LoadSound("sfx/secret.wav");
+    Sound sfxKey = LoadSound("sfx/key.wav");
+    Sound sfxDoor = LoadSound("sfx/door.wav");
 
 
     int WT, HT, SCALE;
@@ -202,9 +223,13 @@ public:
     bool lookingRight = true;
     bool crouch = false;
     int jumpQueue = 0;
+    bool gameover = false;
+
+    int keyHope = 0;
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale) {
         SetSoundVolume(sfxJump, 0.5);
+        SetSoundVolume(sfxSecret, 0.4);
         SCALE = imagescale;
 
         rect.x = x;
@@ -229,7 +254,7 @@ public:
         HB1 = {Hitbox1.x, Hitbox1.y+2, 6.0f, 9.0f};
     }
 
-    void update(std::vector<int> CBs, std::vector<Block> map, std::vector<int> CIs, std::vector<Item> &itens) {
+    void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens) {
         keyPress();
         gravity();
         Physics(CBs, map);
@@ -318,31 +343,57 @@ public:
         vy += 0.25*SCALE;
     }
 
-    void Physics(std::vector<int> CBs, std::vector<Block> map) {
+    void Physics(std::vector<int> CBs, std::vector<Block> &map) {
         // Horizontal Axis checing
         rect.x += vx;
+        if (rect.y > 3000) {
+            rect.y = -1000;
+        }
         updateHitbox();
         int bsize = CBs.size();
         for (int i = 0; i < bsize; i++) {
             Block temp = map[CBs[i]];
             Vector2 DXspace;
-            
+
+
             if (crouch) {
                 DXspace = colision(HitboxA, temp.rect);
                 rect.x += DXspace.x;
                 if (DXspace.x != 0) {
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     HitboxA.x += DXspace.x;
                     vx = -vx/temp.friction;
                     break;
                 }
             } else {
-                // DrawText(TextFormat("Calculating X Colision for non-crouching sprite"), 60, 90, 20, RED);
                 DXspace = colision(Hitbox1, temp.rect);
                 rect.x += DXspace.x;
                 if (DXspace.x != 0) {
-                    // Hitbox1.x -= vx;
-                    // Hitbox2.x -= vx;
-                    // Hitbox3.x -= vx;
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     Hitbox1.x += DXspace.x;
                     Hitbox2.x += DXspace.x;
                     Hitbox3.x += DXspace.x;
@@ -353,9 +404,19 @@ public:
                 DXspace = colision(Hitbox2, temp.rect);
                 rect.x += DXspace.x;
                 if (DXspace.x != 0) {
-                    // Hitbox1.x -= vx;
-                    // Hitbox2.x -= vx;
-                    // Hitbox3.x -= vx;
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     Hitbox1.x += DXspace.x;
                     Hitbox2.x += DXspace.x;
                     Hitbox3.x += DXspace.x;
@@ -366,9 +427,19 @@ public:
                 DXspace = colision(Hitbox3, temp.rect);
                 rect.x += DXspace.x;
                 if (DXspace.x != 0) {
-                    // Hitbox1.x -= vx;
-                    // Hitbox2.x -= vx;
-                    // Hitbox3.x -= vx;
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     Hitbox1.x += DXspace.x;
                     Hitbox2.x += DXspace.x;
                     Hitbox3.x += DXspace.x;
@@ -401,6 +472,19 @@ public:
                 DYspace = colision(HitboxA, temp.rect);
                 rect.y += DYspace.y;
                 if (DYspace.y != 0) {
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     HitboxA.y += DYspace.y;
                     vy = -vy/temp.friction;
                     if (abs(vy) > 7*SCALE) {
@@ -412,9 +496,19 @@ public:
                 DYspace = colision(Hitbox1, temp.rect);
                 rect.y += DYspace.y;
                 if (DYspace.y != 0) {
-                    // Hitbox1.y -= vy;
-                    // Hitbox2.y -= vy;
-                    // Hitbox3.y -= vy;
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     Hitbox1.y += DYspace.y;
                     Hitbox2.y += DYspace.y;
                     Hitbox3.y += DYspace.y;
@@ -431,9 +525,19 @@ public:
                 DYspace = colision(Hitbox2, temp.rect);
                 rect.y += DYspace.y;
                 if (DYspace.y != 0) {
-                    // Hitbox1.y -= vy;
-                    // Hitbox2.y -= vy;
-                    // Hitbox3.y -= vy;
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     Hitbox1.y += DYspace.y;
                     Hitbox2.y += DYspace.y;
                     Hitbox3.y += DYspace.y;
@@ -450,9 +554,19 @@ public:
                 DYspace = colision(Hitbox3, temp.rect);
                 rect.y += DYspace.y;
                 if (DYspace.y != 0) {
-                    // Hitbox1.y -= vy;
-                    // Hitbox2.y -= vy;
-                    // Hitbox3.y -= vy;
+                    if (temp.secret) {
+                        PlaySound(sfxSecret);
+                        temp.secret = false;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        continue;
+                    }
+                    if (temp.name == "gate-hope" and keyHope > 0) {
+                        keyHope -= 1;
+                        temp.background = true;
+                        map[CBs[i]] = temp;
+                        PlaySound(sfxDoor);
+                    }
                     Hitbox1.y += DYspace.y;
                     Hitbox2.y += DYspace.y;
                     Hitbox3.y += DYspace.y;
@@ -585,7 +699,11 @@ public:
             case 'H':
                 PlaySound(sfxHeartPiece);
                 break;
+            case 'K':
+                PlaySound(sfxKey);
+                break;
         }
+
         if (item.name == "copper-coin") {
             score += 5;
         } else if (item.name == "silver-coin") {
@@ -637,6 +755,8 @@ public:
                 WH += 7;
                 PWH = 0;
             }
+        } else if (item.name == "key-hope") {
+            keyHope += 1;
         }
     }
 
@@ -648,10 +768,6 @@ public:
             (hitbox.y) < (B.y + B.height*SCALE) and
             (hitbox.height*SCALE + hitbox.y) > (B.y)
         ) {
-        // if ((int)(hitbox.x + hitbox.width*SCALE) > (int)(B.x) and
-        // (int)(hitbox.x) < (int)(B.x + B.width*SCALE) and
-        // (int)(hitbox.y) < (int)(B.y + B.height*SCALE) and
-        // (int)(hitbox.height*SCALE + hitbox.y) > (int)(B.y)) {
             if (hitbox.x < B.x) {
                 dx = B.x - (hitbox.x+hitbox.width*SCALE);
             } else if (hitbox.x > B.x) {
@@ -662,9 +778,7 @@ public:
             } else if (hitbox.y > B.y) {
                 dy = (B.height*SCALE + B.y) - hitbox.y;
             }
-            // return true;
         }
-        // return false;
         return {dx, dy};
     }
 
@@ -687,29 +801,56 @@ public:
                 break;
         }
 
-
-        // Fun-mode
-        if (RH < HH) {
-            RH += 1;
-            HH -= 1;
-        }
-        if (RH < PH) {
-            RH += 1;
-            PH -= 1;
-        }
-        if (RH < CH) {
-            RH += 1;
-            CH -= 1;
-        }
-        if (RH < WH) {
-            RH += 1;
-            WH -= 1;
+        if (HH <= 0 and RH <= 0 and PH <= 0 and CH <= 0 and WH <= 0) {
+            gameover = true;
+            HH = 0;
+            RH = 0;
+            PH = 0;
+            CH = 0;
+            WH = 0;
+            return;
         }
 
-        if (type == 'P') {
-            if (PH > MPH) {
-                PH = MPH;
-            }
+        if (HH > MHH) {
+            HH = MHH;
+        }
+        if (RH > MRH) {
+            RH = MRH;
+        }
+        if (PH > MPH) {
+            PH = MPH;
+        }
+        if (CH > MCH) {
+            CH = MCH;
+        }
+        if (WH > MWH) {
+            WH = MWH;
+        }
+
+        if (HH < 0) {
+            int extraDmg = 2*HH;
+            HH = 0;
+            Health(extraDmg, 'R');
+        }
+        if (RH < 0) {
+            int extraDmg = 2*RH;
+            RH = 0;
+            Health(extraDmg, 'P');
+        }
+        if (PH < 0) {
+            int extraDmg = 2*PH;
+            PH = 0;
+            Health(extraDmg, 'C');
+        }
+        if (CH < 0) {
+            int extraDmg = 2*CH;
+            CH = 0;
+            Health(extraDmg, 'W');
+        }
+        if (WH < 0) {
+            int extraDmg = 2*WH;
+            WH = 0;
+            Health(extraDmg, 'H');
         }
     }
 };
@@ -914,6 +1055,17 @@ int main(void) {
                     } else {
                         tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "dirt", SCALE);
                     }
+                } else if (line[CWL] = 'H') {
+                    bool rotation = false;
+                    std::string type;
+                    if (line[CWL-1] == '|') {
+                        rotation = true;
+                    }
+                    if (line[CWL+1] == 'h') {
+                        type = "hope";
+                    }
+                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "gate-" + type, SCALE, rotation);
+                    CWL++;
                 }
                 map.push_back(tile);
             }
@@ -981,6 +1133,9 @@ int main(void) {
         if (tick % tickBlockUpdate == 0) {
             colisionBlocks.clear();
             for (int i = 0; i < sizeB; i++) {
+                if (map[i].background) {
+                    continue;
+                }
                 int dx = abs(map[i].cx - player.cx);
                 if (dx < player.rect.width*2*SCALE) {
                     int dy = abs(map[i].cy - player.cy);
@@ -1031,19 +1186,68 @@ int main(void) {
         BeginDrawing();
         ClearBackground(BLUE);
 
-        // Desenhando Player
+
+
         Rectangle center = {WT/2, HT/2, SCALE*player.rect.width, SCALE*player.rect.height};
-        if (player.lookingRight) {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rect.width, player.rect.height}, center, {0, 0}, 0, WHITE);
-        } else {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, WHITE);
-        }
-        // Desenhando blocos
+        // Desenhando blocos Background
         for (int i = 0; i < sizeB; i++) {
+            if (!map[i].background) {
+                continue;
+            }
             Vector2 relativePos;
             relativePos.x = center.x +map[i].rect.x -player.rect.x;
             relativePos.y = center.y +map[i].rect.y -player.rect.y;
-            DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
+            
+            if (map[i].name == "gate-hope") {
+                Rectangle cut, dest;
+                dest.x = relativePos.x;
+                dest.y = relativePos.y;
+                dest.width = 13*SCALE;
+                dest.height = 25*SCALE;
+
+                cut.x = 0;
+                cut.y = 0;
+                cut.width = 13;
+                cut.height = 25;
+                DrawTexturePro(map[i].image, cut, dest, {0, 0}, 0, GRAY);
+            } else {
+                DrawTextureEx(map[i].image, relativePos, 0, SCALE, GRAY);
+            }
+        }
+
+        // Desenhando Player
+        Color playerColor = WHITE;
+        if (player.gameover) {
+            playerColor = GRAY;
+        }
+        if (player.lookingRight) {
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
+        } else {
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
+        }
+        // Desenhando blocos Ground
+        for (int i = 0; i < sizeB; i++) {
+            if (map[i].background) {
+                continue;
+            }
+            Vector2 relativePos;
+            relativePos.x = center.x +map[i].rect.x -player.rect.x;
+            relativePos.y = center.y +map[i].rect.y -player.rect.y;
+            if (map[i].name == "gate-hope") {
+                Rectangle cut, dest;
+                dest.x = relativePos.x;
+                dest.y = relativePos.y;
+                dest.width = 13*SCALE;
+                dest.height = 25*SCALE;
+
+                cut.x = 0;
+                cut.y = 24;
+                cut.width = 13;
+                cut.height = 25;
+                DrawTexturePro(map[i].image, cut, dest, {0, 0}, 0, playerColor);
+            } else {
+                DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
+            }
         }
         // Desenhando itens
         sizeI = itens.size();
@@ -1057,8 +1261,7 @@ int main(void) {
 
 
         // fun-mode
-        
-        if (tick % 50 == 0) {
+        if (tick % 50 == 0 and sizeI < 100) {
             int RNG_X = (RNGWidth(rng))*(BS-1)*SCALE;
             int RNG_Y = (RNGHeight(rng))*(BS-1)*SCALE;
             bool freespace = true;
@@ -1107,6 +1310,9 @@ int main(void) {
         DesenharHeart(player);
         DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()-200, 0, 20, WHITE);
         DrawText(TextFormat("Time: %d", seconds), GetScreenWidth()/2-100, 0, 20, WHITE);
+        if (player.keyHope > 0) {
+            DrawText(TextFormat("Yellow Keys - %d", player.keyHope), GetScreenWidth() - 200, 50, 20, WHITE);
+        }
 
 
 
