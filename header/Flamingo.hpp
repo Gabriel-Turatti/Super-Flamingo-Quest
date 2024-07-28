@@ -78,6 +78,8 @@ public:
     
     void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens);
 
+    int blockColision(Rectangle HBox, Block &temp, bool vert);
+
     void keyPress();
     void gravity();
     void Physics(std::vector<int> CBs, std::vector<Block> &map);

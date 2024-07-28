@@ -1,6 +1,8 @@
 #include "../header/Block.hpp"
 
 Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, bool rotator = false) {
+    rect.width = w;
+    rect.height = h;
     if (namer == "grass") {
         image = LoadTexture("images/block_grass.png");
         friction = 2.5;
@@ -13,13 +15,15 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, bool rot
     } else if (namer == "gate-hope") {
         image = LoadTexture("images/block_gates.png");
         friction = 1.5;
-        rotate = rotator;
+    } else if (namer == "platform") {
+        image = LoadTexture("images/platform.png");
+        friction = 2;
+        rect.height = 1;
     }
+    rotate = rotator;
     rect.x = x;
     rect.y = y;
     SCALE = SCALER;
-    rect.width = w;
-    rect.height = h;
     name = namer;
     if (rotate) {
         rect.height = w;

@@ -10,7 +10,13 @@
 
 
 
-
+bool GenericColision(Rectangle A, Rectangle B, int SCALE) {
+    return
+        (A.x + A.width*SCALE) > (B.x) and
+        (A.x) < (B.x + B.width*SCALE) and
+        (A.y) < (B.y + B.height*SCALE) and
+        (A.height*SCALE + A.y) > (B.y);
+}
 
 void DesenharHeart(Flamingo player) {
     int SCALE = player.SCALE;
@@ -194,7 +200,7 @@ int main(void) {
         }
         if (RenderPhase == 1) {
             for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
-                if (line[CWL] == '-' or line[CWL] == '|') {
+                if (line[CWL] == '-' or line[CWL] == '|' or line[CWL] == 'p' or line[CWL] == 'h') {
                     continue;
                 }
                 if (line[CWL] == 'F') {
@@ -212,7 +218,7 @@ int main(void) {
                     } else {
                         tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "dirt", SCALE);
                     }
-                } else if (line[CWL] = 'H') {
+                } else if (line[CWL] == 'K') {
                     bool rotation = false;
                     std::string type;
                     if (line[CWL-1] == '|') {
@@ -222,7 +228,12 @@ int main(void) {
                         type = "hope";
                     }
                     tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "gate-" + type, SCALE, rotation);
-                    CWL++;
+                } else if (line[CWL] == 'P') {
+                    if (line[CWL+1] == 'p') {
+                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS*2-1, BS, "platform", SCALE, false);
+                    } else {
+                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "platform", SCALE, true);
+                    }
                 }
                 map.push_back(tile);
             }
@@ -232,6 +243,8 @@ int main(void) {
             int CWL;
             std::string text = "";
             std::string name = "";
+            char category;
+
             for (; line[i] != '-'; i++) {
                 if (isdigit(line[i])) {
                     text += line[i];
@@ -256,11 +269,22 @@ int main(void) {
                 if (line[i] == '\"') {
                     continue;
                 }
+                if (line[i] == '-') {
+                    if (text == "coin") {
+                        category = 'C';
+                    } else if (text == "food") {
+                        category = 'F';
+                    } else if (text == "Hshard") {
+                        category = 'H';
+                    } else if (text == "key") {
+                        category = 'K';
+                    }
+                }
                 text += line[i];
             }
             name = text;
 
-            Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE);
+            Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, category);
             itens.push_back(novoItem);
         }
 
@@ -418,13 +442,14 @@ int main(void) {
 
 
         // fun-mode
-        if (tick % 50 == 0 and sizeI < 100) {
+        if (tick % 30 == 0 and sizeI < 100) {
             int RNG_X = (RNGWidth(rng))*(BS-1)*SCALE;
-            int RNG_Y = (RNGHeight(rng))*(BS-1)*SCALE;
+            int RNG_Y = (RNGHeight(rng)-1)*(BS-1)*SCALE;
             bool freespace = true;
+            Rectangle tempItem = {(float) RNG_X, (float) RNG_Y, 13, 13};
             for (int i = 0; i < sizeB; i++) {
                 Block temp = map[i];
-                if (temp.rect.x == RNG_X and temp.rect.y == RNG_Y) { 
+                if (GenericColision(tempItem, temp.rect, SCALE)) { 
                     freespace = false;
                     break;
                 }
@@ -432,31 +457,33 @@ int main(void) {
             if (freespace) {
                 int value = RNG100(rng);
                 if (value <= 1) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE, 'H'));
                 } else if (value <= 4) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-harder", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-courage", SCALE, 'H'));
                 } else if (value <= 7) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE, 'H'));
                 } else if (value <= 10) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE, 'H'));
                 } else if (value <= 14) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
                 } else if (value <= 16) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "gold-coin", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
                 } else if (value <= 18) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "silver-coin", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-silver", SCALE, 'C'));
                 } else if (value <= 25) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "copper-coin", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-copper", SCALE, 'C'));
                 } else if (value <= 33) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE, 'F'));
                 } else if (value <= 48) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE, 'F'));
                 } else if (value <= 65) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
                 } else if (value <= 80) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE, 'F'));
                 } else if (value <= 100) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE, 'F'));
+                } else {
+                    itens.push_back(Item(RNG_X, RNG_Y, "key-hope", SCALE, 'K'));
                 }
                 sizeI += 1;
             }
@@ -495,7 +522,12 @@ int main(void) {
         
         // DrawRectangle(250, 250, 120, 60, RED);
         
-        // Vector2 relativePos;
+        Vector2 relativePos;
+
+        
+        relativePos.x = WT/2 +player.groundBlock.rect.x -player.rect.x;
+        relativePos.y = HT/2 +player.groundBlock.rect.y -player.rect.y;
+        DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width*SCALE, player.groundBlock.rect.height*SCALE, GREEN);
         // relativePos.x = center.x +player.HitboxA.x -player.rect.x;
         // relativePos.y = center.y +player.HitboxA.y -player.rect.y;
         // DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width*SCALE, player.HitboxA.height*SCALE, GREEN);
@@ -508,9 +540,11 @@ int main(void) {
         // relativePos.x = center.x +player.Hitbox3.x -player.rect.x;
         // relativePos.y = center.y +player.Hitbox3.y -player.rect.y;
         // DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width*SCALE, player.Hitbox3.height*SCALE, RED);
-        // relativePos.x = center.x +player.HB1.x -player.rect.x;
-        // relativePos.y = center.y +player.HB1.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
+        relativePos.x = center.x +player.HB1.x -player.rect.x;
+        relativePos.y = center.y +player.HB1.y -player.rect.y;
+        DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
+
+
 
         // relativePos.x = center.x;
         // relativePos.y = center.y;

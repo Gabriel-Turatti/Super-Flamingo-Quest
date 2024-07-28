@@ -11,8 +11,11 @@
 ( ) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric?).
 ( ) [R] Looks like modulo is bad cause of division, find alternatives.
-( ) [R] Fazer um arquivo separado pra map-loader
+( ) [R] Fazer um arquivo separado pra map-loader.
+( ) [R] Não deixar flipar se houver colisão.
+( ) [R] Break gates into different files.
 (X) [R] Cancelado pois aparentemente usar no stack é mais eficiente que pointers -> ~Usar smart pointers e parar de deixar tudo na stack como um cavalo~
+( ) [R] Usar uma única instância de som/imagem para blocos e itens.
 
 
 
@@ -23,11 +26,10 @@
     (X) [+] Blocos Background
     (X) [+] Mudar cor de blocos background
     (X) [+] Blocos Fake
-    ( ) [R] Separar itens em categorias
-    ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
+    (X) [R] Separar itens em categorias
     (X) [R] Separar em arquivos e fazer import bonitinho
-    ( ) [R] Reciclar código repetido em função na colisão.
-    ( ) [+] Blocos com colisão unitária (platform)
+    (X) [R] Reciclar código repetido em função na colisão.
+    (X) [+] Blocos com colisão unitária (platform)
     (X) [+] Key and Lock Block (hope)
     (X) [+] Key and Lock Block for other Quests
 
@@ -57,6 +59,7 @@
 ( ) [+] Animação de tomar dano (indicação com cor?) (som?)
 ( ) [+] Moedas e Itens terem animação de brilho e giro
 ( ) [+] Moeda de Ouro Envenenada -> Tira Hope
+( ) [+] Rotacionar plataforma, hitbox.
 
 
 

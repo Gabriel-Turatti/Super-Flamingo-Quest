@@ -13,7 +13,7 @@ public:
     Texture2D image;
     int SCALE;
 
-    Item(int x, int y, std::string namer, int SCALER);
+    Item(int x, int y, std::string namer, int SCALER, char categorizer);
 };
 
 #endif
