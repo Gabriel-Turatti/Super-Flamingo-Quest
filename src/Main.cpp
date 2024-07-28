@@ -4,715 +4,19 @@
 #include <fstream>
 #include <random>
 
-
-class Block {
-public:
-    Rectangle rect;
-    float cx, cy;
-    float friction;
-    Texture2D image;
-    int SCALE;
-    Block(int x, int y, int w, int h, std::string name, int SCALER) {
-        if (name == "grass") {
-            image = LoadTexture("images/block_grass.png");
-            friction = 2.5;
-        } else if (name == "dirt2") {
-            image = LoadTexture("images/block_dirt2x2.png");
-            friction = 4;
-        } else if (name == "dirt") {
-            image = LoadTexture("images/block_dirt.png");
-            friction = 4;
-        }
-        rect.x = x;
-        rect.y = y;
-        SCALE = SCALER;
-        rect.width = w;
-        rect.height = h;
-        cx = x+w*SCALE/2;
-        cy = y+h*SCALE/2;
-    }
-    Block() {}
-};
-
-class Item {
-public:
-    Rectangle rect;
-    float cx, cy;
-    std::string name;
-    char category;
-    Texture2D image;
-    int SCALE;
-    Item(int x, int y, std::string namer, int SCALER) {
-        name = namer;
-        rect.x = x;
-        rect.y = y;
-        SCALE = SCALER;
-        if (name == "copper-coin") {
-            image = LoadTexture("images/copper-coin.png");
-            rect.width = 9;
-            rect.height = 11;
-            rect.x += 2*SCALE;
-            rect.y += 1*SCALE;
-            category = 'C';
-        } else if (name == "silver-coin") {
-            image = LoadTexture("images/silver-coin.png");
-            rect.width = 9;
-            rect.height = 11;
-            rect.x += 2*SCALE;
-            rect.y += 1*SCALE;
-            category = 'C';
-        } else if (name == "gold-coin") {
-            image = LoadTexture("images/gold-coin.png");
-            rect.width = 9;
-            rect.height = 11;
-            rect.x += 2*SCALE;
-            rect.y += 1*SCALE;
-            category = 'C';
-        } else if (name == "food-banana") {
-            image = LoadTexture("images/food-banana.png");
-            rect.width = 11;
-            rect.height = 11;
-            rect.x += 1*SCALE;
-            rect.y += 1*SCALE;
-            category = 'F';
-        } else if (name == "food-pear") {
-            image = LoadTexture("images/food-pear.png");
-            rect.width = 13;
-            rect.height = 13;
-            rect.x += 0*SCALE;
-            rect.y += 0*SCALE;
-            category = 'F';
-        } else if (name == "food-blueberry") {
-            image = LoadTexture("images/food-blueberry.png");
-            rect.width = 9;
-            rect.height = 11;
-            rect.x += 2*SCALE;
-            rect.y += 1*SCALE;
-            category = 'F';
-        } else if (name == "food-pepper") {
-            image = LoadTexture("images/food-pepper.png");
-            rect.width = 11;
-            rect.height = 11;
-            rect.x += 1*SCALE;
-            rect.y += 1*SCALE;
-            category = 'F';
-        } else if (name == "food-orange") {
-            image = LoadTexture("images/food-orange.png");
-            rect.width = 11;
-            rect.height = 12;
-            rect.x += 1*SCALE;
-            rect.y += 0*SCALE;
-            category = 'F';
-        } else if (name == "Hshard-hope") {
-            image = LoadTexture("images/Hshard-hope.png");
-            rect.width = 7;
-            rect.height = 9;
-            rect.x += 3*SCALE;
-            rect.y += 2*SCALE;
-            category = 'H';
-        } else if (name == "Hshard-resilience") {
-            image = LoadTexture("images/Hshard-resilience.png");
-            rect.width = 7;
-            rect.height = 9;
-            rect.x += 3*SCALE;
-            rect.y += 2*SCALE;
-            category = 'H';
-        } else if (name == "Hshard-power") {
-            image = LoadTexture("images/Hshard-power.png");
-            rect.width = 7;
-            rect.height = 9;
-            rect.x += 3*SCALE;
-            rect.y += 2*SCALE;
-            category = 'H';
-        } else if (name == "Hshard-courage") {
-            image = LoadTexture("images/Hshard-courage.png");
-            rect.width = 7;
-            rect.height = 9;
-            rect.x += 3*SCALE;
-            rect.y += 2*SCALE;
-            category = 'H';
-        } else if (name == "Hshard-wisdom") {
-            image = LoadTexture("images/Hshard-wisdom.png");
-            rect.width = 7;
-            rect.height = 9;
-            rect.x += 3*SCALE;
-            rect.y += 2*SCALE;
-            category = 'H';
-        }
-        cx = x+rect.width*SCALE/2;
-        cy = y+rect.height*SCALE/2;
-    }
-};
-
-class Flamingo {
-public:
-    Rectangle rect;
-    float cx, cy;
-    float vx, vy;
-
-    Rectangle Hitbox1, Hitbox2, Hitbox3, HitboxA; // Leg, Chest, Head, Crouch
-
-    std::vector<Texture2D> images = {
-        LoadTexture("images/Flamingo1.png"),
-        LoadTexture("images/Flamingo2.png"),
-        LoadTexture("images/Flamingo3.png"),
-        LoadTexture("images/FlamingoS.png"),
-        LoadTexture("images/FlamingoF.png"),
-        LoadTexture("images/FlamingoA.png"),
-    };
-    int imageCount = 0;
-    int imageSize = 2;
-
-    Texture2D HeartGrid = LoadTexture("Images/heart_health.png"); // Corações de vida, cada coração tem 7 pontos de vida
-    int MHH = 4*7; // Hope Health
-    int MRH = 3*7; // Resilience Health
-    int MPH = 2*7; // Power Health
-    int MCH = 2*7; // Courage Health
-    int MWH = 1*7; // Wisdom Health
-
-    int HH = 4*7;
-    int RH = 3*7;
-    int PH = 2*7;
-    int CH = 2*7;
-    int WH = 1*7;
-
-    int PHH = 0;
-    int PRH = 0;
-    int PPH = 0;
-    int PCH = 0;
-    int PWH = 0;
-
-    Rectangle HB1;
-    Sound sfxCoin = LoadSound("sfx/coin.wav"); 
-    Sound sfxFood = LoadSound("sfx/eat.wav"); 
-    Sound sfxJump = LoadSound("sfx/jump.wav");
-    Sound sfxHeartPiece = LoadSound("sfx/HeartPiece.wav");
+#include "Block.cpp"
+#include "Item.cpp"
+#include "Flamingo.cpp"
 
 
 
-    int WT, HT, SCALE;
-    int naturalSpeed = 6;
-    int tick = 1;
-    int score = 0;
-
-    bool W, A, S, D;
-    bool canJump = true;
-    bool ground = false;
-    Block groundBlock;
-    bool lookingRight = true;
-    bool crouch = false;
-    int jumpQueue = 0;
-
-    Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale) {
-        SetSoundVolume(sfxJump, 0.5);
-        SCALE = imagescale;
-
-        rect.x = x;
-        rect.y = y;
-        rect.width = w;
-        rect.height = h;
-
-        WT = worldWidth;
-        HT = worldHeight;
-
-        vx = 0;
-        vy = 0;
-
-        cx = x+w*SCALE/2;
-        cy = y+h*SCALE/2;
-
-        Hitbox1 = Rectangle {rect.x+6*SCALE, rect.y+14*SCALE, 6.0f, 9.0f};
-        Hitbox2 = Rectangle {rect.x+3*SCALE, rect.y+7*SCALE, 11.0f, 7.0f};
-        Hitbox3 = Rectangle {rect.x+9*SCALE, rect.y, 9.0f, 8.0f};
-        HitboxA = Rectangle {rect.x, rect.y, 18.0f, 16.0f};
-        
-        HB1 = {Hitbox1.x, Hitbox1.y+2, 6.0f, 9.0f};
-    }
-
-    void update(std::vector<int> CBs, std::vector<Block> map, std::vector<int> CIs, std::vector<Item> &itens) {
-        keyPress();
-        gravity();
-        Physics(CBs, map);
-        ItemColision(CIs, itens);
-        if (tick % 300 == 0) {
-            if (RH < MRH) {
-                RH += 1;
-            }
-        }
-        tick += 1;
-    }
-
-    void keyPress() {
-        W = IsKeyDown(KEY_W);
-        A = IsKeyDown(KEY_A);
-        S = IsKeyDown(KEY_S);
-        D = IsKeyDown(KEY_D);
-
-
-        if (A) {
-            lookingRight = false;
-            if (ground) {
-                vx = -naturalSpeed*SCALE/groundBlock.friction;
-            } else {
-                vx = -naturalSpeed*SCALE/2;
-            }
-        } else if (D) {
-            lookingRight = true;
-            if (ground) {
-                vx = naturalSpeed*SCALE/groundBlock.friction;
-            } else {
-                vx = naturalSpeed*SCALE/2;
-            }
-        } else {
-            vx = 0;
-        }
-
-        bool toggleCrouch = crouch;
-        crouch = false;
-        if (W) {
-            jumpQueue = 3;
-        } else if (S) {
-            if (ground) {
-                if (not toggleCrouch) {
-                    rect.y += 7*SCALE;
-                    cy += 7*SCALE;
-                    HB1.height = HitboxA.height;
-                    HB1.width = HitboxA.width;
-                    rect.height = HitboxA.height;
-                }
-                crouch = true;
-                updateHitbox();
-                vx = vx/3;
-            }
-        }
-        if (toggleCrouch and not crouch) {
-            imageCount = 0;
-            rect.y -= 7*SCALE;
-            cy -= 7*SCALE;
-            HB1.height = Hitbox1.height;
-            HB1.width = Hitbox1.width;
-            rect.height = 23;
-            updateHitbox();
-        }
-
-        if (canJump and jumpQueue > 0) {
-            if (jumpQueue == 3) {
-                vy = -4.5f*SCALE;
-            } else if (jumpQueue == 2) {
-                vy -= 4.5f*SCALE;
-            } else {
-                vy -= 2.0f*SCALE;
-            }
-            PlaySound(sfxJump);
-            canJump = false;
-            crouch = false;
-            imageCount = 4;
-            jumpQueue = 0;
-        } else {
-            jumpQueue -= 1;
-        }
-
-    }
-
-    void gravity() {
-        vy += 0.25*SCALE;
-    }
-
-    void Physics(std::vector<int> CBs, std::vector<Block> map) {
-        // Horizontal Axis checing
-        rect.x += vx;
-        updateHitbox();
-        int bsize = CBs.size();
-        for (int i = 0; i < bsize; i++) {
-            Block temp = map[CBs[i]];
-            Vector2 DXspace;
-            
-            if (crouch) {
-                DXspace = colision(HitboxA, temp.rect);
-                rect.x += DXspace.x;
-                if (DXspace.x != 0) {
-                    HitboxA.x += DXspace.x;
-                    vx = -vx/temp.friction;
-                    break;
-                }
-            } else {
-                // DrawText(TextFormat("Calculating X Colision for non-crouching sprite"), 60, 90, 20, RED);
-                DXspace = colision(Hitbox1, temp.rect);
-                rect.x += DXspace.x;
-                if (DXspace.x != 0) {
-                    // Hitbox1.x -= vx;
-                    // Hitbox2.x -= vx;
-                    // Hitbox3.x -= vx;
-                    Hitbox1.x += DXspace.x;
-                    Hitbox2.x += DXspace.x;
-                    Hitbox3.x += DXspace.x;
-                    vx = -vx/temp.friction;
-                    break;
-                }
-                
-                DXspace = colision(Hitbox2, temp.rect);
-                rect.x += DXspace.x;
-                if (DXspace.x != 0) {
-                    // Hitbox1.x -= vx;
-                    // Hitbox2.x -= vx;
-                    // Hitbox3.x -= vx;
-                    Hitbox1.x += DXspace.x;
-                    Hitbox2.x += DXspace.x;
-                    Hitbox3.x += DXspace.x;
-                    vx = -vx/temp.friction;
-                    break;
-                }
-                
-                DXspace = colision(Hitbox3, temp.rect);
-                rect.x += DXspace.x;
-                if (DXspace.x != 0) {
-                    // Hitbox1.x -= vx;
-                    // Hitbox2.x -= vx;
-                    // Hitbox3.x -= vx;
-                    Hitbox1.x += DXspace.x;
-                    Hitbox2.x += DXspace.x;
-                    Hitbox3.x += DXspace.x;
-                    vx = -vx/temp.friction;
-                    break;
-                }
-
-            }
-        }
-
-
-
-
-        // Vertical Axis checking
-        rect.y += vy;
-        updateHitbox();
-        
-
-        ground = false;
-        for (int i = 0; i < bsize; i++) {
-            Block temp = map[CBs[i]];
-            Vector2 DYspace;
-
-            if (groundCheck(temp)) {
-                ground = true;
-                groundBlock = temp;
-            }
-
-            if (crouch) {
-                DYspace = colision(HitboxA, temp.rect);
-                rect.y += DYspace.y;
-                if (DYspace.y != 0) {
-                    HitboxA.y += DYspace.y;
-                    vy = -vy/temp.friction;
-                    if (abs(vy) > 7*SCALE) {
-                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
-                    }
-                    break;
-                }
-            } else {
-                DYspace = colision(Hitbox1, temp.rect);
-                rect.y += DYspace.y;
-                if (DYspace.y != 0) {
-                    // Hitbox1.y -= vy;
-                    // Hitbox2.y -= vy;
-                    // Hitbox3.y -= vy;
-                    Hitbox1.y += DYspace.y;
-                    Hitbox2.y += DYspace.y;
-                    Hitbox3.y += DYspace.y;
-                    if (DYspace.y < 0) {
-                        canJump = true;
-                    }
-                    if (abs(vy) > 7*SCALE) {
-                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
-                    }
-                    vy = -vy/temp.friction;
-                    break;
-                }
-
-                DYspace = colision(Hitbox2, temp.rect);
-                rect.y += DYspace.y;
-                if (DYspace.y != 0) {
-                    // Hitbox1.y -= vy;
-                    // Hitbox2.y -= vy;
-                    // Hitbox3.y -= vy;
-                    Hitbox1.y += DYspace.y;
-                    Hitbox2.y += DYspace.y;
-                    Hitbox3.y += DYspace.y;
-                    if (DYspace.y < 0) {
-                        canJump = true;
-                    }
-                    if (abs(vy) > 7*SCALE) {
-                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
-                    }
-                    vy = -vy/temp.friction;
-                    break;
-                }
-                
-                DYspace = colision(Hitbox3, temp.rect);
-                rect.y += DYspace.y;
-                if (DYspace.y != 0) {
-                    // Hitbox1.y -= vy;
-                    // Hitbox2.y -= vy;
-                    // Hitbox3.y -= vy;
-                    Hitbox1.y += DYspace.y;
-                    Hitbox2.y += DYspace.y;
-                    Hitbox3.y += DYspace.y;
-                    if (DYspace.y < 0) {
-                        canJump = true;
-                    }
-                    if (abs(vy) > 7*SCALE) {
-                        Health(-(((int)abs(vy) - 7*SCALE)/2), 'R');
-                    }
-                    vy = -vy/temp.friction;
-                    break;
-                }
-            }
-        }
-
-        
-        cx = rect.x + rect.width*SCALE/2;
-        cy = rect.y + rect.height*SCALE/2;
-        if (crouch) {
-            imageCount = 5;
-        } else if (tick % 10 == 0) {
-            if (not canJump) {
-                imageCount = 4;
-            } else if (vx != 0) {
-                imageCount++;
-                if (imageCount > imageSize) {
-                    imageCount = 0;
-                }
-            } else if (imageCount != 3) {
-                if (imageCount == 0 and canJump) {
-                    imageCount = 3;
-                } else {
-                    imageCount = 0;
-                }
-            }
-        }
-    }
-
-    bool groundCheck(Block ground) {
-        if (crouch) {
-            HB1.x = HitboxA.x;
-            HB1.y = HitboxA.y+2;
-        } else {
-            HB1.x = Hitbox1.x;
-            HB1.y = Hitbox1.y+2;
-        }
-        Vector2 C1 = colision(HB1, ground.rect);
-        if (abs(C1.y)+abs(C1.x) > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    void updateHitbox() {
-        if (crouch) {
-            HitboxA.x = rect.x;
-            HitboxA.y = rect.y;
-        } else {
-            if (lookingRight) {
-                Hitbox1.x = rect.x+6*SCALE;
-                Hitbox2.x = rect.x+3*SCALE;
-                Hitbox3.x = rect.x+9*SCALE;
-            } else {
-                Hitbox1.x = rect.x+7*SCALE;
-                Hitbox2.x = rect.x+4*SCALE;
-                Hitbox3.x = rect.x;
-            }
-            Hitbox1.y = rect.y+14*SCALE;
-            Hitbox2.y = rect.y+7*SCALE;
-            Hitbox3.y = rect.y+1*SCALE;
-        }
-    }
-
-    void ItemColision (std::vector<int> CIs, std::vector<Item> &itens) {
-        int isize = CIs.size();
-        for (int i = 0; i < isize; i++) {
-            Item temp = itens[CIs[i]];
-            Vector2 Dspace;
-            std::vector<Item>::iterator pos = itens.begin();
-            pos += CIs[i];
-            if (CIs[i]+1 == itens.size()) {
-                break;
-            }
-
-            if (crouch) {
-                Dspace = colision(HitboxA, temp.rect);
-                if ((Dspace.x+Dspace.y) != 0) {
-                    collect(temp);
-                    itens.erase(pos);
-                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                    break;
-                }
-            } else {
-                Dspace = colision(Hitbox1, temp.rect);
-                if ((Dspace.x+Dspace.y) != 0) {
-                    collect(temp);
-                    itens.erase(pos);
-                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                    break;
-                }
-
-                Dspace = colision(Hitbox2, temp.rect);
-                if ((Dspace.x+Dspace.y) != 0) {
-                    collect(temp);
-                    itens.erase(pos);
-                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                    break;
-                }
-
-                Dspace = colision(Hitbox3, temp.rect);
-                if ((Dspace.x+Dspace.y) != 0) {
-                    collect(temp);
-                    itens.erase(pos);
-                    // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                    break;
-                }
-            }
-        }
-    }
-
-    void collect(Item item) {
-        switch(item.category) {
-            case 'C':
-                PlaySound(sfxCoin);
-                break;
-            case 'F':
-                PlaySound(sfxFood);
-                Health(1, 'P');
-                break;
-            case 'H':
-                PlaySound(sfxHeartPiece);
-                break;
-        }
-        if (item.name == "copper-coin") {
-            score += 5;
-        } else if (item.name == "silver-coin") {
-            score += 25;
-        } else if (item.name == "gold-coin") {
-            score += 100;
-        } else if (item.name == "food-banana") {
-            score += 2;
-        } else if (item.name == "food-pear") {
-            score += 3;
-        } else if (item.name == "food-blueberry") {
-            score += 4;
-        } else if (item.name == "food-pepper") {
-            score += 6;
-        } else if (item.name == "food-orange") {
-            score += 8;
-        } else if (item.name == "Hshard-hope") {
-            PHH += 1;
-            if (PHH == 3) {
-                MHH += 7;
-                HH += 7;
-                PHH = 0;
-            }
-        } else if (item.name == "Hshard-resilience") {
-            PRH += 1;
-            if (PRH == 3) {
-                MRH += 7;
-                RH += 7;
-                PRH = 0;
-            }
-        } else if (item.name == "Hshard-power") {
-            PPH += 1;
-            if (PPH == 3) {
-                MPH += 7;
-                PH += 7;
-                PPH = 0;
-            }
-        } else if (item.name == "Hshard-courage") {
-            PCH += 1;
-            if (PCH == 3) {
-                MCH += 7;
-                CH += 7;
-                PCH = 0;
-            }
-        } else if (item.name == "Hshard-wisdom") {
-            PWH += 1;
-            if (PWH == 3) {
-                MWH += 7;
-                WH += 7;
-                PWH = 0;
-            }
-        }
-    }
-
-    Vector2 colision(Rectangle hitbox, Rectangle B) {
-        float dx = 0, dy = 0;
-        if (
-            (hitbox.x + hitbox.width*SCALE) > (B.x) and
-            (hitbox.x) < (B.x + B.width*SCALE) and
-            (hitbox.y) < (B.y + B.height*SCALE) and
-            (hitbox.height*SCALE + hitbox.y) > (B.y)
-        ) {
-        // if ((int)(hitbox.x + hitbox.width*SCALE) > (int)(B.x) and
-        // (int)(hitbox.x) < (int)(B.x + B.width*SCALE) and
-        // (int)(hitbox.y) < (int)(B.y + B.height*SCALE) and
-        // (int)(hitbox.height*SCALE + hitbox.y) > (int)(B.y)) {
-            if (hitbox.x < B.x) {
-                dx = B.x - (hitbox.x+hitbox.width*SCALE);
-            } else if (hitbox.x > B.x) {
-                dx = (B.width*SCALE + B.x) - hitbox.x;
-            }
-            if (hitbox.y < B.y) {
-                dy = B.y - (hitbox.y+hitbox.height*SCALE);
-            } else if (hitbox.y > B.y) {
-                dy = (B.height*SCALE + B.y) - hitbox.y;
-            }
-            // return true;
-        }
-        // return false;
-        return {dx, dy};
-    }
-
-    void Health(int qtd, char type) {
-        switch(type) {
-            case 'H':
-                HH += qtd;
-                break;
-            case 'R':
-                RH += qtd;
-                break;
-            case 'P':
-                PH += qtd;
-                break;
-            case 'C':
-                CH += qtd;
-                break;
-            case 'W':
-                WH += qtd;
-                break;
-        }
-
-
-        // Fun-mode
-        if (RH < HH) {
-            RH += 1;
-            HH -= 1;
-        }
-        if (RH < PH) {
-            RH += 1;
-            PH -= 1;
-        }
-        if (RH < CH) {
-            RH += 1;
-            CH -= 1;
-        }
-        if (RH < WH) {
-            RH += 1;
-            WH -= 1;
-        }
-
-        if (type == 'P') {
-            if (PH > MPH) {
-                PH = MPH;
-            }
-        }
-    }
-};
+bool GenericColision(Rectangle A, Rectangle B, int SCALE) {
+    return
+        (A.x + A.width*SCALE) > (B.x) and
+        (A.x) < (B.x + B.width*SCALE) and
+        (A.y) < (B.y + B.height*SCALE) and
+        (A.height*SCALE + A.y) > (B.y);
+}
 
 void DesenharHeart(Flamingo player) {
     int SCALE = player.SCALE;
@@ -896,7 +200,7 @@ int main(void) {
         }
         if (RenderPhase == 1) {
             for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
-                if (line[CWL] == '-' or line[CWL] == '|') {
+                if (line[CWL] == '-' or line[CWL] == '|' or line[CWL] == 'p' or line[CWL] == 'h') {
                     continue;
                 }
                 if (line[CWL] == 'F') {
@@ -914,6 +218,22 @@ int main(void) {
                     } else {
                         tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "dirt", SCALE);
                     }
+                } else if (line[CWL] == 'K') {
+                    bool rotation = false;
+                    std::string type;
+                    if (line[CWL-1] == '|') {
+                        rotation = true;
+                    }
+                    if (line[CWL+1] == 'h') {
+                        type = "hope";
+                    }
+                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "gate-" + type, SCALE, rotation);
+                } else if (line[CWL] == 'P') {
+                    if (line[CWL+1] == 'p') {
+                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS*2-1, BS, "platform", SCALE, false);
+                    } else {
+                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "platform", SCALE, true);
+                    }
                 }
                 map.push_back(tile);
             }
@@ -923,6 +243,8 @@ int main(void) {
             int CWL;
             std::string text = "";
             std::string name = "";
+            char category;
+
             for (; line[i] != '-'; i++) {
                 if (isdigit(line[i])) {
                     text += line[i];
@@ -947,11 +269,22 @@ int main(void) {
                 if (line[i] == '\"') {
                     continue;
                 }
+                if (line[i] == '-') {
+                    if (text == "coin") {
+                        category = 'C';
+                    } else if (text == "food") {
+                        category = 'F';
+                    } else if (text == "Hshard") {
+                        category = 'H';
+                    } else if (text == "key") {
+                        category = 'K';
+                    }
+                }
                 text += line[i];
             }
             name = text;
 
-            Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE);
+            Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, category);
             itens.push_back(novoItem);
         }
 
@@ -981,6 +314,9 @@ int main(void) {
         if (tick % tickBlockUpdate == 0) {
             colisionBlocks.clear();
             for (int i = 0; i < sizeB; i++) {
+                if (map[i].background) {
+                    continue;
+                }
                 int dx = abs(map[i].cx - player.cx);
                 if (dx < player.rect.width*2*SCALE) {
                     int dy = abs(map[i].cy - player.cy);
@@ -1031,19 +367,68 @@ int main(void) {
         BeginDrawing();
         ClearBackground(BLUE);
 
-        // Desenhando Player
+
+
         Rectangle center = {WT/2, HT/2, SCALE*player.rect.width, SCALE*player.rect.height};
-        if (player.lookingRight) {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rect.width, player.rect.height}, center, {0, 0}, 0, WHITE);
-        } else {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, WHITE);
-        }
-        // Desenhando blocos
+        // Desenhando blocos Background
         for (int i = 0; i < sizeB; i++) {
+            if (!map[i].background) {
+                continue;
+            }
             Vector2 relativePos;
             relativePos.x = center.x +map[i].rect.x -player.rect.x;
             relativePos.y = center.y +map[i].rect.y -player.rect.y;
-            DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
+            
+            if (map[i].name == "gate-hope") {
+                Rectangle cut, dest;
+                dest.x = relativePos.x;
+                dest.y = relativePos.y;
+                dest.width = 13*SCALE;
+                dest.height = 25*SCALE;
+
+                cut.x = 0;
+                cut.y = 0;
+                cut.width = 13;
+                cut.height = 25;
+                DrawTexturePro(map[i].image, cut, dest, {0, 0}, 0, GRAY);
+            } else {
+                DrawTextureEx(map[i].image, relativePos, 0, SCALE, GRAY);
+            }
+        }
+
+        // Desenhando Player
+        Color playerColor = WHITE;
+        if (player.gameover) {
+            playerColor = GRAY;
+        }
+        if (player.lookingRight) {
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
+        } else {
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
+        }
+        // Desenhando blocos Ground
+        for (int i = 0; i < sizeB; i++) {
+            if (map[i].background) {
+                continue;
+            }
+            Vector2 relativePos;
+            relativePos.x = center.x +map[i].rect.x -player.rect.x;
+            relativePos.y = center.y +map[i].rect.y -player.rect.y;
+            if (map[i].name == "gate-hope") {
+                Rectangle cut, dest;
+                dest.x = relativePos.x;
+                dest.y = relativePos.y;
+                dest.width = 13*SCALE;
+                dest.height = 25*SCALE;
+
+                cut.x = 0;
+                cut.y = 24;
+                cut.width = 13;
+                cut.height = 25;
+                DrawTexturePro(map[i].image, cut, dest, {0, 0}, 0, playerColor);
+            } else {
+                DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
+            }
         }
         // Desenhando itens
         sizeI = itens.size();
@@ -1057,14 +442,14 @@ int main(void) {
 
 
         // fun-mode
-        
-        if (tick % 50 == 0) {
+        if (tick % 30 == 0 and sizeI < 100) {
             int RNG_X = (RNGWidth(rng))*(BS-1)*SCALE;
-            int RNG_Y = (RNGHeight(rng))*(BS-1)*SCALE;
+            int RNG_Y = (RNGHeight(rng)-1)*(BS-1)*SCALE;
             bool freespace = true;
+            Rectangle tempItem = {(float) RNG_X, (float) RNG_Y, 13, 13};
             for (int i = 0; i < sizeB; i++) {
                 Block temp = map[i];
-                if (temp.rect.x == RNG_X and temp.rect.y == RNG_Y) { 
+                if (GenericColision(tempItem, temp.rect, SCALE)) { 
                     freespace = false;
                     break;
                 }
@@ -1072,31 +457,33 @@ int main(void) {
             if (freespace) {
                 int value = RNG100(rng);
                 if (value <= 1) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE, 'H'));
                 } else if (value <= 4) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-harder", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-courage", SCALE, 'H'));
                 } else if (value <= 7) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE, 'H'));
                 } else if (value <= 10) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE, 'H'));
                 } else if (value <= 14) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
                 } else if (value <= 16) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "gold-coin", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
                 } else if (value <= 18) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "silver-coin", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-silver", SCALE, 'C'));
                 } else if (value <= 25) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "copper-coin", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-copper", SCALE, 'C'));
                 } else if (value <= 33) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE, 'F'));
                 } else if (value <= 48) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE, 'F'));
                 } else if (value <= 65) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
                 } else if (value <= 80) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE, 'F'));
                 } else if (value <= 100) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE));
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE, 'F'));
+                } else {
+                    itens.push_back(Item(RNG_X, RNG_Y, "key-hope", SCALE, 'K'));
                 }
                 sizeI += 1;
             }
@@ -1107,6 +494,9 @@ int main(void) {
         DesenharHeart(player);
         DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()-200, 0, 20, WHITE);
         DrawText(TextFormat("Time: %d", seconds), GetScreenWidth()/2-100, 0, 20, WHITE);
+        if (player.keyHope > 0) {
+            DrawText(TextFormat("Yellow Keys - %d", player.keyHope), GetScreenWidth() - 200, 50, 20, WHITE);
+        }
 
 
 
@@ -1132,7 +522,12 @@ int main(void) {
         
         // DrawRectangle(250, 250, 120, 60, RED);
         
-        // Vector2 relativePos;
+        Vector2 relativePos;
+
+        
+        relativePos.x = WT/2 +player.groundBlock.rect.x -player.rect.x;
+        relativePos.y = HT/2 +player.groundBlock.rect.y -player.rect.y;
+        DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width*SCALE, player.groundBlock.rect.height*SCALE, GREEN);
         // relativePos.x = center.x +player.HitboxA.x -player.rect.x;
         // relativePos.y = center.y +player.HitboxA.y -player.rect.y;
         // DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width*SCALE, player.HitboxA.height*SCALE, GREEN);
@@ -1145,9 +540,11 @@ int main(void) {
         // relativePos.x = center.x +player.Hitbox3.x -player.rect.x;
         // relativePos.y = center.y +player.Hitbox3.y -player.rect.y;
         // DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width*SCALE, player.Hitbox3.height*SCALE, RED);
-        // relativePos.x = center.x +player.HB1.x -player.rect.x;
-        // relativePos.y = center.y +player.HB1.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
+        relativePos.x = center.x +player.HB1.x -player.rect.x;
+        relativePos.y = center.y +player.HB1.y -player.rect.y;
+        DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
+
+
 
         // relativePos.x = center.x;
         // relativePos.y = center.y;
