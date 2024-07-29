@@ -29,7 +29,7 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
         HB1 = {Hitbox1.x-1*SCALE, Hitbox1.y+7*SCALE, 10.0f, 2.0f};
     }
 
-void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens) {
+void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> &enemies) {
     keyPress();
     gravity();
     Physics(CBs, map);
@@ -383,16 +383,19 @@ void Flamingo::collect(Item item) {
         score += 25;
     } else if (item.name == "coin-gold") {
         score += 100;
-    } else if (item.name == "food-banana") {
+    } else if (item.name == "food-banana") { // Fun-mode
         score += 2;
-    } else if (item.name == "food-pear") {
+        Health(1, 'H');
+    } else if (item.name == "food-pear") { 
         score += 3;
     } else if (item.name == "food-blueberry") {
         score += 4;
     } else if (item.name == "food-pepper") {
         score += 6;
+        Health(1, 'C');
     } else if (item.name == "food-orange") {
         score += 8;
+        Health(1, 'W');
     } else if (item.name == "Hshard-hope") {
         PHH += 1;
         if (PHH == 3) {

@@ -50,3 +50,9 @@ P2
 21-132-"food-banana"
 10-124-"food-orange"
 21-133-"key-hope"
+P3
+10-44-"enemy-bee"
+endmap
+
+quando buscar uma posição no mapa
+subtraia 4 da linha e 2 da coluna.

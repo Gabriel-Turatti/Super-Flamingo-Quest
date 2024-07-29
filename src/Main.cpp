@@ -9,6 +9,88 @@
 #include "Flamingo.cpp"
 
 
+class Enemy {
+public:
+    Rectangle rect;
+    float cx, cy;
+    float vx, vy;
+    std::vector<Texture2D> images = {};
+    
+    int imageCount = 0;
+    int imageSize;
+
+    int SCALE;
+    std::string name;
+
+    // Sound sfxCoin = LoadSound("sfx/coin.wav");
+
+    char types[5] = {'H', 'R', 'P', 'C', 'W'};
+    int dmgs[5] = {0, 0, 0, 0, 0};
+
+    int id;
+    int patrol1;
+    int patrol2;
+    Block border1;
+    Block border2;
+
+    Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> map, int arg1 = 0) {
+        rect.x = x;
+        rect.y = y;
+        name = namer;
+        int SCALE = imagescale;
+        if (name == "bee") {
+            images.push_back(LoadTexture("images/bee.png"));
+            imageSize = 2;
+            rect.width = 11;
+            rect.height = 11;
+            dmgs[0] = 1;
+
+
+            id = 1;
+            patrol1 = rect.x -arg1;
+            patrol2 = rect.x +arg1;
+            vx = 2*SCALE;
+            int sizeB = map.size();
+            for (int i = 0; i < sizeB; i++) {
+                Block bloquinho = map[i];
+                if (rect.y+rect.height > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
+                    if (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x) {
+                        border2 = bloquinho;
+                    }
+                    if (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x) {
+                        border1 = bloquinho;
+                    }
+                }
+            }
+        }
+    }
+
+    void update() {
+        switch(id) {
+            case (1):
+                patroling();
+                break;
+        }
+        movement();
+    }
+
+    void patroling() {
+        if (rect.x < patrol1) {
+            vx = -vx;
+        } else if (rect.x > patrol2) {
+            vx = -vx;
+        }
+    }
+
+    void movement() {
+        rect.x += vx;
+
+        if (GenericColision(border1.rect, rect, SCALE) or GenericColision(border2.rect, rect, SCALE)) {
+            vx = -vx;
+        }
+    }
+};
+
 
 bool GenericColision(Rectangle A, Rectangle B, int SCALE) {
     return
@@ -164,7 +246,7 @@ int main(void) {
     int tick = 1;
     int seconds = 0;
 
-    InitWindow(WT, HT, "Super Flamingo Quest 0.3 - Flamingos Have Five-Lives");
+    InitWindow(WT, HT, "Super Flamingo Quest 0.6 - Enemies to Lovers Update");
 
 
     InitAudioDevice();
@@ -174,6 +256,7 @@ int main(void) {
 
     std::vector<Block> map;
     std::vector<Item> itens;
+    std::vector<Enemy> enemies;
     std::ifstream level("levels/teste.txt");
     // std::ifstream level("levels/testeSimplao.txt");
     if (!level) {
@@ -193,6 +276,9 @@ int main(void) {
     int RenderPhase = 0; // 1 = Blocks; 2 = Itens;
     while (!level.eof()) {
         std::getline(level, line);
+        if (line == "endmap") {
+            break;
+        }
         if (line[0] == 'P') {
             CHL = 0;
             RenderPhase += 1;
@@ -286,6 +372,42 @@ int main(void) {
 
             Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, category);
             itens.push_back(novoItem);
+        } else if (RenderPhase == 3) {
+            int i = 0;
+            int CWL;
+            std::string text = "";
+            std::string name = "";
+
+            for (; line[i] != '-'; i++) {
+                if (isdigit(line[i])) {
+                    text += line[i];
+                }
+            }
+            i++;
+            CWL = std::stoi(text);
+            text = "";
+
+
+            for (; line[i] != '-'; i++) {
+                if (isdigit(line[i])) {
+                    text += line[i];
+                }
+            }
+            i++;
+            CHL = std::stoi(text);
+            text = "";
+
+
+            for (; line[i] != '\0'; i++) {
+                if (line[i] == '\"') {
+                    continue;
+                }
+                text += line[i];
+            }
+            name = text;
+
+            Enemy novoInimigo(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map);
+            enemies.push_back(novoInimigo);
         }
 
     }
@@ -293,9 +415,11 @@ int main(void) {
 
     int sizeB = map.size();
     int sizeI = itens.size();
+    int sizeE = enemies.size();
     Vector2 mousePosition;
     std::vector<int> colisionBlocks; // List of blocks that can collide with player
     std::vector<int> colisionItens; // List of itens that can collide with player
+    std::vector<int> colisionEnemies; // List of Enemies that can collide with player
     float maxV = 0;
     SetTargetFPS(30);
     PlayMusicStream(songMainTheme);
@@ -337,11 +461,23 @@ int main(void) {
                     }
                 }
             }
+
+
+            colisionEnemies.clear();
+            for (int i = 0; i < sizeE; i++) {
+                int dx = abs(enemies[i].cx - player.cx);
+                if (dx < player.rect.width*2*SCALE) {
+                    int dy = abs(itens[i].cy - player.cy);
+                    if (dy < player.rect.height*2*SCALE) {
+                        colisionEnemies.push_back(i);
+                    }
+                }
+            }
         }
 
 
         // Entities Updates
-        player.update(colisionBlocks, map, colisionItens, itens);
+        player.update(colisionBlocks, map, colisionItens, itens, colisionEnemies, enemies);
 
         if (abs(player.vy) > 12) {
             tickBlockUpdate = 2;
@@ -406,6 +542,15 @@ int main(void) {
         } else {
             DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
         }
+
+        // Desenhando inimigos
+        for (int i = 0; i < sizeE; i++) { // TO-DO
+            Vector2 relativePos;
+            relativePos.x = center.x +itens[i].rect.x -player.rect.x;
+            relativePos.y = center.y +itens[i].rect.y -player.rect.y;
+            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
+        }
+
         // Desenhando blocos Ground
         for (int i = 0; i < sizeB; i++) {
             if (map[i].background) {

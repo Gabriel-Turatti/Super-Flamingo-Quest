@@ -13,13 +13,14 @@
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric?).
 ( ) [R] Looks like modulo is bad cause of division, find alternatives.
 ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
+( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
 
 
 
 
-( ) 0.6 - Enemies and Lovers Update
-    ( ) [+] Enemy class
-    ( ) [+] Bee
+( ) 0.6 - Enemies to Lovers Update
+    (X) [+] Enemy class
+    (X) [+] Bee
     ( ) [+] Snail
     ( ) [+] Butterfly
     ( ) [+] Crab
@@ -28,6 +29,7 @@
     ( ) [+] Animação de tomar dano (indicação com cor?) (som?)
     ( ) [+] Courage altar
     ( ) [+] Courage potion
+    ( ) [+] New themes (Hope & Resilience)
     ( ) [R] Não deixar flipar se houver colisão.
 
 
@@ -39,6 +41,8 @@
 ( ) ??? - Level Editor Update
     ( ) [R] Break gates into different files.
     ( ) [R] Fazer um arquivo separado pra map-loader.
+    ( ) [R] Time limit
+    ( ) [R] Level's finish line.
 ( ) ??? - Puzzle Update
     ( ) - Add more puzzle mechanics
 
@@ -47,7 +51,27 @@
     ( ) Planes of Paris II
 
 ( ) ??? - Inventory Update
+
+
+# Super far future
 ( ) ??? - Dialogue Update
+
+( ) ??? - Search for Hope Mountain LEVELPACK
+    ( ) 10 Levels
+( ) ??? - Resilience through Hardship LEVELPACK
+    ( ) 10 Levels
+( ) ??? - Snow Power LEVELPACK
+    ( ) 10 Levels
+( ) ??? - Lion's Courage LEVELPACK
+    ( ) 10 Levels
+( ) ??? - Tree of Wisdom LEVELPACK
+    ( ) 10 Levels
+( ) ??? - Endless Sea of ... LEVELPACK
+    ( ) 5 Levels
+
+
+( ) ??? - Alternative Paths
+
 
 
 ## Alterações aleatórias futuras
