@@ -5,46 +5,42 @@
 ( ) [+] Soaring
 
 ## Refatoração
+(X) [R] Cancelado pois aparentemente usar no stack é mais eficiente que pointers -> ~Usar smart pointers e parar de deixar tudo na stack como um cavalo~
 ( ) [R] Deixar a moeda de cobre mais cobre
 ( ) [R] Usar muita constante definida no começo
 ( ) [R] Melhorar as animações de caminhada
 ( ) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric?).
 ( ) [R] Looks like modulo is bad cause of division, find alternatives.
-( ) [R] Fazer um arquivo separado pra map-loader.
-( ) [R] Não deixar flipar se houver colisão.
-( ) [R] Break gates into different files.
-(X) [R] Cancelado pois aparentemente usar no stack é mais eficiente que pointers -> ~Usar smart pointers e parar de deixar tudo na stack como um cavalo~
 ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
 
 
 
-## Big Updates
-
-( ) 0.5 - Mapping Update
-    (X) [R] Rework de como a falta de uma vida afeta as outras (ciclo)
-    (X) [+] Blocos Background
-    (X) [+] Mudar cor de blocos background
-    (X) [+] Blocos Fake
-    (X) [R] Separar itens em categorias
-    (X) [R] Separar em arquivos e fazer import bonitinho
-    (X) [R] Reciclar código repetido em função na colisão.
-    (X) [+] Blocos com colisão unitária (platform)
-    (X) [+] Key and Lock Block (hope)
-    (X) [+] Key and Lock Block for other Quests
-
 
 ( ) 0.6 - Enemies and Lovers Update
-    ( ) [+] 5 Enemies (each color)
+    ( ) [+] Enemy class
+    ( ) [+] Bee
+    ( ) [+] Snail
+    ( ) [+] Butterfly
+    ( ) [+] Crab
+    ( ) [+] Meldrop
     ( ) [+] Spikes
+    ( ) [+] Animação de tomar dano (indicação com cor?) (som?)
+    ( ) [+] Courage altar
+    ( ) [+] Courage potion
+    ( ) [R] Não deixar flipar se houver colisão.
 
 
-( ) ??? - Sea of Sound Update
 ( ) ??? - Flamingo Magic Update
     ( ) [+] Pearl Shards
     ( ) [+] Pearl bars
-( ) ??? - Inflating Blocks Update??
+    ( ) [+] Eloise spell (Transmutation)
+    ( ) [+] Wind spell (wind hop)
 ( ) ??? - Level Editor Update
+    ( ) [R] Break gates into different files.
+    ( ) [R] Fazer um arquivo separado pra map-loader.
+( ) ??? - Puzzle Update
+    ( ) - Add more puzzle mechanics
 
 ( ) ??? - Planes of Paris Update
     ( ) Planes of Paris I
@@ -56,10 +52,12 @@
 
 ## Alterações aleatórias futuras
 ( ) [+] Mais um frame de Flamingo caindo.
-( ) [+] Animação de tomar dano (indicação com cor?) (som?)
 ( ) [+] Moedas e Itens terem animação de brilho e giro
 ( ) [+] Moeda de Ouro Envenenada -> Tira Hope
 ( ) [+] Rotacionar plataforma, hitbox.
+( ) [+] Soul Health bar (if you lose all 5 Healths)
+
+
 
 
 
@@ -109,3 +107,15 @@
     (X) [+] Moedas e Itens terem efeito de som
     (X) [+] Heart Shards + upgrade
     (X) [+] Main Theme
+
+(X) 0.5 - Mapping Update
+    (X) [R] Rework de como a falta de uma vida afeta as outras (ciclo)
+    (X) [+] Blocos Background
+    (X) [+] Mudar cor de blocos background
+    (X) [+] Blocos Fake
+    (X) [R] Separar itens em categorias
+    (X) [R] Separar em arquivos e fazer import bonitinho
+    (X) [R] Reciclar código repetido em função na colisão.
+    (X) [+] Blocos com colisão unitária (platform)
+    (X) [+] Key and Lock Block (hope)
+    (X) [+] Key and Lock Block for other Quests
