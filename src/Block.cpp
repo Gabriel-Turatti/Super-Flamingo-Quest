@@ -33,4 +33,6 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, bool rot
     cy = y+h*SCALE/2;
 }
 
-Block::Block() {}
+Block::Block() {
+    SCALE = 0;
+}

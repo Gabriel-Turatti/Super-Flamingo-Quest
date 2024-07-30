@@ -14,6 +14,7 @@
 ( ) [R] Looks like modulo is bad cause of division, find alternatives.
 ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
 ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
+( ) [R] Os inimigos não tem outline :skull_emoji:
 
 
 
@@ -21,7 +22,7 @@
 ( ) 0.6 - Enemies to Lovers Update
     (X) [+] Enemy class
     (X) [+] Bee
-    ( ) [+] Snail
+    (X) [+] Snail
     ( ) [+] Butterfly
     ( ) [+] Crab
     ( ) [+] Meldrop
@@ -29,8 +30,9 @@
     ( ) [+] Animação de tomar dano (indicação com cor?) (som?)
     ( ) [+] Courage altar
     ( ) [+] Courage potion
-    ( ) [+] New themes (Hope & Resilience)
+    (X) [+] New themes (Hope & Resilience)
     ( ) [R] Não deixar flipar se houver colisão.
+    (X) [B] Caracol não encaixando no ground certo -> Eu fiz as abelhas encaixarem no ground, e não as snails... DUHHH
 
 
 ( ) ??? - Flamingo Magic Update

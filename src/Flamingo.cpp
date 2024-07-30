@@ -29,11 +29,16 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
         HB1 = {Hitbox1.x-1*SCALE, Hitbox1.y+7*SCALE, 10.0f, 2.0f};
     }
 
-void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> &enemies) {
+void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies) {
     keyPress();
     gravity();
     Physics(CBs, map);
     ItemColision(CIs, itens);
+    EnemyColision(CEs, enemies);
+
+    if (invincibility > 0) {
+        invincibility -= 1;
+    }
     if (tick % 300 == 0) {
         if (RH < MRH) {
             RH += 1;
@@ -116,6 +121,55 @@ void Flamingo::keyPress() {
 
 void Flamingo::gravity() {
     vy += 0.25*SCALE;
+}
+
+void Flamingo::EnemyColision(std::vector<int> CEs, std::vector<Enemy> enemies) {
+    if (invincibility > 0) {
+        return;
+    }
+    
+    int Esize = CEs.size();
+    Vector2 Dspace;
+    for (int i = 0; i < Esize; i++) {
+        Enemy temp = enemies[CEs[i]];
+        if (crouch) {
+            Dspace = colision(HitboxA, temp.rect);
+            if ((Dspace.x+Dspace.y) != 0) {
+                TakeHit(temp);
+                invincibility = 60;
+                break;
+            }
+        } else {
+            Dspace = colision(Hitbox1, temp.rect);
+            if ((Dspace.x+Dspace.y) != 0) {
+                TakeHit(temp);
+                invincibility = 60;
+                break;
+            }
+
+            Dspace = colision(Hitbox2, temp.rect);
+            if ((Dspace.x+Dspace.y) != 0) {
+                TakeHit(temp);
+                invincibility = 60;
+                break;
+            }
+
+            Dspace = colision(Hitbox3, temp.rect);
+            if ((Dspace.x+Dspace.y) != 0) {
+                TakeHit(temp);
+                invincibility = 60;
+                break;
+            }
+        }
+    }
+}
+
+void Flamingo::TakeHit(Enemy enemy) {
+    for (int i = 0; i < 5; i++) {
+        if (enemy.dmgs[i] > 0) {
+            Health(-enemy.dmgs[i], enemy.types[i]);
+        }
+    }
 }
 
 int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {

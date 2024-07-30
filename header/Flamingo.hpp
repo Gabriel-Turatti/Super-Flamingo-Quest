@@ -6,6 +6,7 @@
 #include <vector>
 #include "Block.hpp"
 #include "Item.hpp"
+#include "Enemy.hpp"
 
 
 class Flamingo {
@@ -71,12 +72,13 @@ public:
     bool gameover = false;
 
     int keyHope = 0;
+    int invincibility = 60;
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
     void Health(int qtd, char type);
     
-    void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens);
+    void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies);
 
     int blockColision(Rectangle HBox, Block &temp, bool vert);
 
@@ -84,6 +86,9 @@ public:
     void gravity();
     void Physics(std::vector<int> CBs, std::vector<Block> &map);
     void ItemColision (std::vector<int> CIs, std::vector<Item> &itens);
+
+    void EnemyColision(std::vector<int> CEs, std::vector<Enemy> enemies);
+    void TakeHit(Enemy enemy);
 
     void collect(Item item);
 
