@@ -55,14 +55,16 @@ P3
 10-16-"bee"
 20-34-"bee"
 15-76-"bee"
-26-89-"bee"
+26-80-"bee"
 6-61-"snail"
 0-70-"snail"
 17-38-"snail"
-24-153-"snail"
 13-85-"butterfly"
-18-135-"butterfly"
 4-81-"butterfly"
+21-25-"crab"
+23-151-"crab"
+1-105-"crab"
+17-29-"crab"
 endmap
 
 

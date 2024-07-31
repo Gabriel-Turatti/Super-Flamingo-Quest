@@ -1,5 +1,9 @@
+Se está dando bug, já tentou checar se você usou SCALE corretamente?
+
 ## Correção de Bugs
 ( ) [B] Snails entering 2x2 blocks
+( ) [B] Snails should ignore spikes
+( ) [B] If a Crab can't spawn, it crashes the game, do a fail-safe
 
 ## Alterações gerais
 ( ) [+] Different levels of jumping
@@ -16,12 +20,15 @@
 ( ) [+] Soul Health bar (if you lose all 5 Healths)
 ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
 ( ) [+] Barulho de poção e altar
+( ) [+] Crouch check pra não clipar igual fiz com mirroring
+( ) [+] Crouch ser mais baixo
 
 ## Refatoração
 ( ) [R] Deixar a moeda de cobre mais cobre
 ( ) [R] Remover as linhas preta estranha dos sprites da: plataforma, pera, abelha
 ( ) [R] Usar muita constante definida no começo
 ( ) [R] Melhorar as animações de caminhada
+( ) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
 ( ) [R] Looks like modulo is bad cause of division, find alternatives.
 ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
@@ -29,6 +36,7 @@
 ( ) [R] Alguns inimigos não tem outline :skull_emoji:
 ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
 ( ) [R] Fazer o jerk de movimento quando levar dado igual HL?
+( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
 
 
 
@@ -38,7 +46,7 @@
     (X) [+] Bee
     (X) [+] Snail
     (X) [+] Butterfly
-    ( ) [+] Crab
+    (X) [+] Crab
     ( ) [+] Meldrop
     (X) [+] Spikes
     (X) [+] Animação de tomar dano (indicação com cor?) (som?)

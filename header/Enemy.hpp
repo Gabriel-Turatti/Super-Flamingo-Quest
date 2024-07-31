@@ -59,6 +59,8 @@ public:
 
     void butterfly(std::vector<Block> map, Flamingo &player);
 
+    void crab(Flamingo &player);
+
     void getCloseBlocks(std::vector<Block> map);
 };
 

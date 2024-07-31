@@ -36,7 +36,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
             rect.height = 13;
             rect.x += (13-rect.width)*SCALE;
         } else if (rotator == 2) {
-            rect.y += (13-rect.height)*SCALE;
+            rect.y += (12-rect.height)*SCALE;
         } else if (rotator == 3) {
             rect.width = 8;
             rect.height = 13;

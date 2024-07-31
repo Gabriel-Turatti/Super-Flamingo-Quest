@@ -149,6 +149,7 @@ void DesenharHeart(Flamingo player) {
 
 int main(void) {
     const int SCALE = 3;
+    const bool DEBUG = false;
     const int BS = 13;
     const int WT = BS*34*SCALE;
     const int HT = BS*25*SCALE;
@@ -349,14 +350,13 @@ int main(void) {
                         break;
                     }
                 }
-                Enemy novoInimigo((CHL-1)*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground);
-                enemies.push_back(novoInimigo);
+                enemies.push_back(Enemy((CHL-1)*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground));
             } else if (name == "butterfly") {
-                Enemy novoInimigo(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng));
-                enemies.push_back(novoInimigo);
+                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
+            } else if (name == "crab") {
+                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             } else {
-                Enemy novoInimigo(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng));
-                enemies.push_back(novoInimigo);
+                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             }
         }
     }
@@ -549,6 +549,9 @@ int main(void) {
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, enemies[i].behavior*-90, WHITE);
             } else if (enemies[i].name == "butterfly") {
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
+            } else if (enemies[i].name == "crab") {
+                // DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, RED);
+                DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else {
                 DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, BLACK);
             }
@@ -659,100 +662,104 @@ int main(void) {
         if (player.keyHope > 0) {
             DrawText(TextFormat("Yellow Keys - %d", player.keyHope), GetScreenWidth() - 200, 50, 20, WHITE);
         }
-
-
-
-
-
-
-        // DrawTexturePro(player.image, player.rect, player.rect, {static_cast<float>(player.rect.w), static_cast<float>(player.rect.h)}, 0, WHITE);
-        // DrawTexture(player.image, player.rect.x, player.rect.y, WHITE);
-        // DrawText(Texto, Lin, Col, Tam, Color)
-
-
-
-
-
-
-        // DEBUG
-        // if (colisionItens.size() > 0) {
-        //     DrawText(TextFormat("item Prox: %d", colisionItens[0]), GetScreenWidth()-300, 220, 20, WHITE);
-        //     DrawText(TextFormat("Tamanho itens: %d", itens.size()), GetScreenWidth()-300, 280, 20, WHITE);
-        // }
         DrawText(TextFormat("itens no mapa: %d", itens.size()), GetScreenWidth()-300, 220, 20, WHITE);
-        // DrawText(TextFormat("CURRENT FPS: %i", (int)(1.0f/deltaTime)), GetScreenWidth() - 220, 40, 20, GREEN);
-        
-        // DrawRectangle(250, 250, 120, 60, RED);
-        
-        // Vector2 relativePos;
-
-        
-        // relativePos.x = WT/2 +player.groundBlock.rect.x -player.rect.x;
-        // relativePos.y = HT/2 +player.groundBlock.rect.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width*SCALE, player.groundBlock.rect.height*SCALE, GREEN);
-        // relativePos.x = center.x +player.HitboxA.x -player.rect.x;
-        // relativePos.y = center.y +player.HitboxA.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width*SCALE, player.HitboxA.height*SCALE, GREEN);
-        // relativePos.x = center.x +player.Hitbox1.x -player.rect.x;
-        // relativePos.y = center.y +player.Hitbox1.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.Hitbox1.width*SCALE, player.Hitbox1.height*SCALE, RED);
-        // relativePos.x = center.x +player.Hitbox2.x -player.rect.x;
-        // relativePos.y = center.y +player.Hitbox2.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.Hitbox2.width*SCALE, player.Hitbox2.height*SCALE, RED);
-        // relativePos.x = center.x +player.Hitbox3.x -player.rect.x;
-        // relativePos.y = center.y +player.Hitbox3.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width*SCALE, player.Hitbox3.height*SCALE, RED);
-        // relativePos.x = center.x +player.HB1.x -player.rect.x;
-        // relativePos.y = center.y +player.HB1.y -player.rect.y;
-        // DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
 
 
 
-        // relativePos.x = center.x;
-        // relativePos.y = center.y;
-        // DrawRectangle(relativePos.x, relativePos.y, 1*SCALE, 1*SCALE, PURPLE);
-        // if (tick % 30 == 0) {
-        //     maxV = 0;
-        // }
-        // if (abs(player.vy) > abs(maxV)) {
-        //     maxV = player.vy;
-        // }
-        // DrawText(TextFormat("CURRENT V-Speed: %02.02f", -maxV), 20, 40, 20, GREEN);
-        // DrawText(TextFormat("Enemies close: %d", colisionEnemies.size()), 20, 40, 20, GREEN);
 
-        // for (int i = 0; i < sizeE; i++) {
-        //     if (enemies[i].name == "butterfly") {
-        //         Vector2 relativePos;
-        //         relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-        //         relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
-        //         DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
-        //         relativePos.x = center.x +enemies[i].orbit.x -player.rect.x;
-        //         relativePos.y = center.y +enemies[i].orbit.y -player.rect.y;
-        //         DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
-        //     }
-            // if (enemies[i].name == "snail") {
-            //     Vector2 relativePos;
-            //     relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
-            //     relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
-            //     DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width*SCALE, enemies[i].HBFeet.height*SCALE, RED);
-            //     relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
-            //     relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
-            //     DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width*SCALE, enemies[i].vision.height*SCALE, BLACK);
-            //     if (enemies[i].ground.SCALE == 0) {
-            //         DrawText("UNEXPECTED SNAIL BEHAVIOR 2", GetScreenWidth() - 520, 40, 20, RED);
-            //     } else {
-            //         relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
-            //         relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
-            //         DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
-            //     }
-            // }
-        // }
-        // for (int i = 0; i < sizeI; i++) {
-        //     Vector2 relativePos;
-        //     relativePos.x = center.x +itens[i].cx -player.rect.x;
-        //     relativePos.y = center.y +itens[i].cy -player.rect.y;
-        //     DrawCircle(relativePos.x, relativePos.y, 5, GREEN);
-        // }
+
+
+
+
+
+ 
+
+        if (DEBUG) {
+            Vector2 relativePos;
+            relativePos.x = WT/2 +player.groundBlock.rect.x -player.rect.x;
+            relativePos.y = HT/2 +player.groundBlock.rect.y -player.rect.y;
+            DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width*SCALE, player.groundBlock.rect.height*SCALE, YELLOW);
+            if (player.crouch) {
+                relativePos.x = center.x +player.HitboxA.x -player.rect.x;
+                relativePos.y = center.y +player.HitboxA.y -player.rect.y;
+                DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width*SCALE, player.HitboxA.height*SCALE, RED);
+            } else {
+                relativePos.x = center.x +player.Hitbox1.x -player.rect.x;
+                relativePos.y = center.y +player.Hitbox1.y -player.rect.y;
+                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox1.width*SCALE, player.Hitbox1.height*SCALE, RED);
+                relativePos.x = center.x +player.Hitbox2.x -player.rect.x;
+                relativePos.y = center.y +player.Hitbox2.y -player.rect.y;
+                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox2.width*SCALE, player.Hitbox2.height*SCALE, RED);
+                relativePos.x = center.x +player.Hitbox3.x -player.rect.x;
+                relativePos.y = center.y +player.Hitbox3.y -player.rect.y;
+                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width*SCALE, player.Hitbox3.height*SCALE, RED);
+            }
+            relativePos.x = center.x +player.HB1.x -player.rect.x;
+            relativePos.y = center.y +player.HB1.y -player.rect.y;
+            DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
+
+
+            for (int i = 0; i < sizeE; i++) {
+                Vector2 relativePos;
+                if (enemies[i].name == "crab") {
+                    relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
+                    relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
+                    relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                    DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
+                    relativePos.x = center.x +enemies[i].patrol2 -player.rect.x;
+                    relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                    DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
+                    relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
+                    relativePos.x = center.x +enemies[i].border1.rect.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].border1.rect.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].border1.rect.width*SCALE, enemies[i].border1.rect.height*SCALE, GREEN);
+                    relativePos.x = center.x +enemies[i].border2.rect.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].border2.rect.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].border2.rect.width*SCALE, enemies[i].border2.rect.height*SCALE, GREEN);
+                } else if (enemies[i].name == "butterfly") {
+                    relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
+                    relativePos.x = center.x +enemies[i].orbit.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].orbit.y -player.rect.y;
+                    DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
+                } else if (enemies[i].name == "snail") {
+                    relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width*SCALE, enemies[i].HBFeet.height*SCALE, RED);
+                    relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width*SCALE, enemies[i].vision.height*SCALE, BLACK);
+                    if (enemies[i].ground.SCALE == 0) {
+                        DrawText("UNEXPECTED SNAIL BEHAVIOR 2", GetScreenWidth() - 520, 40, 20, RED);
+                    } else {
+                        relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
+                        relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                        DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
+                    }
+                } else if (enemies[i].name == "bee") {
+                    relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
+                    relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
+                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
+                    relativePos.x = center.x +enemies[i].patrol2 -player.rect.x;
+                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
+                }
+            }
+            for (int i = 0; i < sizeI; i++) {
+                Vector2 relativePos;
+                relativePos.x = center.x +itens[i].cx -player.rect.x;
+                relativePos.y = center.y +itens[i].cy -player.rect.y;
+                DrawCircle(relativePos.x, relativePos.y, 5, GREEN);
+            }
+        }
 
         EndDrawing();
         tick++;

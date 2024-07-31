@@ -13,7 +13,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         rect.width = 11;
         rect.height = 11;
         dmgs[0] = 1;
-
+        rect.y += 1*SCALE;
 
         id = 1;
         patrol1 = rect.x -20*SCALE;
@@ -63,6 +63,109 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         behavior = 0;
         orbit.x = x;
         orbit.y = y;
+    } else if (name == "crab") {
+        images.push_back(LoadTexture("images/enemy-crab.png"));
+        imageSize = 4;
+        dmgs[3] = 1;
+
+        id = 4;
+        behavior = 0;
+
+        vx = 2;
+        vy = 0;
+
+        rect.width = 9;
+        rect.height = 9;
+        rect.y += 2*SCALE;
+        int sizeB = map.size();
+        for (int i = 0; i < sizeB; i++) {
+            Block bloquinho = map[i];
+            if (rect.y+rect.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height*SCALE > rect.y) {
+                if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
+                    border2 = bloquinho;
+                }
+                if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
+                    border1 = bloquinho;
+                }
+            }
+        }
+        rect.y -= 2*SCALE;
+        rect.width = 13;
+        rect.height = 13;
+
+        int j = 0;
+        for (; j < sizeB; j++) {
+            ground = map[j];
+            if (ground.rect.x == rect.x and ground.rect.y >= rect.y+(13-1)*SCALE) {
+                break;
+            }
+        }
+
+        Block leftGround = ground;
+        patrol1 = ground.rect.x;
+        int k = j;
+        while (true) {
+            k--;
+            Block newLeftGround = map[k];
+            if (newLeftGround.rect.y == leftGround.rect.y and newLeftGround.rect.x+newLeftGround.rect.width*SCALE >= leftGround.rect.x) {
+                leftGround = newLeftGround;
+            } else {
+                break;
+            }
+        }
+        patrol1 = leftGround.rect.x;
+
+
+        Block rightGround = ground;
+        patrol2 = ground.rect.x+ground.rect.width*SCALE;
+        k = j;
+        while (true) {
+            k++;
+            Block newRightGround = map[k];
+            if (newRightGround.rect.y == rightGround.rect.y and newRightGround.rect.x <= rightGround.rect.x+rightGround.rect.width*SCALE) {
+                rightGround = newRightGround;
+            } else {
+                break;
+            }
+        }
+        patrol2 = rightGround.rect.x+rightGround.rect.width*SCALE;
+
+        // border2 = ground;
+        // patrol2 = ground.rect.x+ground.rect.width*SCALE;
+        // int i = j;
+        // while (true) {
+        //     i++;
+        //     Block RightBorder = map[i];
+        //     if (RightBorder.rect.y == border2.rect.y and RightBorder.rect.x <= border2.rect.x+border2.rect.width*SCALE) {
+        //         bool breakable = false;
+        //         for (int m = i-1; m > 0; m--) {
+        //             if (map[m].rect.y == RightBorder.rect.y) {
+        //                 continue;
+        //             }
+        //             // sai do for pq esgotou os blocos possíveis (os mais acima não irão tampar o crab)
+        //             if (map[m].rect.x+map[m].rect.width*SCALE < RightBorder.rect.x) {
+        //                 break;
+        //             }
+
+        //             // m representa o bloco de cima
+        //             // i representa o bloco do chão, delimitante do crab
+        //             // bloco de cima tampa a distancia do bloco abaixo
+        //             if (map[m].rect.x < RightBorder.rect.x+RightBorder.rect.width*SCALE and 
+        //                 map[m].rect.x+map[m].rect.width*SCALE > RightBorder.rect.x
+        //             ) {
+        //                 breakable = true;
+        //                 patrol2 = map[m].rect.x;
+        //                 break;
+        //             }
+        //         }
+        //         if (breakable) {
+        //             break;
+        //         }
+        //         border2 = map[i];
+        //     } else {
+        //         break;
+        //     }
+        // }
     }
     cx = x + rect.width*SCALE/2;
     cy = y + rect.height*SCALE/2;
@@ -79,6 +182,9 @@ void Enemy::update(std::vector<Block> map, Flamingo &player) {
         case(3):
             butterfly(map, player);
             break;
+        case(4):
+            crab(player);
+            break;
     }
     tick += 1;
     if (tick % 10 == 0) {
@@ -92,7 +198,7 @@ void Enemy::update(std::vector<Block> map, Flamingo &player) {
 void Enemy::bee() {
     if (rect.x < patrol1) {
         vx = -vx;
-    } else if (rect.x > patrol2) {
+    } else if (rect.x+rect.width*SCALE > patrol2) {
         vx = -vx;
     }
     rect.x += vx;
@@ -256,6 +362,42 @@ void Enemy::butterfly(std::vector<Block> map, Flamingo &player) {
         }
     }
     
+}
+
+void Enemy::crab(Flamingo &player) {
+    rect.x += vx;
+    cx += vx;
+    if (behavior == 0) {
+        if (rect.x < patrol1) {
+            vx = 2;
+        }
+        if (rect.x+rect.width*SCALE > patrol2) {
+            vx = -2;
+        }
+        if (abs(player.rect.x-rect.x) + abs(player.rect.y-rect.y) < 80*SCALE) {
+            behavior = 1;
+            vx = 4;
+        }
+    } else if (behavior == 1) {
+        if (player.rect.x > rect.x) {
+            vx = 4;
+        } else {
+            vx = -4;
+        }
+        if (abs(player.rect.x-rect.x) + abs(player.rect.y-rect.y) > 80*SCALE) {
+            behavior = 0;
+            vx = 2;
+        }
+    }
+    if (rect.x+rect.width*SCALE > patrol2) {
+        rect.x = patrol2 - rect.width*SCALE;
+    }
+    if (rect.x < patrol1) {
+        rect.x = patrol1;
+    }
+    if (GenericColision(border1.rect, rect, SCALE) or GenericColision(border2.rect, rect, SCALE)) {
+        vx = -vx;
+    }
 }
 
 void Enemy::getCloseBlocks(std::vector<Block> map) {
