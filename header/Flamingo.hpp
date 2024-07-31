@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include <fstream>
 #include <vector>
+#include <map>
 #include "Block.hpp"
 #include "Item.hpp"
 #include "Enemy.hpp"
@@ -55,6 +56,9 @@ public:
     Sound sfxSecret = LoadSound("sfx/secret.wav");
     Sound sfxKey = LoadSound("sfx/key.wav");
     Sound sfxDoor = LoadSound("sfx/door.wav");
+    Sound sfxVulnerable = LoadSound("sfx/LoseAllHealth.wav");
+    Sound sfxHurt = LoadSound("sfx/hurt.wav");
+    Sound sfxFall = LoadSound("sfx/fall.wav");
 
 
     int WT, HT, SCALE;
@@ -72,7 +76,13 @@ public:
     bool gameover = false;
 
     int keyHope = 0;
-    int invincibility = 60;
+    std::map<char, int> invincibility = {
+        { 'H', 20 },
+        { 'R', 20 },
+        { 'P', 20 },
+        { 'C', 20 },
+        { 'W', 20 }
+    };
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
@@ -82,7 +92,7 @@ public:
 
     int blockColision(Rectangle HBox, Block &temp, bool vert);
 
-    void keyPress();
+    void keyPress(std::vector<int> CBs, std::vector<Block> &map);
     void gravity();
     void Physics(std::vector<int> CBs, std::vector<Block> &map);
     void ItemColision (std::vector<int> CIs, std::vector<Item> &itens);
@@ -96,6 +106,8 @@ public:
 
     void updateHitbox();
     Vector2 colision(Rectangle hitbox, Rectangle B);
+
+    bool CheckMirror(std::vector<int> CBs, std::vector<Block> &map);
 };
 
 #endif

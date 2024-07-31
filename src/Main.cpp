@@ -176,6 +176,7 @@ int main(void) {
     }
 
     std::string line;
+    std::string previousLine;
     int CHL; // Current Height Level (AKA. what column of blocks we are currently looking during the map load)
     int widthLevel;
     int heightLevel;
@@ -238,10 +239,25 @@ int main(void) {
                     } else {
                         tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "platform", SCALE, true);
                     }
+                } else if (line[CWL] == 'A') {
+                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "altar", SCALE);
+                } else if (line[CWL] == 'S') {
+                    int orientation = 0;
+                    if (line[CWL-1] != 'S' and line[CWL+1] != 'S') {
+                        if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
+                            orientation = 2;
+                        } else if (line[CWL-1] != '-') {
+                            orientation = 3;
+                        } else if (line[CWL+1] != '-') {
+                            orientation = 1;
+                        }
+                    }
+                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "spike", SCALE, orientation);
                 }
                 map.push_back(tile);
             }
             CHL++;
+            previousLine = line;
         } else if (RenderPhase == 2) {
             int i = 0;
             int CWL;
@@ -335,6 +351,9 @@ int main(void) {
                 }
                 Enemy novoInimigo((CHL-1)*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground);
                 enemies.push_back(novoInimigo);
+            } else if (name == "butterfly") {
+                Enemy novoInimigo(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng));
+                enemies.push_back(novoInimigo);
             } else {
                 Enemy novoInimigo(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng));
                 enemies.push_back(novoInimigo);
@@ -350,17 +369,16 @@ int main(void) {
     std::vector<int> colisionBlocks; // List of blocks that can collide with player
     std::vector<int> colisionItens; // List of itens that can collide with player
     std::vector<int> colisionEnemies; // List of Enemies that can collide with player
-    float maxV = 0;
     SetTargetFPS(30);
 
 
     int song = RNG100(rng);
     Music Theme;
-    if (song <= 5) {
+    if (song <= 3) {
         Theme = LoadMusicStream("songs/PowerTheme.wav");
-    } else if (song <= 15) {
+    } else if (song <= 12) {
         Theme = LoadMusicStream("songs/ResilienceTheme.wav");
-    } else if (song <= 35) {
+    } else if (song <= 28) {
         Theme = LoadMusicStream("songs/HopeTheme.wav");
     } else {
         Theme = LoadMusicStream("songs/MainTheme.wav");
@@ -414,21 +432,22 @@ int main(void) {
 
         // Entities Updates
         for (int i = 0; i < sizeE; i++) {
-            enemies[i].update(map);
+            enemies[i].update(map, player);
         }
         player.update(colisionBlocks, map, colisionItens, itens, colisionEnemies, enemies);
 
         if (abs(player.vy) > 12) {
-            tickBlockUpdate = 2;
+            tickBlockUpdate = 1;
         } else {
             tickBlockUpdate = 5;
         }
 
-        mousePosition = GetMousePosition();
+        Rectangle center = {WT/2, HT/2, SCALE*player.rect.width, SCALE*player.rect.height};
 
+        mousePosition = GetMousePosition();
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            player.rect.x = mousePosition.x;
-            player.rect.y = mousePosition.y;
+            player.rect.x = mousePosition.x +player.rect.x - center.x;
+            player.rect.y = mousePosition.y +player.rect.y - center.y;
         }
 
         if (tick % 30 == 0) {
@@ -444,7 +463,7 @@ int main(void) {
 
 
 
-        Rectangle center = {WT/2, HT/2, SCALE*player.rect.width, SCALE*player.rect.height};
+        
         // Desenhando blocos Background
         for (int i = 0; i < sizeB; i++) {
             if (!map[i].background) {
@@ -474,11 +493,24 @@ int main(void) {
         // Desenhando Player
         Color playerColor = WHITE;
         if (player.gameover) {
+            playerColor = {0, 255, 255, 127};
+        }
+
+        // invincibility for damage
+        if (player.invincibility['H'] > 0 and player.tick % 10 <= 1) {
+            playerColor = {255, 255, 0, 255};
+        } else if (player.invincibility['R'] > 0 and player.tick % 10 <= 3) {
+            playerColor = GREEN;
+        } else if (player.invincibility['P'] > 0 and player.tick % 10 <= 5) {
             playerColor = BLUE;
-        }
-        if (player.invincibility > 0 and player.tick % 6 >= 3) {
+        } else if (player.invincibility['C'] > 0 and player.tick % 10 <= 7) {
             playerColor = RED;
+        } else if (player.invincibility['W'] > 0 and player.tick % 10 <= 9) {
+            playerColor = {255, 255, 0, 255};
         }
+
+
+
         if (player.lookingRight) {
             DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
         } else {
@@ -488,42 +520,35 @@ int main(void) {
         // Desenhando inimigos
         for (int i = 0; i < sizeE; i++) {
             Vector2 relativePos;
+            Rectangle source, dest;
+
             relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
             relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
-            if (enemies[i].name == "bee") {
-                Rectangle source, dest;
-                source.x = 0 + enemies[i].imageCount*(enemies[i].rect.width+1);
-                source.y = 0;
-                source.width = enemies[i].rect.width;
-                source.height = enemies[i].rect.height;
 
-                dest.x = relativePos.x;
-                dest.y = relativePos.y;
-                dest.width = source.width*SCALE;
-                dest.height = source.height*SCALE;
+            source.x = 0 + enemies[i].imageCount*(enemies[i].rect.width+1);
+            source.y = 0;
+            source.width = enemies[i].rect.width;
+            source.height = enemies[i].rect.height;
+
+            dest.x = relativePos.x;
+            dest.y = relativePos.y;
+            dest.width = source.width*SCALE;
+            dest.height = source.height*SCALE;
+
+            if (enemies[i].name == "bee") {
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else if (enemies[i].name == "snail") {
-                Rectangle source, dest;
-                source.x = 0 + enemies[i].imageCount*(enemies[i].rect.width+1);
-                source.y = 0;
-                source.width = enemies[i].rect.width;
-                source.height = enemies[i].rect.height;
-
-                dest.x = relativePos.x;
-                dest.y = relativePos.y;
-                dest.width = source.width*SCALE;
-                dest.height = source.height*SCALE;
-
-                if (enemies[i].direction == 1) {
+                if (enemies[i].behavior == 1) {
                     dest.y += enemies[i].rect.width*SCALE;
-                } else if (enemies[i].direction == 2) {
+                } else if (enemies[i].behavior == 2) {
                     dest.y += enemies[i].rect.height*SCALE;
                     dest.x += enemies[i].rect.width*SCALE;
-                } else if (enemies[i].direction == 3) {
+                } else if (enemies[i].behavior == 3) {
                     dest.x += enemies[i].rect.height*SCALE;
                 }
-
-                DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, enemies[i].direction*-90, WHITE);
+                DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, enemies[i].behavior*-90, WHITE);
+            } else if (enemies[i].name == "butterfly") {
+                DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else {
                 DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, BLACK);
             }
@@ -549,10 +574,22 @@ int main(void) {
                 cut.width = 13;
                 cut.height = 25;
                 DrawTexturePro(map[i].image, cut, dest, {0, 0}, 0, WHITE);
+            } else if (map[i].name == "spike") {
+                if (map[i].direction == 1) {
+                    relativePos.y += map[i].rect.height*SCALE;
+                } else if (map[i].direction == 2) {
+                    relativePos.x += map[i].rect.width*SCALE;
+                    relativePos.y += map[i].rect.height*SCALE;
+                } else if (map[i].direction == 3) {
+                    relativePos.x += map[i].rect.width*SCALE;
+                }
+
+                DrawTextureEx(map[i].image, relativePos, map[i].direction*-90, SCALE, WHITE);
             } else {
                 DrawTextureEx(map[i].image, relativePos, 0, SCALE, WHITE);
             }
         }
+
         // Desenhando itens
         sizeI = itens.size();
         for (int i = 0; i < sizeI; i++) {
@@ -579,16 +616,18 @@ int main(void) {
             }
             if (freespace) {
                 int value = RNG100(rng);
-                if (value <= 1) {
+                if (value <= 0) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE, 'H'));
-                } else if (value <= 4) {
+                } else if (value <= 2) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-courage", SCALE, 'H'));
-                } else if (value <= 7) {
+                } else if (value <= 5) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE, 'H'));
-                } else if (value <= 10) {
+                } else if (value <= 9) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE, 'H'));
                 } else if (value <= 14) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
+                } else if (value <= 15) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "courage-potion", SCALE, 'I'));
                 } else if (value <= 16) {
                     itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
                 } else if (value <= 18) {
@@ -682,22 +721,31 @@ int main(void) {
         // DrawText(TextFormat("Enemies close: %d", colisionEnemies.size()), 20, 40, 20, GREEN);
 
         // for (int i = 0; i < sizeE; i++) {
-        //     if (enemies[i].name == "snail") {
+        //     if (enemies[i].name == "butterfly") {
         //         Vector2 relativePos;
-        //         relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
-        //         relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
-        //         DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width*SCALE, enemies[i].HBFeet.height*SCALE, RED);
-        //         relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
-        //         relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
-        //         DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width*SCALE, enemies[i].vision.height*SCALE, BLACK);
-        //         if (enemies[i].ground.SCALE == 0) {
-        //             DrawText("UNEXPECTED SNAIL BEHAVIOR 2", GetScreenWidth() - 520, 40, 20, RED);
-        //         } else {
-        //             relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
-        //             relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
-        //             DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
-        //         }
+        //         relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
+        //         relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+        //         DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
+        //         relativePos.x = center.x +enemies[i].orbit.x -player.rect.x;
+        //         relativePos.y = center.y +enemies[i].orbit.y -player.rect.y;
+        //         DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
         //     }
+            // if (enemies[i].name == "snail") {
+            //     Vector2 relativePos;
+            //     relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
+            //     relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
+            //     DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width*SCALE, enemies[i].HBFeet.height*SCALE, RED);
+            //     relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
+            //     relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
+            //     DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width*SCALE, enemies[i].vision.height*SCALE, BLACK);
+            //     if (enemies[i].ground.SCALE == 0) {
+            //         DrawText("UNEXPECTED SNAIL BEHAVIOR 2", GetScreenWidth() - 520, 40, 20, RED);
+            //     } else {
+            //         relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
+            //         relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+            //         DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
+            //     }
+            // }
         // }
         // for (int i = 0; i < sizeI; i++) {
         //     Vector2 relativePos;

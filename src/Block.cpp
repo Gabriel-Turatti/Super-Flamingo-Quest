@@ -1,6 +1,8 @@
 #include "../header/Block.hpp"
 
-Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, bool rotator = false) {
+Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator = 0) {
+    rect.x = x;
+    rect.y = y;
     rect.width = w;
     rect.height = h;
     if (namer == "grass") {
@@ -19,16 +21,30 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, bool rot
         image = LoadTexture("images/platform.png");
         friction = 2;
         rect.height = 1;
+    } else if (namer == "altar") {
+        image = LoadTexture("images/block_altar.png");
+        friction = 8.5;
+    } else if (namer == "spike") {
+        image = LoadTexture("images/block_spike.png");
+        friction = 7;
+        rect.width = 13;
+        rect.height = 8;
+        if (rotator == 0) {
+            rect.y += 5*SCALE;
+        } else if (rotator == 1) {
+            rect.width = 8;
+            rect.height = 13;
+            rect.x += (13-rect.width)*SCALE;
+        } else if (rotator == 2) {
+            rect.y += (13-rect.height)*SCALE;
+        } else if (rotator == 3) {
+            rect.width = 8;
+            rect.height = 13;
+        }
     }
-    rotate = rotator;
-    rect.x = x;
-    rect.y = y;
+    direction = rotator;
     SCALE = SCALER;
     name = namer;
-    if (rotate) {
-        rect.height = w;
-        rect.width = h;
-    }
     cx = x+w*SCALE/2;
     cy = y+h*SCALE/2;
 }

@@ -6,6 +6,9 @@
 #include "Functions.hpp"
 #include <fstream>
 #include <vector>
+#include <cmath>
+
+class Flamingo;
 
 class Enemy {
 public:
@@ -38,15 +41,25 @@ public:
     std::vector<int> closeBlocks;
     Rectangle HBFeet, vision;
     Block ground;
-    int direction; // *90º clock-wise
+
+    // Butterfly
+    int angle;
+    Vector2 orbit;
+
+    // all
+    int behavior;
 
     Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> map, int ticker, Block grounder);
 
-    void update(std::vector<Block> map);
+    void update(std::vector<Block> map, Flamingo &player);
 
     void bee();
 
     void snail(std::vector<Block> map);
+
+    void butterfly(std::vector<Block> map, Flamingo &player);
+
+    void getCloseBlocks(std::vector<Block> map);
 };
 
 // class Bee : Enemy {

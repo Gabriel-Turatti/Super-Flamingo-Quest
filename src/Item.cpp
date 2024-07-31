@@ -8,6 +8,7 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
     SCALE = SCALER;
     category = categorizer;
     image = LoadTexture("images/coin-copper.png");
+    // Padrão é 13x13, se for 2 pixels menores que isso de alguma forma, é necessário colocar a posição 1*SCALE pra frente para ficar centralizado
     if (name == "coin-copper") {
         image = LoadTexture("images/coin-copper.png");
         rect.width = 9;
@@ -91,6 +92,18 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rect.width = 7;
         rect.height = 11;
         rect.x += 3*SCALE;
+        rect.y += 1*SCALE;
+    } else if (name == "courage-potion") {
+        image = LoadTexture("images/courage-potion.png");
+        rect.width = 9;
+        rect.height = 11;
+        rect.x += 2*SCALE;
+        rect.y += 1*SCALE;
+    } else if (name == "party-potion") {
+        image = LoadTexture("images/party-potion.png");
+        rect.width = 9;
+        rect.height = 11;
+        rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     }
     cx = x+rect.width*SCALE/2;

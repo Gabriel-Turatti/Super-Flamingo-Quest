@@ -1,8 +1,9 @@
 You're Flamingo, you're searching Happiness. Good Luck!
 
 Links uteis:
-https://sfbgames.itch.io/chiptone
-https://www.beepbox.co
+Sound Effect - https://sfbgames.itch.io/chiptone
+Music - https://www.beepbox.co
+
 
 The keys are NOT a Leaf's Odyssey Reference
 
@@ -40,6 +41,7 @@ Spells
 
 
 Secret bars! (as if 5 health and 5 mana bars weren't enough)
+
 --- Soul bar
 If you have 0 health in all 5 bars, your soul becomes vulnerable.
 All damage will be dealt directly to your soul unless you have any of the other 5 quests to protect it.
