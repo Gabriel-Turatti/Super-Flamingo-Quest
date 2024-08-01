@@ -22,6 +22,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 ( ) [+] Barulho de poção e altar
 ( ) [+] Crouch check pra não clipar igual fiz com mirroring
 ( ) [+] Crouch ser mais baixo
+( ) [+] Add particles
 
 ## Refatoração
 ( ) [R] Deixar a moeda de cobre mais cobre
@@ -47,7 +48,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Snail
     (X) [+] Butterfly
     (X) [+] Crab
-    ( ) [+] Meldrop
+    (X) [+] Meldrop + Shot
     (X) [+] Spikes
     (X) [+] Animação de tomar dano (indicação com cor?) (som?)
     (X) [+] Courage altar

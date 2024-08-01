@@ -3,12 +3,14 @@
 
 #include "raylib.h"
 #include "Block.hpp"
+#include "Effect.hpp"
 #include "Functions.hpp"
 #include <fstream>
 #include <vector>
 #include <cmath>
 
 class Flamingo;
+class Effect;
 
 class Enemy {
 public:
@@ -51,7 +53,7 @@ public:
 
     Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> map, int ticker, Block grounder);
 
-    void update(std::vector<Block> map, Flamingo &player);
+    void update(std::vector<Block> map, Flamingo &player, std::vector<Effect> &effects);
 
     void bee();
 
@@ -60,6 +62,8 @@ public:
     void butterfly(std::vector<Block> map, Flamingo &player);
 
     void crab(Flamingo &player);
+    
+    void meldrop(Flamingo &player, std::vector<Effect> &effects);
 
     void getCloseBlocks(std::vector<Block> map);
 };

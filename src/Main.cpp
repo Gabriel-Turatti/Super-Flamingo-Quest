@@ -5,6 +5,7 @@
 #include <random>
 
 #include "Block.cpp"
+#include "Effect.cpp"
 #include "Item.cpp"
 #include "Flamingo.cpp"
 #include "Enemy.cpp"
@@ -169,6 +170,7 @@ int main(void) {
     std::vector<Block> map;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
+    std::vector<Effect> effects;
     std::ifstream level("levels/teste.txt");
     // std::ifstream level("levels/testeSimplao.txt");
     if (!level) {
@@ -355,6 +357,8 @@ int main(void) {
                 enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             } else if (name == "crab") {
                 enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
+            } else if (name == "meldrop") {
+                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             } else {
                 enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             }
@@ -365,6 +369,7 @@ int main(void) {
     int sizeB = map.size();
     int sizeI = itens.size();
     int sizeE = enemies.size();
+    int sizeS = effects.size();
     Vector2 mousePosition;
     std::vector<int> colisionBlocks; // List of blocks that can collide with player
     std::vector<int> colisionItens; // List of itens that can collide with player
@@ -432,7 +437,7 @@ int main(void) {
 
         // Entities Updates
         for (int i = 0; i < sizeE; i++) {
-            enemies[i].update(map, player);
+            enemies[i].update(map, player, effects);
         }
         player.update(colisionBlocks, map, colisionItens, itens, colisionEnemies, enemies);
 
@@ -440,6 +445,13 @@ int main(void) {
             tickBlockUpdate = 1;
         } else {
             tickBlockUpdate = 5;
+        }
+
+        for (int i = 0; i < sizeS; i++) {
+            if (effects[i].update(map, player)) {
+                auto it = std::next(effects.begin(), i);
+                effects.erase(it);
+            }
         }
 
         Rectangle center = {WT/2, HT/2, SCALE*player.rect.width, SCALE*player.rect.height};
@@ -552,6 +564,11 @@ int main(void) {
             } else if (enemies[i].name == "crab") {
                 // DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, RED);
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
+            } else if (enemies[i].name == "meldrop") {
+                if (enemies[i].behavior > 1) {
+                    source.x += enemies[i].rect.width+1;
+                }
+                DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else {
                 DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, BLACK);
             }
@@ -602,7 +619,27 @@ int main(void) {
             DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
         }
 
+        // Desenhando Efeitos
+        sizeS = effects.size();
+        for (int i = 0; i < sizeS; i++) {
+            Effect temp = effects[i];
+            Vector2 relativePos;
+            Rectangle source, dest;
 
+            relativePos.x = center.x +temp.rect.x -player.rect.x;
+            relativePos.y = center.y +temp.rect.y -player.rect.y;
+
+            source.x = 0 + temp.imageCount*(temp.rect.width);
+            source.y = 0;
+            source.width = temp.rect.width;
+            source.height = temp.rect.height;
+
+            dest.x = relativePos.x;
+            dest.y = relativePos.y;
+            dest.width = source.width*SCALE;
+            dest.height = source.height*SCALE;
+            DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
+        }
 
         // fun-mode
         if (tick % 30 == 0 and sizeI < 100) {

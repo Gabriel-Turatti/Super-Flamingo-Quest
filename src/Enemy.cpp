@@ -129,49 +129,24 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
             }
         }
         patrol2 = rightGround.rect.x+rightGround.rect.width*SCALE;
+    } else if (name == "meldrop") {
+        images.push_back(LoadTexture("images/enemy-meldrop.png"));
+        imageSize = 2;
+        rect.width = 13;
+        rect.height = 13;
+        dmgs[4] = 1;
 
-        // border2 = ground;
-        // patrol2 = ground.rect.x+ground.rect.width*SCALE;
-        // int i = j;
-        // while (true) {
-        //     i++;
-        //     Block RightBorder = map[i];
-        //     if (RightBorder.rect.y == border2.rect.y and RightBorder.rect.x <= border2.rect.x+border2.rect.width*SCALE) {
-        //         bool breakable = false;
-        //         for (int m = i-1; m > 0; m--) {
-        //             if (map[m].rect.y == RightBorder.rect.y) {
-        //                 continue;
-        //             }
-        //             // sai do for pq esgotou os blocos possíveis (os mais acima não irão tampar o crab)
-        //             if (map[m].rect.x+map[m].rect.width*SCALE < RightBorder.rect.x) {
-        //                 break;
-        //             }
-
-        //             // m representa o bloco de cima
-        //             // i representa o bloco do chão, delimitante do crab
-        //             // bloco de cima tampa a distancia do bloco abaixo
-        //             if (map[m].rect.x < RightBorder.rect.x+RightBorder.rect.width*SCALE and 
-        //                 map[m].rect.x+map[m].rect.width*SCALE > RightBorder.rect.x
-        //             ) {
-        //                 breakable = true;
-        //                 patrol2 = map[m].rect.x;
-        //                 break;
-        //             }
-        //         }
-        //         if (breakable) {
-        //             break;
-        //         }
-        //         border2 = map[i];
-        //     } else {
-        //         break;
-        //     }
-        // }
+        id = 5;
+        vx = 0;
+        vy = 0;
+        angle = 0;
+        behavior = 0;
     }
     cx = x + rect.width*SCALE/2;
     cy = y + rect.height*SCALE/2;
 }
 
-void Enemy::update(std::vector<Block> map, Flamingo &player) {
+void Enemy::update(std::vector<Block> map, Flamingo &player, std::vector<Effect> &effects) {
     switch(id) {
         case (1):
             bee();
@@ -184,6 +159,9 @@ void Enemy::update(std::vector<Block> map, Flamingo &player) {
             break;
         case(4):
             crab(player);
+            break;
+        case(5):
+            meldrop(player, effects);
             break;
     }
     tick += 1;
@@ -397,6 +375,29 @@ void Enemy::crab(Flamingo &player) {
     }
     if (GenericColision(border1.rect, rect, SCALE) or GenericColision(border2.rect, rect, SCALE)) {
         vx = -vx;
+    }
+}
+
+void Enemy::meldrop(Flamingo &player, std::vector<Effect> &effects) {
+    if (behavior == 0) {
+        if (abs(cx - player.cx) + abs(cy - player.cy) < 120*SCALE) {
+            behavior = 1;
+        }
+    } else if (behavior < 90) {
+        if (abs(cx - player.cx) + abs(cy - player.cy) > 120*SCALE) {
+            behavior = 0;
+        }
+        behavior += 1;
+    } else if (behavior >= 90) {
+        Vector2 center = {cx, cy};
+        Vector2 direction;
+        float angle = std::atan2(player.cx - cx, player.cy - cy);
+        direction.x = std::sin(angle)*5;
+        direction.y = std::cos(angle)*5;
+        int damager[5] = {0, 0, 0, 0, 1};
+        Effect tiro(center, direction, 120, 1, damager, SCALE);
+        effects.push_back(tiro);
+        behavior = 0;
     }
 }
 
