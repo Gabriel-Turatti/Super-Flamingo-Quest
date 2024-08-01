@@ -43,24 +43,6 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 
 
 
-( ) 0.6 - Enemies to Lovers Update
-    (X) [B] Snails entering 2x2 blocks -> Omg, so much stuff wrong
-    (X) [+] Enemy class
-    (X) [+] Bee
-    (X) [+] Snail
-    (X) [+] Butterfly
-    (X) [+] Crab
-    (X) [+] Meldrop + Shot
-    (X) [+] Spikes
-    (X) [+] Animação de tomar dano (indicação com cor?) (som?)
-    (X) [+] Courage altar
-    (X) [+] Courage potion
-    (X) [+] New themes (Hope & Resilience & Power)
-    (X) [R] Não deixar flipar se houver colisão.
-    (X) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
-    (X) [B] Caracol não encaixando no ground certo -> Eu fiz as abelhas encaixarem no ground, e não as snails... DUHHH
-    (X) [B] COMO ASSIM, a função retorna 3 se ele entra no if... ta entrando no if e retornando ZERO. -> Lembra aquele aviso que eu botei de possível bug de porta? DUHHHHH...
-
 
 ( ) ??? - Flamingo Magic Update
     ( ) [+] Pearl Shards
@@ -165,3 +147,21 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Blocos com colisão unitária (platform)
     (X) [+] Key and Lock Block (hope)
     (X) [+] Key and Lock Block for other Quests
+
+(X) 0.6 - Enemies to Lovers Update
+    (X) [B] Snails entering 2x2 blocks -> Omg, so much stuff wrong
+    (X) [+] Enemy class
+    (X) [+] Bee
+    (X) [+] Snail
+    (X) [+] Butterfly
+    (X) [+] Crab
+    (X) [+] Meldrop + Shot
+    (X) [+] Spikes
+    (X) [+] Animação de tomar dano (indicação com cor?) (som?)
+    (X) [+] Courage altar
+    (X) [+] Courage potion
+    (X) [+] New themes (Hope & Resilience & Power)
+    (X) [R] Não deixar flipar se houver colisão.
+    (X) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
+    (X) [B] Caracol não encaixando no ground certo -> Eu fiz as abelhas encaixarem no ground, e não as snails... DUHHH
+    (X) [B] COMO ASSIM, a função retorna 3 se ele entra no if... ta entrando no if e retornando ZERO. -> Lembra aquele aviso que eu botei de possível bug de porta? DUHHHHH...
