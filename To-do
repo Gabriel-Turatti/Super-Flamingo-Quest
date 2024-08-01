@@ -37,6 +37,8 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
 ( ) [R] Fazer o jerk de movimento quando levar dado igual HL?
 ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
+( ) [R] Criar função externa criadora de particulas
+( ) [R] Usar ponteiros pra facilitar a vida
 
 
 

@@ -167,10 +167,18 @@ int main(void) {
 
     Flamingo player(400, 400, FW, FH, WT, HT, SCALE);
 
+    struct Dust {
+        Vector2 pos;
+        Vector2 dt;
+        Color cor;
+        int timer;
+    };
+
     std::vector<Block> map;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
     std::vector<Effect> effects;
+    std::vector<Dust> dusts;
     std::ifstream level("levels/teste.txt");
     // std::ifstream level("levels/testeSimplao.txt");
     if (!level) {
@@ -367,8 +375,9 @@ int main(void) {
     level.close();
 
     int sizeB = map.size();
-    int sizeI = itens.size();
     int sizeE = enemies.size();
+    int sizeD = dusts.size();
+    int sizeI = itens.size();
     int sizeS = effects.size();
     Vector2 mousePosition;
     std::vector<int> colisionBlocks; // List of blocks that can collide with player
@@ -447,8 +456,59 @@ int main(void) {
             tickBlockUpdate = 5;
         }
 
+        // Particles
+        sizeD = dusts.size();
+        for (int i = 0; i < sizeD; i++) {
+            Dust D = dusts[i];
+            D.timer -= 1;
+            if (D.timer <= 0) {
+                auto it = std::next(dusts.begin(), i);
+                dusts.erase(it);
+            } else {
+                D.pos.x += D.dt.x;
+                D.pos.y += D.dt.y;
+                D.dt.y += 0.1;
+                dusts[i] = D;
+            }
+        }
+
+        // Effects
         for (int i = 0; i < sizeS; i++) {
             if (effects[i].update(map, player)) {
+                Dust D1, D2, D3;
+                D1.pos.x = effects[i].cx;
+                D1.pos.y = effects[i].cy;
+                D2.pos.x = effects[i].cx;
+                D2.pos.y = effects[i].cy;
+                D3.pos.x = effects[i].cx;
+                D3.pos.y = effects[i].cy;
+
+                D1.dt.x = RNG100(rng)*5/100;
+                D1.dt.y = RNG100(rng)*5/100;
+                D2.dt.x = RNG100(rng)*5/100;
+                D2.dt.y = RNG100(rng)*5/100;
+                D3.dt.x = RNG100(rng)*5/100;
+                D3.dt.y = RNG100(rng)*5/100;
+
+                if (effects[i].id == 1) {
+                    D1.cor = {255, 161, 0, 127};
+                }
+                D1.timer = RNG100(rng);
+
+                if (effects[i].id == 1) {
+                    D2.cor = {255, 161, 0, 127};
+                }
+                D2.timer = RNG100(rng);
+
+                if (effects[i].id == 1) {
+                    D3.cor = {255, 161, 0, 127};
+                }
+                D3.timer = RNG100(rng);
+
+                dusts.push_back(D1);
+                dusts.push_back(D2);
+                dusts.push_back(D3);
+
                 auto it = std::next(effects.begin(), i);
                 effects.erase(it);
             }
@@ -639,6 +699,18 @@ int main(void) {
             dest.width = source.width*SCALE;
             dest.height = source.height*SCALE;
             DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
+        }
+
+        // Desenhando Particulas
+        sizeD = dusts.size();
+        for (int i = 0; i < sizeD; i++) {
+            Dust D = dusts[i];
+            Vector2 relativePos;
+
+            relativePos.x = center.x +D.pos.x -player.rect.x;
+            relativePos.y = center.y +D.pos.y -player.rect.y;
+            DrawCircle(relativePos.x, relativePos.y, (D.timer/20)+SCALE, {0, 0, 0, 127});
+            DrawCircle(relativePos.x, relativePos.y, (D.timer/20), D.cor);
         }
 
         // fun-mode
