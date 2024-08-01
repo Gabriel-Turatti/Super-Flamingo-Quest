@@ -18,10 +18,9 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 ( ) [+] Plataformas de grama
 ( ) [+] Soul Health bar (if you lose all 5 Healths)
 ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
-( ) [+] Barulho de poção e altar
+( ) [+] Mais efeitos sonoros: Poção, altar, inimigos (cuidar com a distância deles).
 ( ) [+] Crouch check pra não clipar igual fiz com mirroring
 ( ) [+] Crouch ser mais baixo
-( ) [+] Add particles
 
 ## Refatoração
 ( ) [R] Deixar a moeda de cobre mais cobre
@@ -30,30 +29,32 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 ( ) [R] Melhorar as animações de caminhada
 ( ) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
 ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
-( ) [R] Looks like modulo is bad cause of division, find alternatives.
+( ) [R] Looks like modulo is bad, 'cause of division, find alternatives.
 ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
 ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
-( ) [R] Alguns inimigos não tem outline :skull_emoji:
 ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
-( ) [R] Fazer o jerk de movimento quando levar dado igual HL?
+( ) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
 ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
 ( ) [R] Criar função externa criadora de particulas
 ( ) [R] Usar ponteiros pra facilitar a vida
 
 
-
-
-
-( ) ??? - Flamingo Magic Update
-    ( ) [+] Pearl Shards
-    ( ) [+] Pearl bars
-    ( ) [+] Eloise spell (Transmutation)
+( ) 0.7 - Flamingo Magic Update
+    ( ) [+] Pearl Shards x5
+    ( ) [+] Pearl bars x5
+    ( ) [+] Collectable Spell Stones
+    ( ) [+] Spell Stones appearing on Hud
+    ( ) [+] Eloise spell (Transmutation) + effect
     ( ) [+] Wind spell (wind hop)
+
+
+
 ( ) ??? - Level Editor Update
+    ( ) [+] Add other gates
     ( ) [R] Break gates into different files.
-    ( ) [R] Fazer um arquivo separado pra map-loader.
-    ( ) [R] Time limit
-    ( ) [R] Level's finish line.
+    ( ) [+] Fazer um arquivo separado pra map-loader.
+    ( ) [+] Time limit
+    ( ) [+] Level's finish line.
 ( ) ??? - Puzzle Update
     ( ) - Add more puzzle mechanics
 
@@ -161,7 +162,9 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Courage altar
     (X) [+] Courage potion
     (X) [+] New themes (Hope & Resilience & Power)
+    (X) [+] Add particles
     (X) [R] Não deixar flipar se houver colisão.
     (X) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
+    (X) [R] Alguns inimigos não tem outline :skull_emoji:
     (X) [B] Caracol não encaixando no ground certo -> Eu fiz as abelhas encaixarem no ground, e não as snails... DUHHH
     (X) [B] COMO ASSIM, a função retorna 3 se ele entra no if... ta entrando no if e retornando ZERO. -> Lembra aquele aviso que eu botei de possível bug de porta? DUHHHHH...
