@@ -738,10 +738,10 @@ int main(void) {
 
             for (int i = 0; i < sizeE; i++) {
                 Vector2 relativePos;
+                relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
+                relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
                 if (enemies[i].name == "crab") {
-                    relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
                     relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
                     relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
@@ -758,16 +758,10 @@ int main(void) {
                     relativePos.y = center.y +enemies[i].border2.rect.y -player.rect.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].border2.rect.width*SCALE, enemies[i].border2.rect.height*SCALE, GREEN);
                 } else if (enemies[i].name == "butterfly") {
-                    relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
                     relativePos.x = center.x +enemies[i].orbit.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].orbit.y -player.rect.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
                 } else if (enemies[i].name == "snail") {
-                    relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width*SCALE, enemies[i].HBFeet.height*SCALE, RED);
                     relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width*SCALE, enemies[i].vision.height*SCALE, BLACK);
@@ -779,9 +773,6 @@ int main(void) {
                         DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
                     }
                 } else if (enemies[i].name == "bee") {
-                    relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
                     relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
                     relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
@@ -789,6 +780,9 @@ int main(void) {
                     relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
                 }
+                relativePos.x = center.x +enemies[i].cx -player.rect.x;
+                relativePos.y = center.y +enemies[i].cy -player.rect.y;
+                DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
             }
             for (int i = 0; i < sizeI; i++) {
                 Vector2 relativePos;

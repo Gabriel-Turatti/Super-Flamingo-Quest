@@ -1,8 +1,7 @@
 Se está dando bug, já tentou checar se você usou SCALE corretamente?
 
 ## Correção de Bugs
-( ) [B] Snails entering 2x2 blocks
-( ) [B] Snails should ignore spikes
+(X) [R] Snails should ignore spikes
 ( ) [B] If a Crab can't spawn, it crashes the game, do a fail-safe
 
 ## Alterações gerais
@@ -43,6 +42,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 
 
 ( ) 0.6 - Enemies to Lovers Update
+    (X) [B] Snails entering 2x2 blocks -> Omg, so much stuff wrong
     (X) [+] Enemy class
     (X) [+] Bee
     (X) [+] Snail

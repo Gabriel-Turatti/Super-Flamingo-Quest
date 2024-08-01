@@ -44,7 +44,7 @@ bool Effect::update(std::vector<Block> map, Flamingo &player) {
         return true;
     }
 
-    if (timer % 5 == 0) {
+    if (tick % 5 == 0) {
         int sizeBT = map.size();
         closeBlocks.clear();
         for (int i = 0; i < sizeBT; i++) {
@@ -80,5 +80,6 @@ bool Effect::update(std::vector<Block> map, Flamingo &player) {
     }
 
     timer -= 1;
+    tick += 1;
     return false;
 }

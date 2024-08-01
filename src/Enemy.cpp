@@ -10,8 +10,8 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
     if (name == "bee") {
         images.push_back(LoadTexture("images/enemy-bee.png"));
         imageSize = 2;
-        rect.width = 11;
-        rect.height = 11;
+        rect.width = 12;
+        rect.height = 13;
         dmgs[0] = 1;
         rect.y += 1*SCALE;
 
@@ -189,27 +189,25 @@ void Enemy::bee() {
 
 void Enemy::snail(std::vector<Block> map) {
     getCloseBlocks(map);
+    cx = rect.x+rect.width*SCALE/2;
+    cy = rect.y+rect.height*SCALE/2;
     if (behavior == 0) {
         rect.y = ground.rect.y - (rect.height)*SCALE;
         rect.x += vx;
-        cx += vx;
-        HBFeet = {rect.x, rect.y+(rect.height+1)*SCALE, rect.width, 2};
+        HBFeet = {rect.x, rect.y+(rect.height-1)*SCALE, rect.width, 2};
         vision = {rect.x+(rect.width+1)*SCALE, rect.y+(rect.height/2)*SCALE, 2, 2};
     } else if (behavior == 1) {
         rect.y -= vx;
-        cy -= vx;
         rect.x = ground.rect.x - (rect.height)*SCALE;
         HBFeet = {rect.x+(rect.height)*SCALE, rect.y, 2, rect.width};
         vision = {rect.x+(rect.height/2)*SCALE, rect.y-1*SCALE, 2, 2};
     } else if (behavior == 2) {
         rect.y = ground.rect.y+(ground.rect.height)*SCALE;
         rect.x -= vx;
-        cx -= vx;
-        HBFeet = {rect.x, rect.y-2*SCALE, rect.width, 2};
+        HBFeet = {rect.x, rect.y-3*SCALE, rect.width, 2};
         vision = {rect.x-1*SCALE, rect.y+(rect.height/2)*SCALE, 2, 2};
     } else if (behavior == 3) {
         rect.y += vx;
-        cy += vx;
         rect.x = ground.rect.x+(ground.rect.width)*SCALE;
         HBFeet = {rect.x-3*SCALE, rect.y, 2, rect.width};
         vision = {rect.x+(rect.height/2)*SCALE, rect.y+(rect.width+1)*SCALE, 2, 2};
@@ -218,7 +216,10 @@ void Enemy::snail(std::vector<Block> map) {
     int sizeB = closeBlocks.size();
     for (int i = 0; i < sizeB; i++) {
         Block temp = map[closeBlocks[i]];
-        if (GenericColision(rect, temp.rect, SCALE) and GenericColision(vision, temp.rect, SCALE)) {
+        if (temp.name == "spike" or temp.background or temp.secret) {
+            continue;
+        }
+        if (GenericColision(vision, temp.rect, SCALE)) {
             if (behavior == 0) {
                 ground = temp;
                 behavior = 1;
@@ -234,6 +235,7 @@ void Enemy::snail(std::vector<Block> map) {
             } else {
                 DrawText("UNEXPECTED SNAIL BEHAVIOR", GetScreenWidth() - 520, 40, 20, RED);
             }
+            return;
         }
         if (GenericColision(HBFeet, temp.rect, SCALE)) {
             if (behavior == 0 and temp.rect.x > ground.rect.x) {
@@ -247,6 +249,7 @@ void Enemy::snail(std::vector<Block> map) {
             }
         }
     }
+
     if (!GenericColision(HBFeet, ground.rect, SCALE)) {
         behavior -= 1;
         if (behavior < 0) {
@@ -254,20 +257,17 @@ void Enemy::snail(std::vector<Block> map) {
         }
         if (behavior == 3) {
             rect.y += 2*SCALE;
-            cy += 2*SCALE;
         } else if (behavior == 2) {
             rect.x -= 2*SCALE;
-            cx -= 2*SCALE;
         } else if (behavior == 1) {
             rect.y -= 2*SCALE;
-            cy -= 2*SCALE;
         } else if (behavior == 0) {
             rect.x += 2*SCALE;
-            cx += 2*SCALE;
         }
     }
 
-    
+
+
 }
 
 void Enemy::butterfly(std::vector<Block> map, Flamingo &player) {
@@ -402,7 +402,7 @@ void Enemy::meldrop(Flamingo &player, std::vector<Effect> &effects) {
 }
 
 void Enemy::getCloseBlocks(std::vector<Block> map) {
-    if (tick % 10 == 0) {
+    if (tick % 5 == 0) {
         closeBlocks.clear();
         int sizeB = map.size();
         for (int i = 0; i < sizeB; i++) {
@@ -410,9 +410,9 @@ void Enemy::getCloseBlocks(std::vector<Block> map) {
                 continue;
             }
             int dx = abs(map[i].cx - cx);
-            if (dx < rect.width*2*SCALE) {
+            if (dx < map[i].rect.width*2*SCALE) {
                 int dy = abs(map[i].cy - cy);
-                if (dy < rect.height*2*SCALE) {
+                if (dy < map[i].rect.height*2*SCALE) {
                     closeBlocks.push_back(i);
                 }
             }
