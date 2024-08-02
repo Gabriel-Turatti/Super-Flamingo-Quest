@@ -93,10 +93,11 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         rect.width = 13;
         rect.height = 13;
 
+        ground = grounder;
         int j = 0;
-        for (; j < sizeB; j++) {
-            ground = map[j];
-            if (ground.rect.x == rect.x and ground.rect.y >= rect.y+(13-1)*SCALE) {
+        for (; j < sizeB; j++) { // gambiarra
+            Block temp = map[j];
+            if (ground.rect.x == temp.rect.x and ground.rect.y == temp.rect.y) {
                 break;
             }
         }

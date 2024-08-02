@@ -388,13 +388,18 @@ int main(void) {
                     tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "altar", SCALE);
                 } else if (line[CWL] == 'S') {
                     int orientation = 0;
-                    if (line[CWL-1] != 'S' and line[CWL+1] != 'S') {
+                    if (line[CWL-1] == 'S' or line[CWL+1] == 'S') {
                         if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
                             orientation = 2;
-                        } else if (line[CWL-1] != '-') {
+                        }
+                    }
+                    if (line[CWL-1] != 'S' and line[CWL+1] != 'S') {
+                        if (line[CWL-1] != '-') {
                             orientation = 3;
                         } else if (line[CWL+1] != '-') {
                             orientation = 1;
+                        } else if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
+                            orientation = 2;
                         }
                     }
                     tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "spike", SCALE, orientation);
@@ -485,8 +490,8 @@ int main(void) {
             }
             name = text;
 
-            if (name == "snail") {
-                Block ground;
+            Block ground;
+            if (name == "snail" or name == "crab") {
                 int sizeB = map.size();
                 for (int j = 0; j < sizeB; j++) {
                     ground = map[j];
@@ -494,11 +499,13 @@ int main(void) {
                         break;
                     }
                 }
+            }
+            if (name == "snail") {
                 enemies.push_back(Enemy((CHL-1)*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground));
             } else if (name == "butterfly") {
                 enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             } else if (name == "crab") {
-                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
+                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, (CWL-1)*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground));
             } else if (name == "meldrop") {
                 enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
             } else {
@@ -523,14 +530,16 @@ int main(void) {
     int song = RNG100(rng);
     Music Theme;
     if (song <= 0) {
+        Theme = LoadMusicStream("songs/CourageTheme.wav");
+    } else if (song <= 5) {
         Theme = LoadMusicStream("songs/PowerTheme.wav");
-    } else if (song <= 6) {
+    } else if (song <= 12) {
         Theme = LoadMusicStream("songs/ResilienceTheme.wav");
-    } else if (song <= 16) {
+    } else if (song <= 25) {
         Theme = LoadMusicStream("songs/HopeTheme.wav");
-    } else if (song <= 31) {
+    } else if (song <= 57) {
         Theme = LoadMusicStream("songs/GrassyWalks.wav");
-    } else if (song <= 52) {
+    } else if (song <= 78) {
         Theme = LoadMusicStream("songs/HumidInsomnia.wav");
     } else {
         Theme = LoadMusicStream("songs/MainTheme.wav");
@@ -612,7 +621,7 @@ int main(void) {
             dusts.push_back(D1);
         }
 
-        if (abs(player.vy) > 12) {
+        if (abs(player.vy) > 12 or abs(player.vx) > 12) {
             tickBlockUpdate = 1;
         } else {
             tickBlockUpdate = 5;
@@ -910,7 +919,25 @@ int main(void) {
             Rectangle tempItem = {(float) RNG_X, (float) RNG_Y, 13, 13};
             for (int i = 0; i < sizeB; i++) {
                 Block temp = map[i];
-                if (GenericColision(tempItem, temp.rect, SCALE)) { 
+                if (GenericColision(tempItem, temp.rect, SCALE)) {
+                    int value = RNGe3(rng);
+                    if (value <= 1) {
+                        enemies.push_back(Enemy(RNG_X, RNG_Y, "snail", SCALE, map, RNG100(rng), temp));
+                    } else if (value <= 5) {
+                        bool spawnable;
+                        for(int j = 0; j < sizeB; j++) {
+                            Block tempCeil = map[j];
+                            if (tempCeil.rect.x+tempCeil.rect.width*SCALE > temp.rect.x and tempCeil.rect.x < temp.rect.x+temp.rect.width*SCALE) {
+                                if (tempCeil.rect.y+tempCeil.rect.height*SCALE > temp.rect.y and tempCeil.rect.y < temp.rect.y) {
+                                    spawnable = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (spawnable) {
+                            enemies.push_back(Enemy(RNG_X, RNG_Y, "crab", SCALE, map, RNG100(rng), temp));
+                        }
+                    }
                     freespace = false;
                     break;
                 }
@@ -953,8 +980,14 @@ int main(void) {
                     itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
                 } else if (value <= 680) {
                     itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE, 'F'));
-                } else if (value <= 1000) {
+                } else if (value <= 997) {
                     itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE, 'F'));
+                } else if (value <= 998) {
+                    enemies.push_back(Enemy(RNG_X, RNG_Y, "bee", SCALE, map, RNG100(rng)));
+                } else if (value <= 999) {
+                    enemies.push_back(Enemy(RNG_X, RNG_Y, "butterfly", SCALE, map, RNG100(rng)));
+                } else if (value <= 1000) {
+                    enemies.push_back(Enemy(RNG_X, RNG_Y, "meldrop", SCALE, map, RNG100(rng)));
                 } else {
                     itens.push_back(Item(RNG_X, RNG_Y, "key-hope", SCALE, 'K'));
                 }

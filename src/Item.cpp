@@ -43,8 +43,8 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         image = LoadTexture("images/food-pear.png");
         rect.width = 13;
         rect.height = 13;
-        rect.x += 0*SCALE;
-        rect.y += 0*SCALE;
+        rect.x -= 1*SCALE;
+        rect.y -= 1*SCALE;
     } else if (name == "food-blueberry") {
         image = LoadTexture("images/food-blueberry.png");
         rect.width = 9;

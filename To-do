@@ -3,6 +3,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 ## Correção de Bugs
     ( ) [B] If a Crab can't spawn, it crashes the game, do a fail-safe
     ( ) [B] Dash doesn't work
+    ( ) [B] Why itens recently spawned aren't collectable
 
 ## Alterações gerais
     ( ) [+] Different levels of jumping
@@ -21,25 +22,29 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [+] Crouch ser mais baixo
     ( ) [+] Animate spear
     ( ) [+] Party spell (???)
+    ( ) [+] Makefile pro linux
 
 ## Refatoração
-    ( ) [RR] Tirar as 20k de multiplicações que eu faço por segundo...
-    ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
+    ## Quality of code
     ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
     ( ) [R] Criar função externa criadora de particulas
     ( ) [R] Usar ponteiros pra facilitar a vida
-    ( ) [R] Deixar a moeda de cobre mais cobre
-    ( ) [R] Remover as linhas preta estranha dos sprites da: plataforma, pera, abelha
-    ( ) [R] Melhorar as animações de caminhada
     ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
     ( ) [R] Looks like modulo is bad, 'cause of division, find alternatives.
     ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
     ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
-    ( ) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
+    ## Quality of life
+    ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
+    ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
 
 
 ( ) 0.75 - Random QoL 1 update
+    ( ) [RR] Tirar as 20k de multiplicações que eu faço por segundo...
+    (X) [R] Remover as linhas preta estranha dos sprites da: plataforma, pera, abelha
+    (X) [B] Dash doesn't work
     (X) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
+    (X) [R] Deixar a moeda de cobre mais cobre
+    (X) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
 
 
 

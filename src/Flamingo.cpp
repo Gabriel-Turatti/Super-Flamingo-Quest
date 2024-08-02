@@ -114,7 +114,7 @@ void Flamingo::keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vect
         if (naturalSpeed > -6) {
             naturalSpeed = -6;
         }
-        if (naturalSpeed < -10 and tick % 3 == 0) {
+        if (naturalSpeed < -6 and tick % 4 == 0) {
             naturalSpeed += 1;
         }
         if (lookingRight) {
@@ -137,7 +137,7 @@ void Flamingo::keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vect
         if (naturalSpeed < 6) {
             naturalSpeed = 6;
         }
-        if (naturalSpeed > 10 and tick % 3 == 0) {
+        if (naturalSpeed > 6 and tick % 4 == 0) {
             naturalSpeed -= 1;
         }
         if (!lookingRight) {
@@ -698,6 +698,11 @@ void Flamingo::Health(int qtd, char type) {
     if (qtd < 0) {
         invincibility[type] += 60;
         PlaySound(sfxHurt);
+        if (lookingRight) {
+            naturalSpeed += 4;
+        } else {
+            naturalSpeed -= 4;
+        }
     }
 
     switch(type) {
