@@ -147,6 +147,139 @@ void DesenharHeart(Flamingo player) {
     }
 }
 
+void DesenharPearl(Flamingo player) {
+    int SCALE = player.SCALE;
+    Rectangle PHud = {GetScreenWidth() - 20.0f*SCALE, 10.0f, 11.0f*SCALE, 11.0f*SCALE};
+    // Wind
+    int WPTemp = player.WP/7;
+    int WPPart = player.WP % 7;
+    int WPEmptyTemp = (player.MWP - player.WP)/7;
+    while (WPTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {0.0f, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        WPTemp--;
+    }
+    if (WPPart > 0) {
+        DrawTexturePro(player.PearlGrid, {(12.0f*(7-WPPart)), 0.0f, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+    }
+    while (WPEmptyTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {12.0f*7, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        WPEmptyTemp--;
+    }
+    if (player.PWP > 0) {
+        DrawText(TextFormat("%d+", player.PWP), PHud.x, PHud.y, 35, {223, 245, 0, 255});
+    }
+
+    PHud.x = GetScreenWidth() - 20.0f*SCALE;
+    PHud.y += 12.0f*SCALE;
+    
+    
+    
+    // Party
+    int PPTemp = player.PP/7;
+    int PPPart = player.PP % 7;
+    int PPEmptyTemp = (player.MPP - player.PP)/7;
+    while (PPTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {0.0f, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        PPTemp--;
+    }
+    if (PPPart > 0) {
+        DrawTexturePro(player.PearlGrid, {(12.0f*(7-PPPart)), 12.0f, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+    }
+    while (PPEmptyTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        PPEmptyTemp--;
+    }
+    if (player.PPP > 0) {
+        DrawText(TextFormat("%d+", player.PPP), PHud.x, PHud.y, 35, {133, 255, 0, 255});
+    }
+
+    PHud.x = GetScreenWidth() - 20.0f*SCALE;
+    PHud.y += 12.0f*SCALE;
+    
+    
+    
+    // Fun
+    int FPTemp = player.FP/7;
+    int FPPart = player.FP % 7;
+    int FPEmptyTemp = (player.MFP - player.FP)/7;
+    while (FPTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {0.0f, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        FPTemp--;
+    }
+    if (FPPart > 0) {
+        DrawTexturePro(player.PearlGrid, {(12.0f*(7-FPPart)), 12.0f*2, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+    }
+    while (FPEmptyTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        FPEmptyTemp--;
+    }
+    if (player.PFP > 0) {
+        DrawText(TextFormat("%d+", player.PFP), PHud.x, PHud.y, 35, {30, 235, 210, 255});
+    }
+
+    PHud.x = GetScreenWidth() - 20.0f*SCALE;
+    PHud.y += 12.0f*SCALE;
+    
+    
+    
+    // Hard
+    int HPTemp = player.HP/7;
+    int HPPart = player.HP % 7;
+    int HPEmptyTemp = (player.MHP - player.HP)/7;
+    while (HPTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {0.0f, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        HPTemp--;
+    }
+    if (HPPart > 0) {
+        DrawTexturePro(player.PearlGrid, {(12.0f*(7-HPPart)), 12.0f*3, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+    }
+    while (HPEmptyTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        HPEmptyTemp--;
+    }
+    if (player.PHP > 0) {
+        DrawText(TextFormat("%d+", player.PHP), PHud.x, PHud.y, 35, {253, 105, 150, 255});
+    }
+
+    PHud.x = GetScreenWidth() - 20.0f*SCALE;
+    PHud.y += 12.0f*SCALE;
+    
+    
+    
+    // Eloise
+    int EPTemp = player.EP/7;
+    int EPPart = player.EP % 7;
+    int EPEmptyTemp = (player.MEP - player.EP)/7;
+    while (EPTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {0.0f, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        EPTemp--;
+    }
+    if (EPPart > 0) {
+        DrawTexturePro(player.PearlGrid, {(12.0f*(7-EPPart)), 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+    }
+    while (EPEmptyTemp > 0) {
+        DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        PHud.x -= 12*SCALE;
+        EPEmptyTemp--;
+    }
+    if (player.PEP > 0) {
+        DrawText(TextFormat("%d+", player.PEP), PHud.x, PHud.y, 35, {255, 150, 150, 255});
+    }
+}
 
 int main(void) {
     const int SCALE = 3;
@@ -160,7 +293,7 @@ int main(void) {
     int tick = 1;
     int seconds = 0;
 
-    InitWindow(WT, HT, "Super Flamingo Quest 0.6 - Enemies to Lovers Update");
+    InitWindow(WT, HT, "Super Flamingo Quest 0.7 - Flamingo Magic Update");
 
 
     InitAudioDevice();
@@ -200,10 +333,11 @@ int main(void) {
     std::random_device dev;
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> RNG100(0, 100);
+    std::uniform_int_distribution<std::mt19937::result_type> RNGe3(0, 1000);
     std::uniform_int_distribution<std::mt19937::result_type> RNGWidth(0, widthLevel);
     std::uniform_int_distribution<std::mt19937::result_type> RNGHeight(0, heightLevel);
 
-    int RenderPhase = 0; // 1 = Blocks; 2 = Itens;
+    int RenderPhase = 0; // 1 = Blocks; 2 = Itens; 3 = Enemies;
     while (!level.eof()) {
         std::getline(level, line);
         if (line == "endmap") {
@@ -388,17 +522,33 @@ int main(void) {
 
     int song = RNG100(rng);
     Music Theme;
-    if (song <= 3) {
+    if (song <= 0) {
         Theme = LoadMusicStream("songs/PowerTheme.wav");
-    } else if (song <= 12) {
+    } else if (song <= 6) {
         Theme = LoadMusicStream("songs/ResilienceTheme.wav");
-    } else if (song <= 28) {
+    } else if (song <= 16) {
         Theme = LoadMusicStream("songs/HopeTheme.wav");
+    } else if (song <= 31) {
+        Theme = LoadMusicStream("songs/GrassyWalks.wav");
+    } else if (song <= 52) {
+        Theme = LoadMusicStream("songs/HumidInsomnia.wav");
     } else {
         Theme = LoadMusicStream("songs/MainTheme.wav");
     }
     PlayMusicStream(Theme);
     
+
+
+
+
+
+
+
+
+
+
+
+
     
     while (!WindowShouldClose()) {
         UpdateMusicStream(Theme);
@@ -448,7 +598,19 @@ int main(void) {
         for (int i = 0; i < sizeE; i++) {
             enemies[i].update(map, player, effects);
         }
-        player.update(colisionBlocks, map, colisionItens, itens, colisionEnemies, enemies);
+        player.update(colisionBlocks, map, colisionItens, itens, colisionEnemies, enemies, effects);
+        if (player.isBoost) {
+            float posY = player.rect.y + RNG100(rng)*player.rect.height*SCALE/100;
+            Dust D1;
+            D1.pos.x = player.cx;
+            D1.pos.y = posY;
+            D1.dt.x = 0;
+            D1.dt.y = 0;
+            D1.cor = {0, 255, 255, 127};
+            D1.timer = RNG100(rng);
+
+            dusts.push_back(D1);
+        }
 
         if (abs(player.vy) > 12) {
             tickBlockUpdate = 1;
@@ -474,7 +636,7 @@ int main(void) {
 
         // Effects
         for (int i = 0; i < sizeS; i++) {
-            if (effects[i].update(map, player)) {
+            if (effects[i].update(map, player, itens, enemies)) {
                 Dust D1, D2, D3;
                 D1.pos.x = effects[i].cx;
                 D1.pos.y = effects[i].cy;
@@ -490,19 +652,16 @@ int main(void) {
                 D3.dt.x = RNG100(rng)*5/100;
                 D3.dt.y = RNG100(rng)*5/100;
 
-                if (effects[i].id == 1) {
-                    D1.cor = {255, 161, 0, 127};
-                }
+                unsigned char color1 = RNG100(rng)*255/100;
+                unsigned char color2 = RNG100(rng)*255/100;
+                unsigned char color3 = RNG100(rng)*255/100;
+                D1.cor = {color1, color2, color3, 127};
                 D1.timer = RNG100(rng);
 
-                if (effects[i].id == 1) {
-                    D2.cor = {255, 161, 0, 127};
-                }
+                D2.cor = {color1, color2, color3, 127};
                 D2.timer = RNG100(rng);
 
-                if (effects[i].id == 1) {
-                    D3.cor = {255, 161, 0, 127};
-                }
+                D3.cor = {color1, color2, color3, 127};
                 D3.timer = RNG100(rng);
 
                 dusts.push_back(D1);
@@ -525,6 +684,15 @@ int main(void) {
         if (tick % 30 == 0) {
             seconds += 1;
         }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -589,6 +757,7 @@ int main(void) {
             DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
         }
 
+        sizeE = enemies.size();
         // Desenhando inimigos
         for (int i = 0; i < sizeE; i++) {
             Vector2 relativePos;
@@ -634,6 +803,7 @@ int main(void) {
             }
         }
 
+        sizeB = map.size();
         // Desenhando blocos Ground
         for (int i = 0; i < sizeB; i++) {
             if (map[i].background) {
@@ -698,7 +868,17 @@ int main(void) {
             dest.y = relativePos.y;
             dest.width = source.width*SCALE;
             dest.height = source.height*SCALE;
-            DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
+            if (temp.id == 2) {
+                float angle = temp.timer*3;
+                DrawTexturePro(temp.image, source, dest, {0, 0}, angle, WHITE);
+            } else if (temp.id == 3) {
+                if (temp.vx < 0) {
+                    source.width = -source.width;
+                }
+                DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
+            } else {
+                DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
+            }
         }
 
         // Desenhando Particulas
@@ -712,6 +892,15 @@ int main(void) {
             DrawCircle(relativePos.x, relativePos.y, (D.timer/20)+SCALE, {0, 0, 0, 127});
             DrawCircle(relativePos.x, relativePos.y, (D.timer/20), D.cor);
         }
+
+
+
+
+
+
+
+
+
 
         // fun-mode
         if (tick % 30 == 0 and sizeI < 100) {
@@ -727,34 +916,44 @@ int main(void) {
                 }
             }
             if (freespace) {
-                int value = RNG100(rng);
-                if (value <= 0) {
+                int value = RNGe3(rng);
+                if (value <= 1) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-eloise", SCALE, 'P'));
+                } else if (value <= 4) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-hard", SCALE, 'P'));
+                } else if (value <= 8) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-fun", SCALE, 'P'));
+                } else if (value <= 13) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-party", SCALE, 'P'));
+                } else if (value <= 19) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-wind", SCALE, 'P'));
+                } else if (value <= 28) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE, 'H'));
-                } else if (value <= 2) {
+                } else if (value <= 38) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-courage", SCALE, 'H'));
-                } else if (value <= 5) {
+                } else if (value <= 50) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE, 'H'));
-                } else if (value <= 9) {
+                } else if (value <= 64) {
                     itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE, 'H'));
-                } else if (value <= 14) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
-                } else if (value <= 15) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "courage-potion", SCALE, 'I'));
-                } else if (value <= 16) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
-                } else if (value <= 18) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "coin-silver", SCALE, 'C'));
-                } else if (value <= 25) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "coin-copper", SCALE, 'C'));
-                } else if (value <= 33) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE, 'F'));
-                } else if (value <= 48) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE, 'F'));
-                } else if (value <= 65) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
                 } else if (value <= 80) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
+                } else if (value <= 82) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "courage-potion", SCALE, 'I'));
+                } else if (value <= 90) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
+                } else if (value <= 130) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-silver", SCALE, 'C'));
+                } else if (value <= 200) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "coin-copper", SCALE, 'C'));
+                } else if (value <= 280) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE, 'F'));
+                } else if (value <= 370) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE, 'F'));
+                } else if (value <= 540) {
+                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
+                } else if (value <= 680) {
                     itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE, 'F'));
-                } else if (value <= 100) {
+                } else if (value <= 1000) {
                     itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE, 'F'));
                 } else {
                     itens.push_back(Item(RNG_X, RNG_Y, "key-hope", SCALE, 'K'));
@@ -764,14 +963,44 @@ int main(void) {
         }
 
 
+
+
+
+
+
+
+
+
+
         // Desenhando HUD
         DesenharHeart(player);
-        DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()-200, 0, 20, WHITE);
+        DesenharPearl(player);
+        DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()/2-100, 30, 20, WHITE);
         DrawText(TextFormat("Time: %d", seconds), GetScreenWidth()/2-100, 0, 20, WHITE);
         if (player.keyHope > 0) {
-            DrawText(TextFormat("Yellow Keys - %d", player.keyHope), GetScreenWidth() - 200, 50, 20, WHITE);
+            DrawText(TextFormat("Yellow Keys - %d", player.keyHope), GetScreenWidth() - 300, 50, 20, WHITE);
         }
         DrawText(TextFormat("itens no mapa: %d", itens.size()), GetScreenWidth()-300, 220, 20, WHITE);
+        if (player.powers[0]) {
+            DrawTextureEx(player.P1image, {(float) GetScreenWidth()/2+20*SCALE, 20}, 0, SCALE, WHITE);
+            DrawText("1", (float) GetScreenWidth()/2+27*SCALE, 20+15*SCALE, 20, BLACK);
+        }
+        if (player.powers[1]) {
+            // DrawTextureEx(player.P2image, {(float) GetScreenWidth()/2+40*SCALE, 20}, 0, SCALE, WHITE);
+            DrawText("2", (float) GetScreenWidth()/2+47*SCALE, 20+15*SCALE, 20, BLACK);
+        }
+        if (player.powers[2]) {
+            DrawTextureEx(player.P3image, {(float) GetScreenWidth()/2+60*SCALE, 20}, 0, SCALE, WHITE);
+            DrawText("3", (float) GetScreenWidth()/2+67*SCALE, 20+15*SCALE, 20, BLACK);
+        }
+        if (player.powers[3]) {
+            DrawTextureEx(player.P4image, {(float) GetScreenWidth()/2+80*SCALE, 20}, 0, SCALE, WHITE);
+            DrawText("4", (float) GetScreenWidth()/2+87*SCALE, 20+15*SCALE, 20, BLACK);
+        }
+        if (player.powers[4]) {
+            DrawTextureEx(player.P5image, {(float) GetScreenWidth()/2+100*SCALE, 20}, 0, SCALE, WHITE);
+            DrawText("5", (float) GetScreenWidth()/2+107*SCALE, 20+15*SCALE, 20, BLACK);
+        }
 
 
 

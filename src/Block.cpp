@@ -26,7 +26,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         friction = 8.5;
     } else if (namer == "spike") {
         image = LoadTexture("images/block_spike.png");
-        friction = 7;
+        friction = 0.9;
         rect.width = 13;
         rect.height = 8;
         if (rotator == 0) {

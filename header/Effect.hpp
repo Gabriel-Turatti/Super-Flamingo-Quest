@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 #include "Block.hpp"
+#include "Item.hpp"
 #include "Functions.hpp"
 #include "Flamingo.hpp"
 #include <fstream>
@@ -21,11 +22,17 @@ public:
     int dmg[5];
     int tick;
     std::vector<int> closeBlocks;
+    std::vector<int> closeItens;
+    std::vector<int> closeEnemies;
 
 
     Effect(Vector2 position, Vector2 direction, int lifespan, int identificator, int damager[5], int SCALER);
 
-    bool update(std::vector<Block> map, Flamingo &player);
+    bool update(std::vector<Block> map, Flamingo &player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
+
+    bool meldropShot(std::vector<Block> map, Flamingo &player);
+    bool transmutation(std::vector<Item> &itens);
+    bool spear(std::vector<Enemy> &enemies, std::vector<Item> &itens);
 };
 
 #endif

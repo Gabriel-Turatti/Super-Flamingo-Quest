@@ -1,52 +1,42 @@
 Se está dando bug, já tentou checar se você usou SCALE corretamente?
 
 ## Correção de Bugs
-(X) [R] Snails should ignore spikes
-( ) [B] If a Crab can't spawn, it crashes the game, do a fail-safe
+    ( ) [B] If a Crab can't spawn, it crashes the game, do a fail-safe
+    ( ) [B] Dash doesn't work
 
 ## Alterações gerais
-( ) [+] Different levels of jumping
-( ) [+] Soaring
-( ) [+] Mais um frame de Flamingo caindo.
-( ) [+] Moedas e Itens terem animação de brilho e giro
-( ) [+] coletar itens dropar particulas
-( ) [+] Moeda de Ouro Envenenada -> Dano Hope
-( ) [+] Rotacionar plataforma, hitbox.
-( ) [+] Nuvens
-( ) [+] Other Gates
-( ) [+] Decorações de fundo
-( ) [+] Plataformas de grama
-( ) [+] Soul Health bar (if you lose all 5 Healths)
-( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
-( ) [+] Mais efeitos sonoros: Poção, altar, inimigos (cuidar com a distância deles).
-( ) [+] Crouch check pra não clipar igual fiz com mirroring
-( ) [+] Crouch ser mais baixo
+    ( ) [+] Different levels of jumping
+    ( ) [+] Soaring
+    ( ) [+] Moedas e Itens terem animação de brilho e giro
+    ( ) [+] coletar itens dropar particulas
+    ( ) [+] Moeda de Ouro Envenenada -> Dano Hope
+    ( ) [+] Rotacionar plataforma, hitbox.
+    ( ) [+] Nuvens
+    ( ) [+] Decorações de fundo
+    ( ) [+] Plataformas de grama
+    ( ) [+] Soul Health bar (if you lose all 5 Healths)
+    ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
+    ( ) [+] Mais efeitos sonoros: Poção, altar, inimigos (cuidar com a distância deles).
+    ( ) [+] Crouch check pra não clipar igual fiz com mirroring
+    ( ) [+] Crouch ser mais baixo
+    ( ) [+] Animate spear
+    ( ) [+] Party spell (???)
 
 ## Refatoração
-( ) [R] Deixar a moeda de cobre mais cobre
-( ) [R] Remover as linhas preta estranha dos sprites da: plataforma, pera, abelha
-( ) [R] Usar muita constante definida no começo
-( ) [R] Melhorar as animações de caminhada
-( ) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
-( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
-( ) [R] Looks like modulo is bad, 'cause of division, find alternatives.
-( ) [R] Usar uma única instância de som/imagem para blocos e itens.
-( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
-( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
-( ) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
-( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
-( ) [R] Criar função externa criadora de particulas
-( ) [R] Usar ponteiros pra facilitar a vida
-
-
-( ) 0.7 - Flamingo Magic Update
-    ( ) [+] Pearl Shards x5
-    ( ) [+] Pearl bars x5
-    ( ) [+] Collectable Spell Stones
-    ( ) [+] Spell Stones appearing on Hud
-    ( ) [+] Eloise spell (Transmutation) + effect
-    ( ) [+] Wind spell (wind hop)
-
+    ( ) [RR] Tirar as 20k de multiplicações que eu faço por segundo...
+    ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
+    ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
+    ( ) [R] Criar função externa criadora de particulas
+    ( ) [R] Usar ponteiros pra facilitar a vida
+    ( ) [R] Deixar a moeda de cobre mais cobre
+    ( ) [R] Remover as linhas preta estranha dos sprites da: plataforma, pera, abelha
+    ( ) [R] Melhorar as animações de caminhada
+    ( ) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
+    ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
+    ( ) [R] Looks like modulo is bad, 'cause of division, find alternatives.
+    ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
+    ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
+    ( ) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
 
 
 ( ) ??? - Level Editor Update
@@ -57,12 +47,19 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [+] Level's finish line.
 ( ) ??? - Puzzle Update
     ( ) - Add more puzzle mechanics
+( ) ??? - Save the world Update
+    ( ) - Add save files for players, and for completed levels
+( ) ??? - Inventory Update
+    ( ) Slots
+    ( ) Throw Away stuff
+    ( ) Use itens
+    ( ) Hourglass
+( ) ??? - Quad-tree Update
 
 ( ) ??? - Planes of Paris Update
     ( ) Planes of Paris I
     ( ) Planes of Paris II
 
-( ) ??? - Inventory Update
 
 
 
@@ -167,4 +164,17 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [R] Mudar como o Teleporte do mouse funciona pra melhor debug, fazer ele relativo a tela atual.
     (X) [R] Alguns inimigos não tem outline :skull_emoji:
     (X) [B] Caracol não encaixando no ground certo -> Eu fiz as abelhas encaixarem no ground, e não as snails... DUHHH
+    (X) [R] Snails should ignore spikes
     (X) [B] COMO ASSIM, a função retorna 3 se ele entra no if... ta entrando no if e retornando ZERO. -> Lembra aquele aviso que eu botei de possível bug de porta? DUHHHHH...
+
+(X) 0.7 - Flamingo Magic Update
+    (X) [+] Pearl Shards x5
+    (X) [+] Pearl bars x5
+    (X) [+] Collectable Spell Stones
+    (X) [+] Spell Stones appearing on Hud
+    (X) [+] Wind spell (wind hop)
+    (X) [+] Fun spell (Speed Boost)
+    (X) [+] Hard spell (Spear of Vengence)
+    (X) [+] Eloise spell (Transmutation) + effect
+    (X) [R] Spike bounce
+    (X) [R] Não deixar dash combar velocidade

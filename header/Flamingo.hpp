@@ -29,24 +29,51 @@ public:
     int imageCount = 0;
     int imageSize = 2;
 
-    Texture2D HeartGrid = LoadTexture("Images/heart_health.png"); // Corações de vida, cada coração tem 7 pontos de vida
+    Texture2D HeartGrid = LoadTexture("Images/heart-health.png"); // Corações de vida, cada coração tem 7 pontos de vida
+    Texture2D PearlGrid = LoadTexture("Images/pearl-mana.png"); // Pérolas de mana, cada pérola tem 7 pontos de mana
+    // Health
+    // Max
     int MHH = 4*7; // Hope Health
     int MRH = 3*7; // Resilience Health
     int MPH = 2*7; // Power Health
     int MCH = 2*7; // Courage Health
     int MWH = 1*7; // Wisdom Health
 
+    // Current
     int HH = 4*7;
     int RH = 3*7;
     int PH = 2*7;
     int CH = 2*7;
     int WH = 1*7;
 
+    // Partial
     int PHH = 0;
     int PRH = 0;
     int PPH = 0;
     int PCH = 0;
     int PWH = 0;
+
+    // Mana
+    // Max
+    int MWP = 2*7; // Wind Pearl
+    int MPP = 2*7; // Party Pearl
+    int MFP = 3*7; // Fun Pearl
+    int MHP = 1*7; // Hard Pearl
+    int MEP = 2*7; // Eloise Pearl
+
+    // Current
+    int WP = 2*7;
+    int PP = 2*7;
+    int FP = 3*7;
+    int HP = 1*7;
+    int EP = 2*7;
+
+    // Partial Max
+    int PWP = 0;
+    int PPP = 0;
+    int PFP = 0;
+    int PHP = 0;
+    int PEP = 0;
 
     Rectangle HB1;
     Sound sfxCoin = LoadSound("sfx/coin.wav"); 
@@ -59,10 +86,12 @@ public:
     Sound sfxVulnerable = LoadSound("sfx/LoseAllHealth.wav");
     Sound sfxHurt = LoadSound("sfx/hurt.wav");
     Sound sfxFall = LoadSound("sfx/fall.wav");
+    Sound sfxPearlPiece = LoadSound("sfx/PearlPiece.wav");
+    Sound sfxSpecial = LoadSound("sfx/SpecialItem.wav");
 
 
     int WT, HT, SCALE;
-    int naturalSpeed = 6;
+    int naturalSpeed = 4;
     int tick = 1;
     int score = 0;
 
@@ -84,15 +113,28 @@ public:
         { 'W', 20 }
     };
 
+    Texture2D P1image = LoadTexture("images/power-dash.png");
+    // Texture2D P2image = LoadTexture("images/power-???.png");
+    Texture2D P3image = LoadTexture("images/power-boost.png");
+    Texture2D P4image = LoadTexture("images/power-spear.png");
+    Texture2D P5image = LoadTexture("images/power-transmutation.png");
+    std::vector<bool> powers = {
+        0, 0, 0, 0, 0, // Tier-1 powers: Dash, ???, Speed, Spear, Transmutation
+        0, 0, 0, 0, 0, // Tier-2 powers: Seer, Shield, ???, ???, Transfiguration
+        0, 0, // Tier-S Powers: StopTime, VoiceHear 
+    };
+
+    bool isBoost = false;
+
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
     void Health(int qtd, char type);
     
-    void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies);
+    void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies, std::vector<Effect> &effects);
 
     int blockColision(Rectangle HBox, Block &temp, bool vert);
 
-    void keyPress(std::vector<int> CBs, std::vector<Block> &map);
+    void keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vector<Effect> &effects);
     void gravity();
     void Physics(std::vector<int> CBs, std::vector<Block> &map);
     void ItemColision (std::vector<int> CIs, std::vector<Item> &itens);

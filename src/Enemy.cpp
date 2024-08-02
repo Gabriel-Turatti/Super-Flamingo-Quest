@@ -369,9 +369,11 @@ void Enemy::crab(Flamingo &player) {
     }
     if (rect.x+rect.width*SCALE > patrol2) {
         rect.x = patrol2 - rect.width*SCALE;
+        cx = rect.x+rect.width*SCALE/2;
     }
     if (rect.x < patrol1) {
         rect.x = patrol1;
+        cx = rect.x+rect.width*SCALE/2;
     }
     if (GenericColision(border1.rect, rect, SCALE) or GenericColision(border2.rect, rect, SCALE)) {
         vx = -vx;

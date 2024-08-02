@@ -27,6 +27,12 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rect.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
+    } else if (name == "coin-death") {
+        image = LoadTexture("images/coin-death.png");
+        rect.width = 13;
+        rect.height = 13;
+        rect.x += 0*SCALE;
+        rect.y += 0*SCALE;
     } else if (name == "food-banana") {
         image = LoadTexture("images/food-banana.png");
         rect.width = 11;
@@ -87,6 +93,36 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rect.height = 9;
         rect.x += 3*SCALE;
         rect.y += 2*SCALE;
+    } else if (name == "Pshard-wind") {
+        image = LoadTexture("images/Pshard-wind.png");
+        rect.width = 8;
+        rect.height = 8;
+        rect.x += 2.5*SCALE;
+        rect.y += 2.5*SCALE;
+    } else if (name == "Pshard-party") {
+        image = LoadTexture("images/Pshard-party.png");
+        rect.width = 8;
+        rect.height = 8;
+        rect.x += 2.5*SCALE;
+        rect.y += 2.5*SCALE;
+    } else if (name == "Pshard-fun") {
+        image = LoadTexture("images/Pshard-fun.png");
+        rect.width = 8;
+        rect.height = 8;
+        rect.x += 2.5*SCALE;
+        rect.y += 2.5*SCALE;
+    } else if (name == "Pshard-hard") {
+        image = LoadTexture("images/Pshard-hard.png");
+        rect.width = 8;
+        rect.height = 8;
+        rect.x += 2.5*SCALE;
+        rect.y += 2.5*SCALE;
+    } else if (name == "Pshard-eloise") {
+        image = LoadTexture("images/Pshard-eloise.png");
+        rect.width = 8;
+        rect.height = 8;
+        rect.x += 2.5*SCALE;
+        rect.y += 2.5*SCALE;
     } else if (name == "key-hope") {
         image = LoadTexture("images/key-hope.png");
         rect.width = 7;
@@ -105,7 +141,33 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rect.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
+    } else if (name == "power-dash") {
+        image = LoadTexture("images/power-dash.png");
+        rect.width = 15;
+        rect.height = 15;
+        rect.x -= 1*SCALE;
+        rect.y -= 1*SCALE;
+    } else if (name == "power-transmutation") {
+        image = LoadTexture("images/power-transmutation.png");
+        rect.width = 15;
+        rect.height = 15;
+        rect.x -= 1*SCALE;
+        rect.y -= 1*SCALE;
+    } else if (name == "power-boost") {
+        image = LoadTexture("images/power-boost.png");
+        rect.width = 15;
+        rect.height = 15;
+        rect.x -= 1*SCALE;
+        rect.y -= 1*SCALE;
+    } else if (name == "power-spear") {
+        image = LoadTexture("images/power-spear.png");
+        rect.width = 15;
+        rect.height = 15;
+        rect.x -= 1*SCALE;
+        rect.y -= 1*SCALE;
     }
     cx = x+rect.width*SCALE/2;
     cy = y+rect.height*SCALE/2;
 }
+
+Item::Item() {}

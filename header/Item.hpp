@@ -14,6 +14,7 @@ public:
     int SCALE;
 
     Item(int x, int y, std::string namer, int SCALER, char categorizer);
+    Item();
 };
 
 #endif

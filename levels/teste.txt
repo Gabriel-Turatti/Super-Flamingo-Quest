@@ -50,6 +50,10 @@ P2
 21-132-"food-banana"
 10-124-"food-orange"
 21-133-"key-hope"
+22-64-"power-dash"
+8-148-"power-boost"
+0-0-"power-spear"
+23-28-"power-transmutation"
 P3
 10-44-"bee"
 10-16-"bee"

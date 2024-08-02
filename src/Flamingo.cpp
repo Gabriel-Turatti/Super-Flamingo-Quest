@@ -29,8 +29,8 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
     HB1 = {Hitbox1.x-1*SCALE, Hitbox1.y+7*SCALE, 10.0f, 2.0f};
 }
 
-void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies) {
-    keyPress(CBs, map);
+void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
+    keyPress(CBs, map, effects);
     gravity();
     Physics(CBs, map);
     ItemColision(CIs, itens);
@@ -49,37 +49,121 @@ void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector
     tick += 1;
 }
 
-void Flamingo::keyPress(std::vector<int> CBs, std::vector<Block> &map) {
+void Flamingo::keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vector<Effect> &effects) {
     W = IsKeyDown(KEY_W);
     A = IsKeyDown(KEY_A);
     S = IsKeyDown(KEY_S);
     D = IsKeyDown(KEY_D);
 
 
+    if (powers[0] and IsKeyDown(KEY_ONE) and WP >= 3 and invincibility['H'] == 0) {
+        WP -= 3;
+        if (lookingRight) {
+            naturalSpeed += 14;
+        } else {
+            naturalSpeed -= 14;
+        }
+        invincibility['H'] += 10;
+    }
+    if (powers[2] and IsKeyDown(KEY_THREE) and FP >= 3 and invincibility['P'] == 0) {
+        if (isBoost) {
+            isBoost = false;
+            invincibility['P'] += 10;
+        } else {
+            FP -= 1;
+            invincibility['P'] += 10;
+            isBoost = true;
+        }
+    }
+    if (powers[3] and IsKeyDown(KEY_FOUR) and HP >= 7 and invincibility['C'] == 0) {
+        Vector2 direction;
+        direction.y = 0;
+        if (lookingRight) {
+            direction.x = 7;
+        } else {
+            direction.x = -7;
+        }
+        int dmg[5] = {0, 0, 0, 0, 0};
+        Effect spear({cx, cy-8*SCALE}, direction, 250, 3, dmg, SCALE);
+
+        effects.push_back(spear);
+        HP -= 7;
+        invincibility['C'] += 10;
+    }
+    if (powers[4] and IsKeyDown(KEY_FIVE) and EP >= 7 and invincibility['W'] == 0) {
+        Vector2 direction;
+        direction.y = 0;
+        if (lookingRight) {
+            direction.x = 2;
+        } else {
+            direction.x = -2;
+        }
+        int dmg[5] = {0, 0, 0, 0, 0};
+        Effect transmutation({cx, cy}, direction, 250, 2, dmg, SCALE);
+
+        effects.push_back(transmutation);
+        EP -= 7;
+        invincibility['W'] += 10;
+    }
+
+
+
+
+
     if (A) {
+        if (naturalSpeed > -6) {
+            naturalSpeed = -6;
+        }
+        if (naturalSpeed < -10 and tick % 3 == 0) {
+            naturalSpeed += 1;
+        }
         if (lookingRight) {
             if (CheckMirror(CBs, map)) {
                 lookingRight = false;
             }
         }
-        if (ground) {
-            vx = -naturalSpeed*SCALE/groundBlock.friction;
-        } else {
-            vx = -naturalSpeed*SCALE/2;
+        if (isBoost) {
+            if (naturalSpeed > -12) {
+                naturalSpeed = -12;
+            }
+            if (tick % 45 == 0) {
+                FP -= 1;
+                if (FP == 0) {
+                    isBoost = false;
+                }
+            }
         }
     } else if (D) {
+        if (naturalSpeed < 6) {
+            naturalSpeed = 6;
+        }
+        if (naturalSpeed > 10 and tick % 3 == 0) {
+            naturalSpeed -= 1;
+        }
         if (!lookingRight) {
             if (CheckMirror(CBs, map)) {
                 lookingRight = true;
             }
         }
-        if (ground) {
-            vx = naturalSpeed*SCALE/groundBlock.friction;
-        } else {
-            vx = naturalSpeed*SCALE/2;
+        if (isBoost) {
+            if (naturalSpeed < 12) {
+                naturalSpeed = 12;
+            }
+            if (tick % 45 == 0) {
+                FP -= 1;
+                if (FP == 0) {
+                    isBoost = false;
+                }
+            }
         }
     } else {
-        vx = 0;
+        naturalSpeed = naturalSpeed/1.2;
+    }
+
+    if (ground) {
+        vx = naturalSpeed*SCALE/groundBlock.friction;
+    } else {
+        vx = naturalSpeed*SCALE/2;
     }
 
     bool toggleCrouch = crouch;
@@ -129,6 +213,10 @@ void Flamingo::gravity() {
     vy += 0.25*SCALE;
     if (vy > 9*SCALE and tick % 60 == 0) {
         PlaySound(sfxFall);
+    }
+    if (rect.y > 3000) {
+        Health(-7, 'C');
+        rect.y = -1000;
     }
 }
 
@@ -210,7 +298,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
                 (temp.direction == 2 and vert and vy < 0) or
                 (temp.direction == 3 and !vert and vx < 0)
                 ){
-                    Health(-(int)(temp.friction), 'R');
+                    Health(-7, 'R');
                 }
             }
         }
@@ -246,6 +334,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
             Hitbox3.x += Dspace.x;
             HitboxA.x += Dspace.x;
             vx = -vx/temp.friction;
+            naturalSpeed = 0;
         }
         // break;
         return doReturn;
@@ -256,9 +345,6 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
 void Flamingo::Physics(std::vector<int> CBs, std::vector<Block> &map) {
     // Horizontal Axis checing
     rect.x += vx;
-    if (rect.y > 3000) {
-        rect.y = -1000;
-    }
     updateHitbox();
     int bsize = CBs.size();
     for (int i = 0; i < bsize; i++) {
@@ -460,26 +546,47 @@ void Flamingo::collect(Item item) {
         case 'K':
             PlaySound(sfxKey);
             break;
+        case 'P':
+            PlaySound(sfxPearlPiece);
+            break;
+        case 'S':
+            PlaySound(sfxSpecial);
+            break;
     }
 
     if (item.name == "coin-copper") {
         score += 5;
     } else if (item.name == "coin-silver") {
-        score += 25;
+        score += 20;
     } else if (item.name == "coin-gold") {
-        score += 100;
+        score += 75;
+    } else if (item.name == "coin-death") {
+        score += 150;
     } else if (item.name == "food-banana") { // Fun-mode
         score += 2;
-        Health(1, 'H');
+        if (WP < MWP) {
+            WP += 1;
+        }
     } else if (item.name == "food-pear") { 
         score += 3;
+        if (PP < MPP) {
+            PP += 1;
+        }
     } else if (item.name == "food-blueberry") {
         score += 4;
+        if (FP < MFP) {
+            FP += 1;
+        }
     } else if (item.name == "food-pepper") {
         score += 6;
+        if (HP < MHP) {
+            HP += 1;
+        }
     } else if (item.name == "food-orange") {
         score += 8;
-        Health(1, 'W');
+        if (EP < MEP) {
+            EP += 1;
+        }
     } else if (item.name == "Hshard-hope") {
         PHH += 1;
         if (PHH == 3) {
@@ -515,10 +622,53 @@ void Flamingo::collect(Item item) {
             WH += 7;
             PWH = 0;
         }
+    } else if (item.name == "Pshard-wind") {
+        PWP += 1;
+        if (PWP == 3) {
+            MWP += 7;
+            WP += 7;
+            PWP = 0;
+        }
+    } else if (item.name == "Pshard-party") {
+        PPP += 1;
+        if (PPP == 3) {
+            MPP += 7;
+            PP += 7;
+            PPP = 0;
+        }
+    } else if (item.name == "Pshard-fun") {
+        PFP += 1;
+        if (PFP == 3) {
+            MFP += 7;
+            FP += 7;
+            PFP = 0;
+        }
+    } else if (item.name == "Pshard-hard") {
+        PHP += 1;
+        if (PHP == 3) {
+            MHP += 7;
+            HP += 7;
+            PHP = 0;
+        }
+    } else if (item.name == "Pshard-eloise") {
+        PEP += 1;
+        if (PEP == 3) {
+            MEP += 7;
+            EP += 7;
+            PEP = 0;
+        }
     } else if (item.name == "key-hope") {
         keyHope += 1;
     } else if (item.name == "courage-potion") {
         Health(7, 'C');
+    } else if (item.name == "power-dash") {
+        powers[0] = true;
+    } else if (item.name == "power-transmutation") {
+        powers[4] = true;
+    } else if (item.name == "power-boost") {
+        powers[2] = true;
+    } else if (item.name == "power-spear") {
+        powers[3] = true;
     }
 }
 
