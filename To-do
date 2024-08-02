@@ -31,12 +31,16 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [R] Deixar a moeda de cobre mais cobre
     ( ) [R] Remover as linhas preta estranha dos sprites da: plataforma, pera, abelha
     ( ) [R] Melhorar as animações de caminhada
-    ( ) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
     ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
     ( ) [R] Looks like modulo is bad, 'cause of division, find alternatives.
     ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
     ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
     ( ) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
+
+
+( ) 0.75 - Random QoL 1 update
+    (X) [R] Deixar alguns sprites mais bonitos: Borboleta (parecer que está voando), Grama e Terra (mais borrachudos), Banana (mais amarela)
+
 
 
 ( ) ??? - Level Editor Update
