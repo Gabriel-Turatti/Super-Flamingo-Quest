@@ -368,7 +368,7 @@ void Flamingo::Physics(std::vector<int> CBs, std::vector<Block> &map) {
             map[CBs[i]] = temp;
             continue;
         } else if (doColide == 2) {
-            break;
+            // break;
         } else if (doColide == 3) {
             map[CBs[i]] = temp;
             break;
@@ -402,7 +402,7 @@ void Flamingo::Physics(std::vector<int> CBs, std::vector<Block> &map) {
             map[CBs[i]] = temp;
             break;
         } else if (doColide == 2) {
-            break;
+            // break;
         } else if (doColide == 1) {
             map[CBs[i]] = temp;
             continue;

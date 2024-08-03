@@ -621,7 +621,7 @@ int main(void) {
             dusts.push_back(D1);
         }
 
-        if (abs(player.vy) > 12 or abs(player.vx) > 12) {
+        if (abs(player.vy) > 8 or abs(player.vx) > 8) {
             tickBlockUpdate = 1;
         } else {
             tickBlockUpdate = 5;
