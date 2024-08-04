@@ -7,6 +7,7 @@
 class Item {
 public:
     Rectangle rect;
+    Rectangle rectImage;
     float cx, cy;
     std::string name;
     char category;

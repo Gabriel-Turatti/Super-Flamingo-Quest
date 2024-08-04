@@ -13,8 +13,7 @@
 
 
 
-void DesenharHeart(Flamingo player) {
-    int SCALE = player.SCALE;
+void DesenharHeart(Flamingo player, const int SCALE) {
     Rectangle PHud = {10.0f, 10.0f, 11.0f*SCALE, 11.0f*SCALE};
     // Hope
     int HHTemp = player.HH/7;
@@ -147,8 +146,7 @@ void DesenharHeart(Flamingo player) {
     }
 }
 
-void DesenharPearl(Flamingo player) {
-    int SCALE = player.SCALE;
+void DesenharPearl(Flamingo player, const int SCALE) {
     Rectangle PHud = {GetScreenWidth() - 20.0f*SCALE, 10.0f, 11.0f*SCALE, 11.0f*SCALE};
     // Wind
     int WPTemp = player.WP/7;
@@ -283,10 +281,10 @@ void DesenharPearl(Flamingo player) {
 
 int main(void) {
     const int SCALE = 3;
-    const bool DEBUG = false;
-    const int BS = 13;
-    const int WT = BS*34*SCALE;
-    const int HT = BS*25*SCALE;
+    const bool DEBUG = true;
+    const int BS = 13*SCALE;
+    const int WT = BS*34;
+    const int HT = BS*25;
     const float FW = 18;
     const float FH = 23;
     int tickBlockUpdate = 5;
@@ -337,6 +335,7 @@ int main(void) {
     std::uniform_int_distribution<std::mt19937::result_type> RNGWidth(0, widthLevel);
     std::uniform_int_distribution<std::mt19937::result_type> RNGHeight(0, heightLevel);
 
+
     int RenderPhase = 0; // 1 = Blocks; 2 = Itens; 3 = Enemies;
     while (!level.eof()) {
         std::getline(level, line);
@@ -354,19 +353,19 @@ int main(void) {
                     continue;
                 }
                 if (line[CWL] == 'F') {
-                    player.rect.x = CWL*(BS-1)*SCALE;
-                    player.rect.y = CHL*(BS-1)*SCALE;
+                    player.rect.x = CWL*(BS-SCALE);
+                    player.rect.y = CHL*(BS-SCALE);
                     continue;
                 }
                 Block tile;
                 if (line[CWL] == 'G') {
-                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "grass", SCALE);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE);
                 } else if (line[CWL] == 'D') {
                     if (line[CWL+1] == '2') {
-                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS*2-1, BS*2-1, "dirt2", SCALE);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE);
                         CWL++;
                     } else {
-                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "dirt", SCALE);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE);
                     }
                 } else if (line[CWL] == 'K') {
                     bool rotation = false;
@@ -377,15 +376,15 @@ int main(void) {
                     if (line[CWL+1] == 'h') {
                         type = "hope";
                     }
-                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "gate-" + type, SCALE, rotation);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation);
                 } else if (line[CWL] == 'P') {
                     if (line[CWL+1] == 'p') {
-                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS*2-1, BS, "platform", SCALE, false);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0);
                     } else {
-                        tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS*2-1, "platform", SCALE, true);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90);
                     }
                 } else if (line[CWL] == 'A') {
-                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "altar", SCALE);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE);
                 } else if (line[CWL] == 'S') {
                     int orientation = 0;
                     if (line[CWL-1] == 'S' or line[CWL+1] == 'S') {
@@ -402,7 +401,7 @@ int main(void) {
                             orientation = 2;
                         }
                     }
-                    tile = Block(CWL*(BS-1)*SCALE, CHL*(BS-1)*SCALE, BS, BS, "spike", SCALE, orientation);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation);
                 }
                 map.push_back(tile);
             }
@@ -448,13 +447,15 @@ int main(void) {
                         category = 'H';
                     } else if (text == "key") {
                         category = 'K';
+                    } else if (text == "power") {
+                        category = 'S';
                     }
                 }
                 text += line[i];
             }
             name = text;
 
-            Item novoItem(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, category);
+            Item novoItem(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, category);
             itens.push_back(novoItem);
         } else if (RenderPhase == 3) {
             int i = 0;
@@ -495,21 +496,21 @@ int main(void) {
                 int sizeB = map.size();
                 for (int j = 0; j < sizeB; j++) {
                     ground = map[j];
-                    if (ground.rect.x == (float)(CHL)*(BS-1)*SCALE and ground.rect.y == (float)CWL*(BS-1)*SCALE) {
+                    if (ground.rect.x == (float)(CHL)*(BS-SCALE) and ground.rect.y == (float)CWL*(BS-SCALE)) {
                         break;
                     }
                 }
             }
             if (name == "snail") {
-                enemies.push_back(Enemy((CHL-1)*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground));
+                enemies.push_back(Enemy((CHL-1)*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, map, RNG100(rng), ground));
             } else if (name == "butterfly") {
-                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
+                enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, map, RNG100(rng)));
             } else if (name == "crab") {
-                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, (CWL-1)*(BS-1)*SCALE, name, SCALE, map, RNG100(rng), ground));
+                enemies.push_back(Enemy(CHL*(BS-SCALE), (CWL-1)*(BS-SCALE), name, SCALE, map, RNG100(rng), ground));
             } else if (name == "meldrop") {
-                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
+                enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, map, RNG100(rng)));
             } else {
-                enemies.push_back(Enemy(CHL*(BS-1)*SCALE, CWL*(BS-1)*SCALE, name, SCALE, map, RNG100(rng)));
+                enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, map, RNG100(rng)));
             }
         }
     }
@@ -557,7 +558,6 @@ int main(void) {
 
 
 
-
     
     while (!WindowShouldClose()) {
         UpdateMusicStream(Theme);
@@ -569,9 +569,9 @@ int main(void) {
                     continue;
                 }
                 int dx = abs(map[i].cx - player.cx);
-                if (dx < player.rect.width*2*SCALE) {
+                if (dx < player.rect.width*2) {
                     int dy = abs(map[i].cy - player.cy);
-                    if (dy < player.rect.height*2*SCALE) {
+                    if (dy < player.rect.height*2) {
                         colisionBlocks.push_back(i);
                     }
                 }
@@ -581,9 +581,9 @@ int main(void) {
             colisionItens.clear();
             for (int i = 0; i < sizeI; i++) {
                 int dx = abs(itens[i].cx - player.cx);
-                if (dx < player.rect.width*2*SCALE) {
+                if (dx < player.rect.width*2) {
                     int dy = abs(itens[i].cy - player.cy);
-                    if (dy < player.rect.height*2*SCALE) {
+                    if (dy < player.rect.height*2) {
                         colisionItens.push_back(i);
                     }
                 }
@@ -593,9 +593,9 @@ int main(void) {
             colisionEnemies.clear();
             for (int i = 0; i < sizeE; i++) {
                 int dx = abs(enemies[i].cx - player.cx);
-                if (dx < player.rect.width*2*SCALE) {
+                if (dx < player.rect.width*2) {
                     int dy = abs(enemies[i].cy - player.cy);
-                    if (dy < player.rect.height*2*SCALE) {
+                    if (dy < player.rect.height*2) {
                         colisionEnemies.push_back(i);
                     }
                 }
@@ -609,7 +609,7 @@ int main(void) {
         }
         player.update(colisionBlocks, map, colisionItens, itens, colisionEnemies, enemies, effects);
         if (player.isBoost) {
-            float posY = player.rect.y + RNG100(rng)*player.rect.height*SCALE/100;
+            float posY = player.rect.y + RNG100(rng)*player.rect.height/100;
             Dust D1;
             D1.pos.x = player.cx;
             D1.pos.y = posY;
@@ -682,7 +682,7 @@ int main(void) {
             }
         }
 
-        Rectangle center = {WT/2, HT/2, SCALE*player.rect.width, SCALE*player.rect.height};
+        Rectangle center = {WT/2, HT/2, player.rect.width, player.rect.height};
 
         mousePosition = GetMousePosition();
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -739,12 +739,13 @@ int main(void) {
             }
         }
 
+
+
         // Desenhando Player
         Color playerColor = WHITE;
         if (player.gameover) {
             playerColor = {0, 255, 255, 127};
         }
-
         // invincibility for damage
         if (player.invincibility['H'] > 0 and player.tick % 10 <= 1) {
             playerColor = {255, 255, 0, 255};
@@ -758,13 +759,13 @@ int main(void) {
             playerColor = {255, 255, 0, 255};
         }
 
-
-
         if (player.lookingRight) {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rectImage.width, player.rectImage.height}, center, {0, 0}, 0, playerColor);
         } else {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rect.width, player.rect.height}, center, {0, 0}, 0, playerColor);
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rectImage.width, player.rectImage.height}, center, {0, 0}, 0, playerColor);
         }
+
+
 
         sizeE = enemies.size();
         // Desenhando inimigos
@@ -775,26 +776,26 @@ int main(void) {
             relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
             relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
 
-            source.x = 0 + enemies[i].imageCount*(enemies[i].rect.width+1);
+            source.x = 0 + enemies[i].imageCount*(enemies[i].rectImage.width+1);
             source.y = 0;
-            source.width = enemies[i].rect.width;
-            source.height = enemies[i].rect.height;
+            source.width = enemies[i].rectImage.width;
+            source.height = enemies[i].rectImage.height;
 
             dest.x = relativePos.x;
             dest.y = relativePos.y;
-            dest.width = source.width*SCALE;
-            dest.height = source.height*SCALE;
+            dest.width = enemies[i].rect.width;
+            dest.height = enemies[i].rect.height;
 
             if (enemies[i].name == "bee") {
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else if (enemies[i].name == "snail") {
                 if (enemies[i].behavior == 1) {
-                    dest.y += enemies[i].rect.width*SCALE;
+                    dest.y += enemies[i].rect.width;
                 } else if (enemies[i].behavior == 2) {
-                    dest.y += enemies[i].rect.height*SCALE;
-                    dest.x += enemies[i].rect.width*SCALE;
+                    dest.y += enemies[i].rect.height;
+                    dest.x += enemies[i].rect.width;
                 } else if (enemies[i].behavior == 3) {
-                    dest.x += enemies[i].rect.height*SCALE;
+                    dest.x += enemies[i].rect.height;
                 }
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, enemies[i].behavior*-90, WHITE);
             } else if (enemies[i].name == "butterfly") {
@@ -835,12 +836,12 @@ int main(void) {
                 DrawTexturePro(map[i].image, cut, dest, {0, 0}, 0, WHITE);
             } else if (map[i].name == "spike") {
                 if (map[i].direction == 1) {
-                    relativePos.y += map[i].rect.height*SCALE;
+                    relativePos.y += map[i].rect.height;
                 } else if (map[i].direction == 2) {
-                    relativePos.x += map[i].rect.width*SCALE;
-                    relativePos.y += map[i].rect.height*SCALE;
+                    relativePos.x += map[i].rect.width;
+                    relativePos.y += map[i].rect.height;
                 } else if (map[i].direction == 3) {
-                    relativePos.x += map[i].rect.width*SCALE;
+                    relativePos.x += map[i].rect.width;
                 }
 
                 DrawTextureEx(map[i].image, relativePos, map[i].direction*-90, SCALE, WHITE);
@@ -868,15 +869,15 @@ int main(void) {
             relativePos.x = center.x +temp.rect.x -player.rect.x;
             relativePos.y = center.y +temp.rect.y -player.rect.y;
 
-            source.x = 0 + temp.imageCount*(temp.rect.width);
+            source.x = 0 + temp.imageCount*(temp.rectImage.width);
             source.y = 0;
-            source.width = temp.rect.width;
-            source.height = temp.rect.height;
+            source.width = temp.rectImage.width;
+            source.height = temp.rectImage.height;
 
             dest.x = relativePos.x;
             dest.y = relativePos.y;
-            dest.width = source.width*SCALE;
-            dest.height = source.height*SCALE;
+            dest.width = temp.rect.width;
+            dest.height = temp.rect.height;
             if (temp.id == 2) {
                 float angle = temp.timer*3;
                 DrawTexturePro(temp.image, source, dest, {0, 0}, angle, WHITE);
@@ -913,13 +914,13 @@ int main(void) {
 
         // fun-mode
         if (tick % 30 == 0 and sizeI < 200) {
-            int RNG_X = (RNGWidth(rng))*(BS-1)*SCALE;
-            int RNG_Y = (RNGHeight(rng)-1)*(BS-1)*SCALE;
+            int RNG_X = (RNGWidth(rng))*(BS-SCALE);
+            int RNG_Y = (RNGHeight(rng)-1)*(BS-SCALE);
             bool freespace = true;
             Rectangle tempItem = {(float) RNG_X, (float) RNG_Y, 13, 13};
             for (int i = 0; i < sizeB; i++) {
                 Block temp = map[i];
-                if (GenericColision(tempItem, temp.rect, SCALE)) {
+                if (GenericColision(tempItem, temp.rect)) {
                     int value = RNGe3(rng);
                     if (value <= 1) {
                         enemies.push_back(Enemy(RNG_X, RNG_Y, "snail", SCALE, map, RNG100(rng), temp));
@@ -927,8 +928,8 @@ int main(void) {
                         bool spawnable;
                         for(int j = 0; j < sizeB; j++) {
                             Block tempCeil = map[j];
-                            if (tempCeil.rect.x+tempCeil.rect.width*SCALE > temp.rect.x and tempCeil.rect.x < temp.rect.x+temp.rect.width*SCALE) {
-                                if (tempCeil.rect.y+tempCeil.rect.height*SCALE > temp.rect.y and tempCeil.rect.y < temp.rect.y) {
+                            if (tempCeil.rect.x+tempCeil.rect.width > temp.rect.x and tempCeil.rect.x < temp.rect.x+temp.rect.width) {
+                                if (tempCeil.rect.y+tempCeil.rect.height > temp.rect.y and tempCeil.rect.y < temp.rect.y) {
                                     spawnable = false;
                                     break;
                                 }
@@ -1006,8 +1007,8 @@ int main(void) {
 
 
         // Desenhando HUD
-        DesenharHeart(player);
-        DesenharPearl(player);
+        DesenharHeart(player, SCALE);
+        DesenharPearl(player, SCALE);
         DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()/2-100, 30, 20, WHITE);
         DrawText(TextFormat("Time: %d", seconds), GetScreenWidth()/2-100, 0, 20, WHITE);
         if (player.keyHope > 0) {
@@ -1043,38 +1044,98 @@ int main(void) {
 
 
 
+
+
+
+
+        // Color test for White Flamingo
+
+        // if (IsKeyPressed(KEY_F)) {
+        //     setFlamingo[0] += 1;
+        //     if (setFlamingo[0] > 255) {
+        //         setFlamingo[0] = 0;
+        //     }
+        // }
+        // if (IsKeyPressed(KEY_G)) {
+        //     setFlamingo[1] += 1;
+        //     if (setFlamingo[1] > 255) {
+        //         setFlamingo[1] = 0;
+        //     }
+        // }
+        // if (IsKeyPressed(KEY_H)) {
+        //     setFlamingo[2] += 1;
+        //     if (setFlamingo[2] > 255) {
+        //         setFlamingo[2] = 0;
+        //     }
+        // }
+        // if (IsKeyPressed(KEY_V)) {
+        //     setFlamingo[0] -= 1;
+        //     if (setFlamingo[0] < 0) {
+        //         setFlamingo[0] = 255;
+        //     }
+        // }
+        // if (IsKeyPressed(KEY_B)) {
+        //     setFlamingo[1] -= 1;
+        //     if (setFlamingo[1] > 0) {
+        //         setFlamingo[1] = 255;
+        //     }
+        // }
+        // if (IsKeyPressed(KEY_N)) {
+        //     setFlamingo[2] -= 1;
+        //     if (setFlamingo[2] > 0) {
+        //         setFlamingo[2] = 255;
+        //     }
+        // }
+
+
+        // Color test = {(unsigned char)setFlamingo[0], (unsigned char)setFlamingo[1], (unsigned char)setFlamingo[2], (unsigned char)setFlamingo[3]};
+        // DrawRectangle(100, 50, 60, 60, test);
+
  
 
         if (DEBUG) {
             Vector2 relativePos;
             relativePos.x = WT/2 +player.groundBlock.rect.x -player.rect.x;
             relativePos.y = HT/2 +player.groundBlock.rect.y -player.rect.y;
-            DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width*SCALE, player.groundBlock.rect.height*SCALE, YELLOW);
+            DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width, player.groundBlock.rect.height, YELLOW);
+
+            
+            DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player.groundBlock.rect.x, player.groundBlock.rect.y, player.groundBlock.rect.width, player.groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
             if (player.crouch) {
                 relativePos.x = center.x +player.HitboxA.x -player.rect.x;
                 relativePos.y = center.y +player.HitboxA.y -player.rect.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width*SCALE, player.HitboxA.height*SCALE, RED);
+                DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width, player.HitboxA.height, RED);
             } else {
                 relativePos.x = center.x +player.Hitbox1.x -player.rect.x;
                 relativePos.y = center.y +player.Hitbox1.y -player.rect.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox1.width*SCALE, player.Hitbox1.height*SCALE, RED);
+                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox1.width, player.Hitbox1.height, RED);
                 relativePos.x = center.x +player.Hitbox2.x -player.rect.x;
                 relativePos.y = center.y +player.Hitbox2.y -player.rect.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox2.width*SCALE, player.Hitbox2.height*SCALE, RED);
+                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox2.width, player.Hitbox2.height, RED);
                 relativePos.x = center.x +player.Hitbox3.x -player.rect.x;
                 relativePos.y = center.y +player.Hitbox3.y -player.rect.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width*SCALE, player.Hitbox3.height*SCALE, RED);
+                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width, player.Hitbox3.height, RED);
             }
             relativePos.x = center.x +player.HB1.x -player.rect.x;
             relativePos.y = center.y +player.HB1.y -player.rect.y;
-            DrawRectangle(relativePos.x, relativePos.y, player.HB1.width*SCALE, player.HB1.height*SCALE, DARKBLUE);
+            DrawRectangle(relativePos.x, relativePos.y, player.HB1.width, player.HB1.height, DARKBLUE);
+
+            relativePos.x = center.x +player.cx -player.rect.x;
+            relativePos.y = center.y +player.cy -player.rect.y;
+            DrawCircle(relativePos.x, relativePos.y, 5, PURPLE);
 
 
+            int closeSizeB = colisionBlocks.size();
+            for (int i = 0; i < closeSizeB; i++) {
+                Block temp = map[colisionBlocks[i]];
+                relativePos.x = center.x +temp.rect.x -player.rect.x;
+                relativePos.y = center.y +temp.rect.y -player.rect.y;
+                DrawRectangle(relativePos.x, relativePos.y, temp.rect.width, temp.rect.height, GRAY);
+            }
             for (int i = 0; i < sizeE; i++) {
-                Vector2 relativePos;
-                relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-                relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
-                DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width*SCALE, enemies[i].rect.height*SCALE, RED);
+                // relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
+                // relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                // DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, RED);
                 if (enemies[i].name == "crab") {
                     relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
                     relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
@@ -1084,13 +1145,13 @@ int main(void) {
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
                     relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width, enemies[i].ground.rect.height, YELLOW);
                     relativePos.x = center.x +enemies[i].border1.rect.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].border1.rect.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].border1.rect.width*SCALE, enemies[i].border1.rect.height*SCALE, GREEN);
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].border1.rect.width, enemies[i].border1.rect.height, GREEN);
                     relativePos.x = center.x +enemies[i].border2.rect.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].border2.rect.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].border2.rect.width*SCALE, enemies[i].border2.rect.height*SCALE, GREEN);
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].border2.rect.width, enemies[i].border2.rect.height, GREEN);
                 } else if (enemies[i].name == "butterfly") {
                     relativePos.x = center.x +enemies[i].orbit.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].orbit.y -player.rect.y;
@@ -1098,13 +1159,16 @@ int main(void) {
                 } else if (enemies[i].name == "snail") {
                     relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
                     relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
-                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width*SCALE, enemies[i].vision.height*SCALE, BLACK);
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width, enemies[i].vision.height, BLACK);
+                    relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
+                    relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
+                    DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width, enemies[i].HBFeet.height, BLACK);
                     if (enemies[i].ground.SCALE == 0) {
                         DrawText("UNEXPECTED SNAIL BEHAVIOR 2", GetScreenWidth() - 520, 40, 20, RED);
                     } else {
                         relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
                         relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
-                        DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width*SCALE, enemies[i].ground.rect.height*SCALE, YELLOW);
+                        DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width, enemies[i].ground.rect.height, YELLOW);
                     }
                 } else if (enemies[i].name == "bee") {
                     relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;

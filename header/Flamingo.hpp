@@ -13,6 +13,7 @@
 class Flamingo {
 public:
     Rectangle rect;
+    Rectangle rectImage;
     float cx, cy;
     float vx, vy;
 
@@ -91,7 +92,7 @@ public:
 
 
     int WT, HT, SCALE;
-    int naturalSpeed = 4;
+    int naturalSpeed = 6;
     int tick = 1;
     int score = 0;
 

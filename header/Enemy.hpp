@@ -15,6 +15,7 @@ class Effect;
 class Enemy {
 public:
     Rectangle rect;
+    Rectangle rectImage;
     float cx, cy;
     float vx, vy;
     std::vector<Texture2D> images = {};

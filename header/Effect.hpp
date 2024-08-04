@@ -12,6 +12,7 @@
 class Effect {
 public:
     Rectangle rect;
+    Rectangle rectImage;
     float cx, cy;
     float vx, vy;
     Texture2D image;

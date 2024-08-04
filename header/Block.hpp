@@ -8,6 +8,7 @@
 class Block {
 public:
     Rectangle rect;
+    Rectangle rectImage;
     float cx, cy;
     float friction;
     Texture2D image;

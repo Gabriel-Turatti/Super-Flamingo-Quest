@@ -20,23 +20,27 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
         PlaySound(LoadSound("sfx/meldrop-shot.wav"));
         image = LoadTexture("images/effect-meldrop-shot.png");
         imageSize = 2;
-        rect.width = 6;
-        rect.height = 6;
+        rectImage.width = 6;
+        rectImage.height = 6;
     } else if (id == 2) {
         // PlaySound(LoadSound("sfx/meldrop-shot.wav"));
         image = LoadTexture("images/effect-transmutation.png");
         imageSize = 1;
-        rect.width = 15;
-        rect.height = 15;
+        rectImage.width = 15;
+        rectImage.height = 15;
     } else if (id == 3) {
         // PlaySound(LoadSound("sfx/meldrop-shot.wav"));
         image = LoadTexture("images/effect-spear.png");
         imageSize = 1;
-        rect.width = 15;
-        rect.height = 15;
+        rectImage.width = 15;
+        rectImage.height = 15;
     }
-    cx = rect.x + rect.width*SCALE/2;
-    cy = rect.y + rect.height*SCALE/2;
+    
+    
+    rect.width = rectImage.width*SCALE;
+    rect.height = rectImage.height*SCALE;
+    cx = rect.x + rect.width/2;
+    cy = rect.y + rect.height/2;
 }
 
 bool Effect::update(std::vector<Block> map, Flamingo &player, std::vector<Item> &itens, std::vector<Enemy> &enemies) {
@@ -82,9 +86,9 @@ bool Effect::meldropShot(std::vector<Block> map, Flamingo &player) {
                 continue;
             }
             int dx = abs(map[i].cx - cx);
-            if (dx < map[i].rect.width*2*SCALE) {
+            if (dx < map[i].rect.width*2) {
                 int dy = abs(map[i].cy - cy);
-                if (dy < map[i].rect.height*2*SCALE) {
+                if (dy < map[i].rect.height*2) {
                     closeBlocks.push_back(i);
                 }
             }
@@ -93,12 +97,12 @@ bool Effect::meldropShot(std::vector<Block> map, Flamingo &player) {
 
     int sizeB = closeBlocks.size();
     for (int i = 0; i < sizeB; i++) {
-        if (GenericColision(rect, map[closeBlocks[i]].rect, SCALE)) {
+        if (GenericColision(rect, map[closeBlocks[i]].rect)) {
             return true;
         }
     }
 
-    if (GenericColision(player.rect, rect, SCALE)) {
+    if (GenericColision(player.rect, rect)) {
         int q = 0;
         for(char type : {'H', 'R', 'P', 'C', 'W'}) {
             if (dmg[q] > 0) {
@@ -118,9 +122,9 @@ bool Effect::transmutation(std::vector<Item> &itens) {
         closeItens.clear();
         for (int i = 0; i < sizeI; i++) {
             int dx = abs(itens[i].cx - cx);
-            if (dx < itens[i].rect.width*2*SCALE) {
+            if (dx < itens[i].rect.width*2) {
                 int dy = abs(itens[i].cy - cy);
-                if (dy < itens[i].rect.height*2*SCALE) {
+                if (dy < itens[i].rect.height*2) {
                     closeItens.push_back(i);
                 }
             }
@@ -130,7 +134,7 @@ bool Effect::transmutation(std::vector<Item> &itens) {
     int sizeCI = closeItens.size();
     for (int i = 0; i < sizeCI; i++) {
         Item target = itens[closeItens[i]];
-        if (GenericColision(rect, target.rect, SCALE)) {
+        if (GenericColision(rect, target.rect)) {
             Item result;
             if (target.name == "food-banana") {
                 result = Item(target.rect.x, target.rect.y, "food-pear", SCALE, 'F');
@@ -178,9 +182,9 @@ bool Effect::spear(std::vector<Enemy> &enemies, std::vector<Item> &itens) {
         closeEnemies.clear();
         for (int i = 0; i < sizeE; i++) {
             int dx = abs(enemies[i].cx - cx);
-            if (dx < enemies[i].rect.width*2*SCALE) {
+            if (dx < enemies[i].rect.width*2) {
                 int dy = abs(enemies[i].cy - cy);
-                if (dy < enemies[i].rect.height*2*SCALE) {
+                if (dy < enemies[i].rect.height*2) {
                     closeEnemies.push_back(i);
                 }
             }
@@ -190,7 +194,7 @@ bool Effect::spear(std::vector<Enemy> &enemies, std::vector<Item> &itens) {
     int sizeE = closeEnemies.size();
     for (int i = 0; i < sizeE; i++) {
         Enemy temp = enemies[closeEnemies[i]];
-        if (GenericColision(temp.rect, rect, SCALE)) {
+        if (GenericColision(temp.rect, rect)) {
             Item deathCoin(temp.rect.x, temp.rect.y, "coin-death", SCALE, 'C');
             itens.push_back(deathCoin);
             auto it = std::next(enemies.begin(), closeEnemies[i]);

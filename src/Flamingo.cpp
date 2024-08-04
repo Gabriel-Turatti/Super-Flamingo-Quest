@@ -1,6 +1,6 @@
 #include "../header/Flamingo.hpp"
 
-   
+
 
 Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale) {
     SetSoundVolume(sfxJump, 0.25);
@@ -9,8 +9,11 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
 
     rect.x = x;
     rect.y = y;
-    rect.width = w;
-    rect.height = h;
+    rectImage.width = w;
+    rectImage.height = h;
+
+    rect.width = rectImage.width*SCALE;
+    rect.height = rectImage.height*SCALE;
 
     WT = worldWidth;
     HT = worldHeight;
@@ -18,15 +21,15 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
     vx = 0;
     vy = 0;
 
-    cx = x+w*SCALE/2;
-    cy = y+h*SCALE/2;
+    cx = rect.x+rect.width/2;
+    cy = rect.y+rect.height/2;
 
-    Hitbox1 = Rectangle {rect.x+7*SCALE, rect.y+16*SCALE, 6.0f, 7.0f};
-    Hitbox2 = Rectangle {rect.x+3*SCALE, rect.y+7*SCALE, 11.0f, 7.0f};
-    Hitbox3 = Rectangle {rect.x+9*SCALE, rect.y, 9.0f, 8.0f};
-    HitboxA = Rectangle {rect.x, rect.y, 18.0f, 16.0f};
+    Hitbox1 = Rectangle {rect.x+7*SCALE, rect.y+15*SCALE, 6.0f*SCALE, 8.0f*SCALE};
+    Hitbox2 = Rectangle {rect.x+3*SCALE, rect.y+7*SCALE, 11.0f*SCALE, 7.0f*SCALE};
+    Hitbox3 = Rectangle {rect.x+9*SCALE, rect.y, 9.0f*SCALE, 8.0f*SCALE};
+    HitboxA = Rectangle {rect.x, rect.y, 18.0f*SCALE, 16.0f*SCALE};
     
-    HB1 = {Hitbox1.x-1*SCALE, Hitbox1.y+7*SCALE, 10.0f, 2.0f};
+    HB1 = {Hitbox1.x-1*SCALE, Hitbox1.y+7*SCALE, 10.0f*SCALE, 2.0f*SCALE};
 }
 
 void Flamingo::update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
@@ -176,6 +179,7 @@ void Flamingo::keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vect
                 rect.y += 7*SCALE;
                 cy += 7*SCALE;
                 rect.height = HitboxA.height;
+                rectImage.height = 16;
             }
             crouch = true;
             updateHitbox();
@@ -186,7 +190,8 @@ void Flamingo::keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vect
         imageCount = 0;
         rect.y -= 7*SCALE;
         cy -= 7*SCALE;
-        rect.height = 23;
+        rect.height = 23*SCALE;
+        rectImage.height = 23;
         updateHitbox();
     }
 
@@ -280,14 +285,11 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
             PlaySound(sfxSecret);
             temp.secret = false;
             temp.background = true;
-            // map[CBs[i]] = temp;
-            // continue;
             return 1;
         }
         if (temp.name == "gate-hope" and keyHope > 0) {
             keyHope -= 1;
             temp.background = true;
-            // map[CBs[i]] = temp;
             PlaySound(sfxDoor);
             doReturn = 3;
         } else if (temp.name == "spike") {
@@ -336,7 +338,6 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
             vx = -vx/temp.friction;
             naturalSpeed = 0;
         }
-        // break;
         return doReturn;
     }
     return 0;
@@ -398,22 +399,15 @@ void Flamingo::Physics(std::vector<int> CBs, std::vector<Block> &map) {
                 doColide = returned;
             }
         }
-        if (doColide == 3) {
-            map[CBs[i]] = temp;
-            break;
-        } else if (doColide == 2) {
-            // break;
-        } else if (doColide == 1) {
+        if (doColide == 1) {
             map[CBs[i]] = temp;
             continue;
+        } else if (doColide == 2) {
+            // break;
+        } else if (doColide == 3) {
+            map[CBs[i]] = temp;
+            break;
         }
-        // if (doColide != 0) {
-        //     Vector2 relativePos;
-        //     relativePos.x = WT/2 +temp.rect.x -rect.x;
-        //     relativePos.y = HT/2 +temp.rect.y -rect.y;
-        //     DrawRectangle(relativePos.x, relativePos.y-6, 8, 8, RED);
-        //     DrawText(TextFormat("X"), relativePos.x, relativePos.y-40, 20, WHITE);
-        // }
     }
 
 
@@ -427,8 +421,8 @@ void Flamingo::Physics(std::vector<int> CBs, std::vector<Block> &map) {
         }
     }
     
-    cx = rect.x + rect.width*SCALE/2;
-    cy = rect.y + rect.height*SCALE/2;
+    cx = rect.x + rect.width/2;
+    cy = rect.y + rect.height/2;
     if (crouch) {
         imageCount = 5;
     } else if (tick % 10 == 0) {
@@ -465,10 +459,8 @@ bool Flamingo::groundCheck(Block ground) {
 }
 
 void Flamingo::updateHitbox() {
-    // if (crouch) {
     HitboxA.x = rect.x;
     HitboxA.y = rect.y;
-    // } else {
     if (lookingRight) {
         Hitbox1.x = rect.x+6*SCALE;
         Hitbox2.x = rect.x+3*SCALE;
@@ -478,10 +470,9 @@ void Flamingo::updateHitbox() {
         Hitbox2.x = rect.x+4*SCALE;
         Hitbox3.x = rect.x;
     }
-    Hitbox1.y = rect.y+16*SCALE;
+    Hitbox1.y = rect.y+15*SCALE;
     Hitbox2.y = rect.y+7*SCALE;
     Hitbox3.y = rect.y+1*SCALE;
-    // }
 }
 
 void Flamingo::ItemColision(std::vector<int> CIs, std::vector<Item> &itens) {
@@ -675,20 +666,20 @@ void Flamingo::collect(Item item) {
 Vector2 Flamingo::colision(Rectangle hitbox, Rectangle B) {
     float dx = 0, dy = 0;
     if (
-        (hitbox.x + hitbox.width*SCALE) > (B.x) and
-        (hitbox.x) < (B.x + B.width*SCALE) and
-        (hitbox.y) < (B.y + B.height*SCALE) and
-        (hitbox.height*SCALE + hitbox.y) > (B.y)
+        (hitbox.x + hitbox.width) > (B.x) and
+        (hitbox.x) < (B.x + B.width) and
+        (hitbox.y) < (B.y + B.height) and
+        (hitbox.height + hitbox.y) > (B.y)
     ) {
         if (hitbox.x < B.x) {
-            dx = B.x - (hitbox.x+hitbox.width*SCALE);
+            dx = B.x - (hitbox.x+hitbox.width);
         } else if (hitbox.x > B.x) {
-            dx = (B.width*SCALE + B.x) - hitbox.x;
+            dx = (B.width + B.x) - hitbox.x;
         }
         if (hitbox.y < B.y) {
-            dy = B.y - (hitbox.y+hitbox.height*SCALE);
+            dy = B.y - (hitbox.y+hitbox.height);
         } else if (hitbox.y > B.y) {
-            dy = (B.height*SCALE + B.y) - hitbox.y;
+            dy = (B.height + B.y) - hitbox.y;
         }
     }
     return {dx, dy};
@@ -793,46 +784,55 @@ void Flamingo::Health(int qtd, char type) {
 *   Might cause bug: If blockColision does alterations to player that shouldn't be done out of the Physics check 
 */
 bool Flamingo::CheckMirror(std::vector<int> CBs, std::vector<Block> &map) {
-    Hitbox1.y = rect.y+16*SCALE;
+    Hitbox1.y = rect.y+15*SCALE;
     Hitbox2.y = rect.y+7*SCALE;
     Hitbox3.y = rect.y+1*SCALE;
     if (crouch) {
         return true;
     } else {
-        Hitbox1.x = rect.x+6*SCALE;
-        Hitbox2.x = rect.x+3*SCALE;
-        Hitbox3.x = rect.x+9*SCALE;
-
         int bsize = CBs.size();
-        for (int i = 0; i < bsize; i++) {
-            Block temp = map[CBs[i]];
+        bool returning;
+        if (lookingRight) {
+            Hitbox1.x = rect.x+7*SCALE;
+            Hitbox2.x = rect.x+4*SCALE;
+            Hitbox3.x = rect.x;
 
-            if (blockColision(Hitbox1, temp, false) != 0) {
-                return false;
-            }
-            if (blockColision(Hitbox2, temp, false) != 0) {
-                return false;
-            }
-            if (blockColision(Hitbox3, temp, false) != 0) {
-                return false;
-            }
-        }
+            for (int i = 0; i < bsize; i++) {
+                Block temp = map[CBs[i]];
 
-        Hitbox1.x = rect.x+7*SCALE;
-        Hitbox2.x = rect.x+4*SCALE;
-        Hitbox3.x = rect.x;
-        for (int i = 0; i < bsize; i++) {
-            Block temp = map[CBs[i]];
+                if (blockColision(Hitbox1, temp, false) != 0) {
+                    return false;
+                }
+                if (blockColision(Hitbox2, temp, false) != 0) {
+                    return false;
+                }
+                if (blockColision(Hitbox3, temp, false) != 0) {
+                    return false;
+                }
+            }
+            Hitbox1.x = rect.x+6*SCALE;
+            Hitbox2.x = rect.x+3*SCALE;
+            Hitbox3.x = rect.x+9*SCALE;
+        } else {
+            Hitbox1.x = rect.x+6*SCALE;
+            Hitbox2.x = rect.x+3*SCALE;
+            Hitbox3.x = rect.x+9*SCALE;
+            for (int i = 0; i < bsize; i++) {
+                Block temp = map[CBs[i]];
 
-            if (blockColision(Hitbox1, temp, false) != 0) {
-                return false;
+                if (blockColision(Hitbox1, temp, false) != 0) {
+                    return false;
+                }
+                if (blockColision(Hitbox2, temp, false) != 0) {
+                    return false;
+                }
+                if (blockColision(Hitbox3, temp, false) != 0) {
+                    return false;
+                }
             }
-            if (blockColision(Hitbox2, temp, false) != 0) {
-                return false;
-            }
-            if (blockColision(Hitbox3, temp, false) != 0) {
-                return false;
-            }
+            Hitbox1.x = rect.x+7*SCALE;
+            Hitbox2.x = rect.x+4*SCALE;
+            Hitbox3.x = rect.x;
         }
     }
     return true;

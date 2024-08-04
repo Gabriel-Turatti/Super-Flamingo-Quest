@@ -3,6 +3,6 @@
 
 #include "raylib.h"
 
-bool GenericColision(Rectangle A, Rectangle B, int SCALE);
+bool GenericColision(Rectangle A, Rectangle B);
 
 #endif

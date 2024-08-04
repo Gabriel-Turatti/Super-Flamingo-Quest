@@ -6,8 +6,15 @@ P1
 ----------
 ----------
 ----------
-----------
-----------
+----D2----
+----||----
 ----------
 ----------
 GGGGGGGGGG
+P2
+0-0-"power-dash"
+0-2-"power-boost"
+0-4-"power-spear"
+0-6-"power-transmutation"
+P3
+endmap

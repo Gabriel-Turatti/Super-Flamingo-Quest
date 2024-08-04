@@ -3,8 +3,9 @@
 Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator = 0) {
     rect.x = x;
     rect.y = y;
-    rect.width = w;
-    rect.height = h;
+    SCALE = SCALER;
+    rectImage.width = w/SCALE;
+    rectImage.height = h/SCALE;
     if (namer == "grass") {
         image = LoadTexture("images/block_grass.png");
         friction = 2.5;
@@ -20,33 +21,38 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     } else if (namer == "platform") {
         image = LoadTexture("images/platform.png");
         friction = 2;
-        rect.height = 1;
     } else if (namer == "altar") {
         image = LoadTexture("images/block_altar.png");
         friction = 8.5;
     } else if (namer == "spike") {
         image = LoadTexture("images/block_spike.png");
         friction = 0.9;
-        rect.width = 13;
-        rect.height = 8;
+        rectImage.width = 13;
+        rectImage.height = 8;
         if (rotator == 0) {
             rect.y += 5*SCALE;
         } else if (rotator == 1) {
-            rect.width = 8;
-            rect.height = 13;
-            rect.x += (13-rect.width)*SCALE;
+            rectImage.width = 8;
+            rectImage.height = 13;
+            rect.x += (13-rectImage.width)*SCALE;
         } else if (rotator == 2) {
-            rect.y += (8-rect.height)*SCALE;
+            rect.y += (8-rectImage.height)*SCALE;
         } else if (rotator == 3) {
-            rect.width = 8;
-            rect.height = 13;
+            rectImage.width = 8;
+            rectImage.height = 13;
         }
     }
+
+
+    rect.width = rectImage.width*SCALE;
+    rect.height = rectImage.height*SCALE;
+    if (namer == "platform") {
+        rect.height = SCALE;
+    }
     direction = rotator;
-    SCALE = SCALER;
     name = namer;
-    cx = x+w*SCALE/2;
-    cy = y+h*SCALE/2;
+    cx = rect.x+rect.width/2;
+    cy = rect.y+rect.height/2;
 }
 
 Block::Block() {
