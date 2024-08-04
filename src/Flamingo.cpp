@@ -733,6 +733,16 @@ void Flamingo::Health(int qtd, char type) {
         PlaySound(sfxVulnerable);
         return;
     }
+    if (gameover) {
+        if (HH > 4 and RH > 4 and PH > 4 and CH > 4 and WH > 4)  {
+            gameover = false;
+            HH -= 4;
+            RH -= 4;
+            PH -= 4;
+            CH -= 4;
+            WH -= 4;
+        }
+    }
 
     if (HH > MHH) {
         HH = MHH;

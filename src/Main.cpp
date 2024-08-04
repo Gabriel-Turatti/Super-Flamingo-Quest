@@ -912,7 +912,7 @@ int main(void) {
 
 
         // fun-mode
-        if (tick % 30 == 0 and sizeI < 100) {
+        if (tick % 30 == 0 and sizeI < 200) {
             int RNG_X = (RNGWidth(rng))*(BS-1)*SCALE;
             int RNG_Y = (RNGHeight(rng)-1)*(BS-1)*SCALE;
             bool freespace = true;
