@@ -8,6 +8,7 @@
 #include "Block.hpp"
 #include "Item.hpp"
 #include "Enemy.hpp"
+#include "Effect.hpp"
 
 
 class Flamingo {
@@ -94,6 +95,7 @@ public:
     int WT, HT, SCALE;
     int naturalSpeed = 6;
     int tick = 1;
+    int tickBlockUpdate = 5;
     int score = 0;
 
     bool W, A, S, D;
@@ -125,22 +127,29 @@ public:
         0, 0, // Tier-S Powers: StopTime, VoiceHear 
     };
 
+    std::vector<int> CBs; // List of blocks that can collide with player
+    std::vector<int> CIs; // List of itens that can collide with player
+    std::vector<int> CEs; // List of Enemies that can collide with player
+
     bool isBoost = false;
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
+    Flamingo();
+
     void Health(int qtd, char type);
     
-    void update(std::vector<int> CBs, std::vector<Block> &map, std::vector<int> CIs, std::vector<Item> &itens, std::vector<int> CEs, std::vector<Enemy> enemies, std::vector<Effect> &effects);
+    void update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects);
+    void CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies);
 
     int blockColision(Rectangle HBox, Block &temp, bool vert);
 
-    void keyPress(std::vector<int> CBs, std::vector<Block> &map, std::vector<Effect> &effects);
+    void keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects);
     void gravity();
-    void Physics(std::vector<int> CBs, std::vector<Block> &map);
-    void ItemColision (std::vector<int> CIs, std::vector<Item> &itens);
+    void Physics(std::vector<Block> &Blocks);
+    void ItemColision (std::vector<Item> &itens);
 
-    void EnemyColision(std::vector<int> CEs, std::vector<Enemy> enemies);
+    void EnemyColision(std::vector<Enemy> enemies);
     void TakeHit(Enemy enemy);
 
     void collect(Item item);
@@ -150,7 +159,7 @@ public:
     void updateHitbox();
     Vector2 colision(Rectangle hitbox, Rectangle B);
 
-    bool CheckMirror(std::vector<int> CBs, std::vector<Block> &map);
+    bool CheckMirror(std::vector<Block> &Blocks);
 };
 
 #endif

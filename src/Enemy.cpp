@@ -1,7 +1,7 @@
 #include "../header/Enemy.hpp"
 
 
-Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> map, int ticker, Block grounder = Block()) {
+Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> Blocks, int ticker, Block grounder) {
     rect.x = x;
     rect.y = y;
     name = namer;
@@ -20,9 +20,9 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         patrol2 = rect.x +20*SCALE;
         vx = 1*SCALE;
         vy = 0;
-        int sizeB = map.size();
+        int sizeB = Blocks.size();
         for (int i = 0; i < sizeB; i++) {
-            Block bloquinho = map[i];
+            Block bloquinho = Blocks[i];
             if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
                 if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
                     border2 = bloquinho;
@@ -77,9 +77,9 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         rectImage.width = 9;
         rectImage.height = 9;
         rect.y += 2*SCALE;
-        int sizeB = map.size();
+        int sizeB = Blocks.size();
         for (int i = 0; i < sizeB; i++) {
-            Block bloquinho = map[i];
+            Block bloquinho = Blocks[i];
             if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
                 if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
                     border2 = bloquinho;
@@ -96,7 +96,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         ground = grounder;
         int j = 0;
         for (; j < sizeB; j++) { // gambiarra
-            Block temp = map[j];
+            Block temp = Blocks[j];
             if (ground.rect.x == temp.rect.x and ground.rect.y == temp.rect.y) {
                 break;
             }
@@ -107,7 +107,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         int k = j;
         while (true) {
             k--;
-            Block newLeftGround = map[k];
+            Block newLeftGround = Blocks[k];
             if (newLeftGround.rect.y == leftGround.rect.y and newLeftGround.rect.x+newLeftGround.rect.width >= leftGround.rect.x) {
                 leftGround = newLeftGround;
             } else {
@@ -122,7 +122,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
         k = j;
         while (true) {
             k++;
-            Block newRightGround = map[k];
+            Block newRightGround = Blocks[k];
             if (newRightGround.rect.y == rightGround.rect.y and newRightGround.rect.x <= rightGround.rect.x+rightGround.rect.width) {
                 rightGround = newRightGround;
             } else {
@@ -151,16 +151,16 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
     cy = rect.y + rect.height/2;
 }
 
-void Enemy::update(std::vector<Block> map, Flamingo &player, std::vector<Effect> &effects) {
+void Enemy::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects) {
     switch(id) {
         case (1):
             bee();
             break;
         case(2):
-            snail(map);
+            snail(Blocks);
             break;
         case(3):
-            butterfly(map, player);
+            butterfly(Blocks, player);
             break;
         case(4):
             crab(player);
@@ -192,8 +192,8 @@ void Enemy::bee() {
     }
 }
 
-void Enemy::snail(std::vector<Block> map) {
-    getCloseBlocks(map);
+void Enemy::snail(std::vector<Block> Blocks) {
+    getCloseBlocks(Blocks);
     cx = rect.x+rect.width/2;
     cy = rect.y+rect.height/2;
     if (behavior == 0) {
@@ -224,7 +224,7 @@ void Enemy::snail(std::vector<Block> map) {
 
     int sizeB = closeBlocks.size();
     for (int i = 0; i < sizeB; i++) {
-        Block temp = map[closeBlocks[i]];
+        Block temp = Blocks[closeBlocks[i]];
         if (temp.name == "spike" or temp.background or temp.secret) {
             continue;
         }
@@ -279,8 +279,8 @@ void Enemy::snail(std::vector<Block> map) {
 
 }
 
-void Enemy::butterfly(std::vector<Block> map, Flamingo &player) {
-    getCloseBlocks(map);
+void Enemy::butterfly(std::vector<Block> Blocks, Flamingo &player) {
+    getCloseBlocks(Blocks);
     if (behavior == 0) {
         angle += 3;
         if (angle >= 360) {
@@ -294,7 +294,7 @@ void Enemy::butterfly(std::vector<Block> map, Flamingo &player) {
 
         int sizeB = closeBlocks.size();
         for (int i = 0; i < sizeB; i++) {
-            if (GenericColision(map[closeBlocks[i]].rect, rect)) {
+            if (GenericColision(Blocks[closeBlocks[i]].rect, rect)) {
                 orbit.x -= 1*SCALE*std::cos(radians);
                 orbit.y -= 1*SCALE*std::sin(radians);
             }
@@ -325,7 +325,7 @@ void Enemy::butterfly(std::vector<Block> map, Flamingo &player) {
         rect.x += vx;
         cx += vx;
         for (int i = 0; i < sizeB; i++) {
-            if (GenericColision(map[closeBlocks[i]].rect, rect)) {
+            if (GenericColision(Blocks[closeBlocks[i]].rect, rect)) {
                 rect.x -= vx;
                 cx -= vx;
                 break;
@@ -334,7 +334,7 @@ void Enemy::butterfly(std::vector<Block> map, Flamingo &player) {
         rect.y += vy;
         cy += vy;
         for (int i = 0; i < sizeB; i++) {
-            if (GenericColision(map[closeBlocks[i]].rect, rect)) {
+            if (GenericColision(Blocks[closeBlocks[i]].rect, rect)) {
                 rect.y -= vy;
                 cy -= vy;
                 break;
@@ -412,18 +412,18 @@ void Enemy::meldrop(Flamingo &player, std::vector<Effect> &effects) {
     }
 }
 
-void Enemy::getCloseBlocks(std::vector<Block> map) {
+void Enemy::getCloseBlocks(std::vector<Block> Blocks) {
     if (tick % 5 == 0) {
         closeBlocks.clear();
-        int sizeB = map.size();
+        int sizeB = Blocks.size();
         for (int i = 0; i < sizeB; i++) {
-            if (map[i].background) {
+            if (Blocks[i].background) {
                 continue;
             }
-            int dx = abs(map[i].cx - cx);
-            if (dx < map[i].rect.width*2) {
-                int dy = abs(map[i].cy - cy);
-                if (dy < map[i].rect.height*2) {
+            int dx = abs(Blocks[i].cx - cx);
+            if (dx < Blocks[i].rect.width*2) {
+                int dy = abs(Blocks[i].cy - cy);
+                if (dy < Blocks[i].rect.height*2) {
                     closeBlocks.push_back(i);
                 }
             }

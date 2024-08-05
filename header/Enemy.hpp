@@ -8,9 +8,9 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include "predefinitions.hpp"
 
-class Flamingo;
-class Effect;
+
 
 class Enemy {
 public:
@@ -52,21 +52,21 @@ public:
     // all
     int behavior;
 
-    Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> map, int ticker, Block grounder);
+    Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> Blocks, int ticker, Block grounder = Block());
 
-    void update(std::vector<Block> map, Flamingo &player, std::vector<Effect> &effects);
+    void update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects);
 
     void bee();
 
-    void snail(std::vector<Block> map);
+    void snail(std::vector<Block> Blocks);
 
-    void butterfly(std::vector<Block> map, Flamingo &player);
+    void butterfly(std::vector<Block> Blocks, Flamingo &player);
 
     void crab(Flamingo &player);
     
     void meldrop(Flamingo &player, std::vector<Effect> &effects);
 
-    void getCloseBlocks(std::vector<Block> map);
+    void getCloseBlocks(std::vector<Block> Blocks);
 };
 
 // class Bee : Enemy {

@@ -1,6 +1,6 @@
 #include "../header/Block.hpp"
 
-Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator = 0) {
+Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator) {
     rect.x = x;
     rect.y = y;
     SCALE = SCALER;
