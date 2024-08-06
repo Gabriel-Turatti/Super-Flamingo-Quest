@@ -12,45 +12,710 @@ void Play::loadFlamingo() {
     player = Flamingo(400, 400, FW, FH, WT, HT, SCALE);
 }
 
+void Play::search_universe(std::vector<std::string> &Universe) {
+    std::string name = "levels"; 
+    DIR* dirp = opendir(name.c_str());
+    struct dirent * dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        Universe.push_back(dp->d_name);
+    }
+    Universe.erase(Universe.begin());
+    Universe.erase(Universe.begin());
+    closedir(dirp);
+}
+
 void Play::Hub() {
-    Map Level = loader.LoadFile("teste.txt");
+    SetTargetFPS(30);
+    theme = LoadMusicStream("songs/MainTheme.wav");
+    PlayMusicStream(theme);
+
+    Vector2 mousePosition;
+    Rectangle mouseRect = {0, 0, 2, 2};
+    int SCALER = 3;
+
+    float midX = (float)GetScreenWidth()/2;
+    float midY = (float)GetScreenHeight()/2 - 200;
+    float sizeOptions = 28*SCALER;
+
+    Rectangle editorRect = {midX - 200, midY, sizeOptions, sizeOptions};
+    Rectangle iconRect = {midX + 200, midY, sizeOptions, sizeOptions};
+
+    while (!WindowShouldClose()) {
+        UpdateMusicStream(theme);
+        mousePosition = GetMousePosition();
+        mouseRect.x = mousePosition.x;
+        mouseRect.y = mousePosition.y;
+        int option = 0;
+
+        if (GenericColision(mouseRect, editorRect)) {
+            option = 1;
+        } else if (GenericColision(mouseRect, iconRect)) {
+            option = 2;
+        }
+
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (option == 1) {
+                HubMapEditor();
+            } else if (option == 2) {
+                HubLevelSelect();
+            }
+        }
+        
+        BeginDrawing();
+        ClearBackground(BLUE);
+
+
+        if (option == 1) {
+            DrawTextureEx(iconEditor, {editorRect.x, editorRect.y}, 0, SCALER, YELLOW);
+        } else {
+            DrawTextureEx(iconEditor, {editorRect.x, editorRect.y}, 0, SCALER, WHITE);
+        }
+        DrawText("Map Editor", midX-210, midY+90, 20, BLACK);
+
+
+        if (option == 2) {
+            DrawTextureEx(iconGame, {iconRect.x, iconRect.y}, 0, SCALER, YELLOW);
+        } else {
+            DrawTextureEx(iconGame, {iconRect.x, iconRect.y}, 0, SCALER, WHITE);
+        }
+        DrawText("Main Game", midX+190, midY+90, 20, BLACK);
+
+        EndDrawing();
+    }
+
+    UnloadMusicStream(theme);
+}
+
+
+
+void Play::HubMapEditor() {
+
+    Vector2 mousePosition;
+    Rectangle mouseRect = {0, 0, 2, 2};
+    int SCALER = 3;
+
+    std::vector<std::string> Universe;
+    search_universe(Universe);
+
+    float positionX = 60;
+    float positionY = 60;
+
+    while (!WindowShouldClose()) {
+        UpdateMusicStream(theme);
+        mousePosition = GetMousePosition();
+        mouseRect.x = mousePosition.x;
+        mouseRect.y = mousePosition.y;
+
+
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            positionY = 60;
+            for (std::string level : Universe) {
+                DrawRectangle(positionX, positionY, 200, 25, BLACK);
+                Rectangle levelRect = {positionX, positionY, 200, 25};
+                if (GenericColision(mouseRect, levelRect)) {
+                    EditLevel(level);
+                }
+                positionY += 30;
+            }
+        }
+
+
+
+
+        BeginDrawing();
+        ClearBackground(BLUE);
+        positionY = 60;
+
+        for (std::string level : Universe) {
+            DrawRectangle(positionX, positionY, 200, 25, BLACK);
+            Rectangle levelRect = {positionX, positionY, 200, 25};
+            if (GenericColision(mouseRect, levelRect)) {
+                DrawRectangle(positionX+2, positionY+2, 196, 21, YELLOW);
+            } else {
+                DrawRectangle(positionX+2, positionY+2, 196, 21, GRAY);
+            }
+            DrawText(level.c_str(), positionX+2, positionY+2, 20, BLACK);
+            positionY += 30;
+        }
+
+        
+
+        EndDrawing();
+    }
+}
+
+void Play::EditLevel(std::string name) {
+    Map LevelMap = loader.LoadFile(name);
+    Blocks = LevelMap.Blocks;
+    itens = LevelMap.itens;
+    enemies = LevelMap.enemies;
+    player.rect.x = LevelMap.playerX;
+    player.rect.y = LevelMap.playerY;
+
+
+    float cx = WT/2;
+    float cy = HT/2;
+    bool W, A, S, D, E;
+    Vector2 relativePos;
+    Texture2D grid = LoadTexture("images/grid.png");
+    Rectangle mouseRect = {0, 0, 2, 2};
+
+
+    int Menu = 0;
+    std::vector<Block> BlockOptions;
+    BlockOptions.push_back(Block(0, 0, BS, BS, "dirt", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "grass", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "brick", SCALE));
+    std::vector<Item> ItemOptions;
+    ItemOptions.push_back(Item(0, 0, "coin-copper", SCALE, 'C'));
+    ItemOptions.push_back(Item(0, 0, "coin-silver", SCALE, 'C'));
+    ItemOptions.push_back(Item(0, 0, "coin-gold", SCALE, 'C'));
+    ItemOptions.push_back(Item(0, 0, "coin-death", SCALE, 'C'));
+    ItemOptions.push_back(Item(0, 0, "food-banana", SCALE, 'F'));
+    ItemOptions.push_back(Item(0, 0, "food-pear", SCALE, 'F'));
+    ItemOptions.push_back(Item(0, 0, "food-blueberry", SCALE, 'F'));
+    ItemOptions.push_back(Item(0, 0, "food-pepper", SCALE, 'F'));
+    ItemOptions.push_back(Item(0, 0, "food-orange", SCALE, 'F'));
+    ItemOptions.push_back(Item(0, 0, "Hshard-hope", SCALE, 'H'));
+    ItemOptions.push_back(Item(0, 0, "Hshard-resilience", SCALE, 'H'));
+    ItemOptions.push_back(Item(0, 0, "Hshard-power", SCALE, 'H'));
+    ItemOptions.push_back(Item(0, 0, "Hshard-courage", SCALE, 'H'));
+    ItemOptions.push_back(Item(0, 0, "Hshard-wisdom", SCALE, 'H'));
+    ItemOptions.push_back(Item(0, 0, "courage-potion", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "party-potion", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "Pshard-wind", SCALE, 'P'));
+    ItemOptions.push_back(Item(0, 0, "Pshard-party", SCALE, 'P'));
+    ItemOptions.push_back(Item(0, 0, "Pshard-fun", SCALE, 'P'));
+    ItemOptions.push_back(Item(0, 0, "Pshard-hard", SCALE, 'P'));
+    ItemOptions.push_back(Item(0, 0, "Pshard-eloise", SCALE, 'P'));
+    ItemOptions.push_back(Item(0, 0, "key-hope", SCALE, 'K'));
+    ItemOptions.push_back(Item(0, 0, "power-dash", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "power-transmutation", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "power-boost", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "power-spear", SCALE, 'S'));
+
+
+    float Px = WT*2/3 + 30;
+    float Py = 50;
+    float MaxHeight = 0;
+    int bc = 0;
+    for (Block temp : BlockOptions) {
+        temp.rect.x = Px;
+        temp.rect.y = Py;
+        Px += temp.rect.width + 10;
+        if (temp.rect.height > MaxHeight) {
+            MaxHeight = temp.rect.height;
+        }
+        if (Px+temp.rect.width > WT) {
+            Px = WT*2/3 + 30;
+            Py += MaxHeight + 10;
+        }
+        BlockOptions[bc] = temp;
+        bc += 1;
+    }
+
+
+    Px = WT*2/3 + 30;
+    Py = 50;
+    MaxHeight = 0;
+    bc = 0;
+    for (Item temp : ItemOptions) {
+        temp.rect.x = Px;
+        temp.rect.y = Py;
+        Px += temp.rect.width + 10;
+        if (temp.rect.height > MaxHeight) {
+            MaxHeight = temp.rect.height;
+        }
+        if (Px+temp.rect.width > WT) {
+            Px = WT*2/3 + 30;
+            Py += MaxHeight + 10;
+        }
+        ItemOptions[bc] = temp;
+        bc += 1;
+    }
+
+
+    Block mouseBlock;
+    Item mouseItem;
+    Enemy mouseEnemy;
+    bool background = false;
+
+
+    while (!WindowShouldClose()) {
+        UpdateMusicStream(theme);
+        sizeB = Blocks.size();
+        sizeE = enemies.size();
+        sizeI = itens.size();
+
+
+        Vector2 posM =  GetMousePosition();
+        mouseRect.x = posM.x;
+        mouseRect.y = posM.y;
+        mouseBlock.rect.x = posM.x;
+        mouseBlock.rect.y = posM.y;
+        mouseItem.rect.x = posM.x;
+        mouseItem.rect.y = posM.y;
+
+        W = IsKeyDown(KEY_W);
+        A = IsKeyDown(KEY_A);
+        S = IsKeyDown(KEY_S);
+        D = IsKeyDown(KEY_D);
+        E = IsKeyPressed(KEY_E);
+
+        if (W) {
+            cy -= BS-SCALE;
+        }
+        if (A) {
+            cx -= BS-SCALE;
+        }
+        if (S) {
+            cy += BS-SCALE;
+        }
+        if (D) {
+            cx += BS-SCALE;
+        }
+        if (E) {
+            background = !background;
+        }
+
+        // one = Blocks/ two = Itens/ Three = Enemies
+        if (IsKeyPressed(KEY_ONE)) {
+            if (Menu == 1) {
+                Menu = 0;
+            } else {
+                Menu = 1;
+            }
+        }
+        if (IsKeyPressed(KEY_TWO)) {
+            if (Menu == 2) {
+                Menu = 0;
+            } else {
+                Menu = 2;
+            }
+        }
+        if (IsKeyPressed(KEY_THREE)) {
+            if (Menu == 3) {
+                Menu = 0;
+            } else {
+                Menu = 3;
+            }
+        }
+        if (IsKeyPressed(KEY_ZERO)) {
+            Menu = 0;
+        }
+
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (mouseRect.x > WT/3) {
+                if (Menu == 1) {
+                    for (Block blockOption : BlockOptions) {
+                        if (GenericColision(mouseRect, blockOption.rect)) {
+                            mouseBlock = Block(mouseRect.x, mouseRect.y, blockOption.rect.width, blockOption.rect.height, blockOption.name, SCALE, 0, background);
+                        }
+                    }
+                } else if (Menu == 2) {
+                    for (Item itemOption : ItemOptions) {
+                        if (GenericColision(mouseRect, itemOption.rect)) {
+                            mouseItem = Item(mouseRect.x, mouseRect.y, itemOption.name, SCALE, itemOption.category);
+                        }
+                    }
+                }
+            }
+        } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+            Rectangle mouseRectTemp = mouseRect;
+            mouseRectTemp.x = cx + mouseRect.x - WT/2;
+            mouseRectTemp.y = cy + mouseRect.y - HT/2;
+            if (Menu == 1) {
+                if (mouseBlock.SCALE == 0) {
+                    for (int i = 0; i < sizeB; i++) {
+                        if (GenericColision(Blocks[i].rect, mouseRectTemp)) {
+                            auto it = std::next(Blocks.begin(), i);
+                            Blocks.erase(it);
+                            sizeB -= 1;
+                            break;
+                        }
+                    }
+                } else {
+                    mouseBlock.SCALE = 0;
+                }
+            } else if (Menu == 2) {
+                if (mouseItem.SCALE == 0) {
+                    for (int i = 0; i < sizeI; i++) {
+                        if (GenericColision(itens[i].rect, mouseRectTemp)) {
+                            auto it = std::next(itens.begin(), i);
+                            itens.erase(it);
+                            sizeI -= 1;
+                            break;
+                        }
+                    }
+                } else {
+                    mouseItem.SCALE = 0;
+                }
+            }
+        }
+
+
+
+        Block placeBlock;
+        Item placeItem;
+        bool placeable = false;
+
+        // Drawing MAP
+        BeginDrawing();
+        ClearBackground(BLUE);
+
+
+        Vector2 posGrid = {0, 0};
+        for (int i = 0; i < BHT+3; i++) {
+            for (int j = 0; j < BWT+3; j++) {
+                DrawTextureEx(grid, posGrid, 0, SCALE, WHITE);
+                if (mouseRect.x <= WT*2/3 and (mouseBlock.SCALE != 0 or mouseItem.SCALE != 0)) {
+                    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                        Rectangle gridrect = {posGrid.x, posGrid.y, BS, BS};
+                        if (GenericColision(gridrect, mouseRect)) {
+                            float Bx = cx -WT/2 +posGrid.x;
+                            float By = cy -HT/2 +posGrid.y;
+                            if (Menu == 1) {
+                                placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, 0, background);
+                            } else if (Menu == 2) {
+                                placeItem = Item(Bx, By, mouseItem.name, SCALE, mouseItem.category);
+                            }
+                            placeable = true;
+                        }
+                    }
+                }
+                posGrid.x += (BS-SCALE);
+            }
+            posGrid.x = 0;
+            posGrid.y += (BS-SCALE);
+        }
+
+
+        // if (IsMouseButtonPressed())
+
+        
+        relativePos.x = WT/2 +player.rect.x -cx;
+        relativePos.y = HT/2 +player.rect.y -cy;
+        DrawTextureEx(player.images[player.imageCount], relativePos, 0, 1, WHITE);
+
+        
+        // Desenhando blocos Background
+        for (int i = 0; i < sizeB; i++) {
+            if (!Blocks[i].background) {
+                continue;
+            }
+            if (Menu == 1) {
+                if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+                    placeBlock.rect.x += 2*SCALE;
+                    placeBlock.rect.y += 2*SCALE;
+                    if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+                        placeBlock.rect.x -= 4*SCALE;
+                        placeBlock.rect.y -= 4*SCALE;
+                        if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+                            placeable = false;
+                        } else {
+                            placeBlock.rect.x += 2*SCALE;
+                            placeBlock.rect.y += 2*SCALE;
+                        }
+                    } else {
+                        placeBlock.rect.x -= 2*SCALE;
+                        placeBlock.rect.y -= 2*SCALE;
+                    }
+                }
+            }
+
+
+            relativePos.x = WT/2 +Blocks[i].rect.x -cx;
+            relativePos.y = HT/2 +Blocks[i].rect.y -cy;
+            if (Blocks[i].name == "gate-hope") {
+                // Rectangle cut, dest;
+                // dest.x = relativePos.x;
+                // dest.y = relativePos.y;
+                // dest.width = 13*SCALE;
+                // dest.height = 25*SCALE;
+
+                // cut.x = 0;
+                // cut.y = 0;
+                // cut.width = 13;
+                // cut.height = 25;
+                // DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, GRAY);
+                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
+            } else {
+                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
+            }
+        }
+
+        // Desenhando inimigos
+        for (int i = 0; i < sizeE; i++) {
+            relativePos.x = WT/2 +enemies[i].rect.x -cx;
+            relativePos.y = HT/2 +enemies[i].rect.y -cy;
+            // Rectangle source, dest;
+            // source.x = 0 + enemies[i].imageCount*(enemies[i].rectImage.width+1);
+            // source.y = 0;
+            // source.width = enemies[i].rectImage.width;
+            // source.height = enemies[i].rectImage.height;
+
+            // dest.x = relativePos.x;
+            // dest.y = relativePos.y;
+            // dest.width = enemies[i].rect.width;
+            // dest.height = enemies[i].rect.height;
+
+            DrawTextureEx(enemies[i].images[0], relativePos, 0, 1, WHITE);
+            // DrawTexturePro(enemies[i].images[0], source, enemies[i].rect, {0, 0}, 0, WHITE);
+        }
+
+        // Desenhando blocos Ground
+        for (int i = 0; i < sizeB; i++) {
+            if (Blocks[i].background) {
+                continue;
+            }
+            if (Menu == 1) {
+                if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+                    placeBlock.rect.x += 2*SCALE;
+                    placeBlock.rect.y += 2*SCALE;
+                    if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+                        placeBlock.rect.x -= 4*SCALE;
+                        placeBlock.rect.y -= 4*SCALE;
+                        if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+                            placeable = false;
+                        } else {
+                            placeBlock.rect.x += 2*SCALE;
+                            placeBlock.rect.y += 2*SCALE;
+                        }
+                    } else {
+                        placeBlock.rect.x -= 2*SCALE;
+                        placeBlock.rect.y -= 2*SCALE;
+                    }
+                }
+            } else if (Menu == 2) {
+                if (GenericColision(Blocks[i].rect, placeItem.rect)) {
+                    placeItem.rect.x += 2*SCALE;
+                    placeItem.rect.y += 2*SCALE;
+                    if (GenericColision(Blocks[i].rect, placeItem.rect)) {
+                        placeItem.rect.x -= 4*SCALE;
+                        placeItem.rect.y -= 4*SCALE;
+                        if (GenericColision(Blocks[i].rect, placeItem.rect)) {
+                            placeable = false;
+                        } else {
+                            placeItem.rect.x += 2*SCALE;
+                            placeItem.rect.y += 2*SCALE;
+                        }
+                    } else {
+                        placeItem.rect.x -= 2*SCALE;
+                        placeItem.rect.y -= 2*SCALE;
+                    }
+                }
+            }
+            relativePos.x = WT/2 +Blocks[i].rect.x -cx;
+            relativePos.y = HT/2 +Blocks[i].rect.y -cy;
+            if (Blocks[i].name == "gate-hope") {
+                // Rectangle cut, dest;
+                // dest.x = relativePos.x;
+                // dest.y = relativePos.y;
+                // dest.width = 13*SCALE;
+                // dest.height = 25*SCALE;
+
+                // cut.x = 0;
+                // cut.y = 24;
+                // cut.width = 13;
+                // cut.height = 25;
+                // DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, WHITE);
+                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
+            } else if (Blocks[i].name == "spike") {
+                if (Blocks[i].direction == 1) {
+                    relativePos.y += Blocks[i].rect.height;
+                } else if (Blocks[i].direction == 2) {
+                    relativePos.x += Blocks[i].rect.width;
+                    relativePos.y += Blocks[i].rect.height;
+                } else if (Blocks[i].direction == 3) {
+                    relativePos.x += Blocks[i].rect.width;
+                }
+
+                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
+            } else {
+                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
+            }
+        }
+
+        // Desenhando itens
+        for (int i = 0; i < sizeI; i++) {
+            if (Menu == 2) {
+                if (GenericColision(itens[i].rect, placeItem.rect)) {
+                    placeItem.rect.x += 2*SCALE;
+                    placeItem.rect.y += 2*SCALE;
+                    if (GenericColision(itens[i].rect, placeItem.rect)) {
+                        placeItem.rect.x -= 4*SCALE;
+                        placeItem.rect.y -= 4*SCALE;
+                        if (GenericColision(itens[i].rect, placeItem.rect)) {
+                            placeable = false;
+                        } else {
+                            placeItem.rect.x += 2*SCALE;
+                            placeItem.rect.y += 2*SCALE;
+                        }
+                    } else {
+                        placeItem.rect.x -= 2*SCALE;
+                        placeItem.rect.y -= 2*SCALE;
+                    }
+                }
+            }
+
+
+            relativePos.x = WT/2 +itens[i].rect.x -cx;
+            relativePos.y = HT/2 +itens[i].rect.y -cy;
+            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
+        }
+
+
+
+        if (placeable) {
+            if (Menu == 1) {
+                Blocks.push_back(placeBlock);
+            } else if (Menu == 2) {
+                itens.push_back(placeItem);
+            }
+        }
+
+
+
+        // Drawing HUD
+
+        if (Menu != 0) {
+            DrawRectangle(WT*2/3, 0, WT/3, HT, GRAY);
+        }
+
+        if (Menu == 1) {
+            for (Block blockOption : BlockOptions) {
+                DrawTextureEx(blockOption.image, {blockOption.rect.x, blockOption.rect.y}, 0, SCALE, WHITE);
+            }
+        } else if (Menu == 2) {
+            for (Item itemOption : ItemOptions) {
+                DrawTextureEx(itemOption.image, {itemOption.rect.x, itemOption.rect.y}, 0, SCALE, WHITE);
+            }
+        }
+
+        if (mouseBlock.SCALE != 0 or mouseItem.SCALE != 0) {
+            if (Menu == 1) {
+                if (background) {
+                    DrawTextureEx(mouseBlock.image, {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, GRAY);
+                } else {
+                    DrawTextureEx(mouseBlock.image, {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, WHITE);
+                }
+            } else if (Menu == 2) {
+                DrawTextureEx(mouseItem.image, {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
+            }
+        }
+
+
+
+
+
+        EndDrawing();
+    }
+
+}
+
+
+void Play::HubLevelSelect() {
+    Vector2 mousePosition;
+    Rectangle mouseRect = {0, 0, 2, 2};
+    int SCALER = 3;
+
+    std::vector<std::string> Universe;
+    search_universe(Universe);
+
+    float positionX = 60;
+    float positionY = 60;
+
+    while (!WindowShouldClose()) {
+        UpdateMusicStream(theme);
+        mousePosition = GetMousePosition();
+        mouseRect.x = mousePosition.x;
+        mouseRect.y = mousePosition.y;
+
+
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            positionY = 60;
+            for (std::string level : Universe) {
+                DrawRectangle(positionX, positionY, 200, 25, BLACK);
+                Rectangle levelRect = {positionX, positionY, 200, 25};
+                if (GenericColision(mouseRect, levelRect)) {
+                    PlayLevel(level);
+                }
+                positionY += 30;
+            }
+        }
+
+
+
+
+        BeginDrawing();
+        ClearBackground(BLUE);
+        positionY = 60;
+
+        for (std::string level : Universe) {
+            DrawRectangle(positionX, positionY, 200, 25, BLACK);
+            Rectangle levelRect = {positionX, positionY, 200, 25};
+            if (GenericColision(mouseRect, levelRect)) {
+                DrawRectangle(positionX+2, positionY+2, 196, 21, YELLOW);
+            } else {
+                DrawRectangle(positionX+2, positionY+2, 196, 21, GRAY);
+            }
+            DrawText(level.c_str(), positionX+4, positionY+2, 20, BLACK);
+            positionY += 30;
+        }
+
+        
+
+        EndDrawing();
+    }
+}
+
+void Play::PlayLevel(std::string levelname) {
+    Map Level = loader.LoadFile(levelname);
     if (Level.playerX == -1) {
         return;
     }
     Blocks = Level.Blocks;
     itens = Level.itens;
     enemies = Level.enemies;
+    player.rect.x = Level.playerX;
+    player.rect.y = Level.playerY;
     RNGWidth = std::uniform_int_distribution<std::mt19937::result_type>(0, Level.widthLevel);
     RNGHeight = std::uniform_int_distribution<std::mt19937::result_type> (0, Level.heightLevel);
+
+    Music LevelTheme;
     int song = RNG100(rng);
     if (song <= 0) {
-        theme = LoadMusicStream("songs/BrighterWays.wav");
+        LevelTheme = LoadMusicStream("songs/BrighterWays.wav");
     }else if (song <= 2) {
-        theme = LoadMusicStream("songs/Couragetheme.wav");
+        LevelTheme = LoadMusicStream("songs/Couragetheme.wav");
     } else if (song <= 7) {
-        theme = LoadMusicStream("songs/Powertheme.wav");
+        LevelTheme = LoadMusicStream("songs/Powertheme.wav");
     } else if (song <= 15) {
-        theme = LoadMusicStream("songs/Resiliencetheme.wav");
+        LevelTheme = LoadMusicStream("songs/Resiliencetheme.wav");
     } else if (song <= 30) {
-        theme = LoadMusicStream("songs/Hopetheme.wav");
+        LevelTheme = LoadMusicStream("songs/Hopetheme.wav");
     } else if (song <= 61) {
-        theme = LoadMusicStream("songs/GrassyWalks.wav");
-    } else if (song <= 82) {
-        theme = LoadMusicStream("songs/HumidInsomnia.wav");
+        LevelTheme = LoadMusicStream("songs/GrassyWalks.wav");
     } else {
-        theme = LoadMusicStream("songs/Maintheme.wav");
+        LevelTheme = LoadMusicStream("songs/HumidInsomnia.wav");
     }
-    mainLoop();
+    mainLoop(LevelTheme);
+    UnloadMusicStream(LevelTheme);
 }
 
-void Play::mainLoop() {
+void Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
 
-    PlayMusicStream(theme);
+    PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
     
     while (!WindowShouldClose()) {
-        UpdateMusicStream(theme);
+        UpdateMusicStream(LevelTheme);
         sizeB = Blocks.size();
         sizeE = enemies.size();
         sizeD = dusts.size();
@@ -643,7 +1308,6 @@ void Play::mainLoop() {
         tick++;
     }
 
-    UnloadMusicStream(theme);
 }
 
 void Play::DesenharHeart() {

@@ -7,6 +7,9 @@
 #include <fstream>
 #include <random>
 
+#include <sys/types.h>
+#include <dirent.h>
+
 #include "Block.hpp"
 #include "Effect.hpp"
 #include "Item.hpp"
@@ -23,9 +26,11 @@ class Play {
 public:
     const int SCALE = 3;
     const bool DEBUG = false;
-    const int BS = 13*SCALE;
-    const float WT = BS*34;
-    const float HT = BS*25;
+    const float BS = 13*SCALE;
+    const int BWT = 34;
+    const int BHT = 25;
+    const float WT = BS*BWT;
+    const float HT = BS*BHT;
     const float FW = 18;
     const float FH = 23;
     int tickBlockUpdate = 5;
@@ -34,6 +39,10 @@ public:
     Flamingo player;
     int widthLevel;
     int heightLevel;
+
+    Texture2D iconEditor = LoadTexture("images/mapEditor.png");
+    Texture2D iconGame = LoadTexture("images/mainGame.png");
+
 
     struct Dust {
         Vector2 pos;
@@ -70,7 +79,13 @@ public:
     Play();
     void loadFlamingo();
     void Hub();
-    void mainLoop();
+    void HubLevelSelect();
+    void HubMapEditor();
+    void search_universe(std::vector<std::string> &Universe);
+
+    void PlayLevel(std::string level);
+    void mainLoop(Music LevelTheme);
+    void EditLevel(std::string level);
     void DesenharHeart();
     void DesenharPearl();
 };

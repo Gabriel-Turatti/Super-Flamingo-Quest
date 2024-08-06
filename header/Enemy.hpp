@@ -54,6 +54,8 @@ public:
 
     Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> Blocks, int ticker, Block grounder = Block());
 
+    Enemy();
+
     void update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects);
 
     void bee();

@@ -2,7 +2,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 
 ## Correção de Bugs
     ( ) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
-    ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (butterfly)
+    ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (Happened with: butterfly and bee; Did not happen with: Meldrop)
     ( ) [B] Why itens recently spawned aren't collectable
     ( ) [B] Spikes teleport from left to right
     ( ) [B] Not able to walk backwards, when turning around not possible
@@ -51,16 +51,17 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [+] Time limit
     ( ) [+] Hope and Wisdom Regeneration
     ( ) [+] Level's finish line.
-    ( ) [+] Grid for placing things.
-    ( ) [+] Block selector
-    ( ) [+] Item selector
+    ( ) [+] Finish line's direction.
+    (X) [+] Grid for placing things.
+    (X) [+] Block selector
+    (X) [+] Item selector
     ( ) [+] Enemy selector
     ( ) [+] Complexity calculation
     ( ) [+] Flamingo Savefile
-    ( ) [+] Map Loading Class
-    ( ) [+] Game Class
+    (X) [+] Map Loading Class
+    (X) [+] Game Class
     ( ) [+] Map testing
-    ( ) [+] Map Loading
+    (X) [+] Map Loading
     ( ) [+] Map Saving
     ( ) [+] Song Selector
 

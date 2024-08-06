@@ -12,7 +12,7 @@ MapLoader::MapLoader(int SCALER, int BSer, float width, float height) {
 MapLoader::MapLoader() {}
 
 Map MapLoader::LoadFile(std::string name) {
-    std::ifstream level("levels/teste.txt");
+    std::ifstream level("levels/"+name);
     if (!level) {
         level.close();
         Map Error;
@@ -82,12 +82,12 @@ Map MapLoader::LoadFile(std::string name) {
                     if (line[CWL+1] == 'h') {
                         type = "hope";
                     }
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation, false);
                 } else if (line[CWL] == 'P') {
                     if (line[CWL+1] == 'p') {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0, false);
                     } else {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90, false);
                     }
                 } else if (line[CWL] == 'A') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE);
@@ -107,7 +107,7 @@ Map MapLoader::LoadFile(std::string name) {
                             orientation = 2;
                         }
                     }
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation, false);
                 }
                 Blocks.push_back(tile);
             }

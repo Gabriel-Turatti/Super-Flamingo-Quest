@@ -173,4 +173,4 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
     cy = rect.y+rect.height/2;
 }
 
-Item::Item() {}
+Item::Item() {SCALE = 0;}

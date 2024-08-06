@@ -151,6 +151,8 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
     cy = rect.y + rect.height/2;
 }
 
+Enemy::Enemy() {SCALE = 0;}
+
 void Enemy::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects) {
     switch(id) {
         case (1):
