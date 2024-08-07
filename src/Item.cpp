@@ -129,6 +129,30 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rectImage.height = 11;
         rect.x += 3*SCALE;
         rect.y += 1*SCALE;
+    } else if (name == "key-resilience") {
+        image = LoadTexture("images/key-resilience.png");
+        rectImage.width = 7;
+        rectImage.height = 11;
+        rect.x += 3*SCALE;
+        rect.y += 1*SCALE;
+    } else if (name == "key-power") {
+        image = LoadTexture("images/key-power.png");
+        rectImage.width = 7;
+        rectImage.height = 12;
+        rect.x += 3*SCALE;
+        rect.y += 1*SCALE;
+    } else if (name == "key-courage") {
+        image = LoadTexture("images/key-courage.png");
+        rectImage.width = 9;
+        rectImage.height = 11;
+        rect.x += 2*SCALE;
+        rect.y += 1*SCALE;
+    } else if (name == "key-wisdom") {
+        image = LoadTexture("images/key-wisdom.png");
+        rectImage.width = 7;
+        rectImage.height = 11;
+        rect.x += 3*SCALE;
+        rect.y += 1*SCALE;
     } else if (name == "courage-potion") {
         image = LoadTexture("images/courage-potion.png");
         rectImage.width = 9;

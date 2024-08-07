@@ -108,6 +108,10 @@ public:
     bool gameover = false;
 
     int keyHope = 0;
+    int keyResilience = 0;
+    int keyPower = 0;
+    int keyCourage = 0;
+    int keyWisdom = 0;
     std::map<char, int> invincibility = {
         { 'H', 20 },
         { 'R', 20 },
@@ -136,6 +140,8 @@ public:
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
     Flamingo();
+
+    void unload();
 
     void Health(int qtd, char type);
     

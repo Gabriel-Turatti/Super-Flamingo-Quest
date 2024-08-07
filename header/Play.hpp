@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <random>
+#include <string.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -83,6 +84,8 @@ public:
     void HubMapEditor();
     void search_universe(std::vector<std::string> &Universe);
 
+    int complexityCalc(Item temp);
+    int complexityCalc(Enemy temp);
     void PlayLevel(std::string level);
     void mainLoop(Music LevelTheme);
     void EditLevel(std::string level);

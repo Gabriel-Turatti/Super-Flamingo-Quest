@@ -26,6 +26,9 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [+] Animate spear
     ( ) [+] Party spell (???)
     ( ) [+] Makefile pro linux
+    ( ) [+] Gate Rotation
+    ( ) [+] Idle animation beaking feathers
+    ( ) [+] Auto Complete Music name editor
 
 ## Refatoração
     ## Quality of code
@@ -44,26 +47,27 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
 
 
 ( ) 0.8 - Level Editor Update
-    ( ) [+] Add other gates
-    ( ) [R] Break gates into different files.
+    (X) [+] Add other gates
+    (X) [R] Break gates into different files.
     (X) [+] Separate file class for map loading
     (X) [R] Pretty Makefile
+    (X) [+] Song Selector
     ( ) [+] Time limit
     ( ) [+] Hope and Wisdom Regeneration
-    ( ) [+] Level's finish line.
-    ( ) [+] Finish line's direction.
+    (X) [+] Level's name.
+    (X) [+] Level's finish line.
+    (X) [+] Finish line's direction.
     (X) [+] Grid for placing things.
     (X) [+] Block selector
     (X) [+] Item selector
-    ( ) [+] Enemy selector
-    ( ) [+] Complexity calculation
+    (X) [+] Enemy selector
+    (X) [+] Complexity calculation
     ( ) [+] Flamingo Savefile
     (X) [+] Map Loading Class
     (X) [+] Game Class
     ( ) [+] Map testing
     (X) [+] Map Loading
     ( ) [+] Map Saving
-    ( ) [+] Song Selector
 
 
 

@@ -7,143 +7,167 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
     name = namer;
     SCALE = imagescale;
     tick = ticker;
-    if (name == "bee") {
-        images.push_back(LoadTexture("images/enemy-bee.png"));
-        imageSize = 2;
-        rectImage.width = 12;
-        rectImage.height = 13;
-        dmgs[0] = 1;
-        rect.y += 1*SCALE;
-
-        id = 1;
-        patrol1 = rect.x -20*SCALE;
-        patrol2 = rect.x +20*SCALE;
-        vx = 1*SCALE;
-        vy = 0;
-        int sizeB = Blocks.size();
-        for (int i = 0; i < sizeB; i++) {
-            Block bloquinho = Blocks[i];
-            if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
-                if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
-                    border2 = bloquinho;
-                }
-                if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
-                    border1 = bloquinho;
-                }
-            }
+    if (tick == 0) {
+        if (name == "bee") {
+            images.push_back(LoadTexture("images/enemy-bee.png"));
+            rectImage.width = 12;
+            rectImage.height = 13;
+            rect.y += 1*SCALE;
+        } else if (name == "snail") {
+            images.push_back(LoadTexture("images/enemy-snail.png"));
+            rectImage.width = 12;
+            rectImage.height = 13;
+        } else if (name == "butterfly") {
+            images.push_back(LoadTexture("images/enemy-butterfly.png"));
+            rectImage.width = 11;
+            rectImage.height = 11;
+        } else if (name == "crab") {
+            images.push_back(LoadTexture("images/enemy-crab.png"));
+            rectImage.width = 13;
+            rectImage.height = 13;
+        } else if (name == "meldrop") {
+            images.push_back(LoadTexture("images/enemy-meldrop.png"));
+            rectImage.width = 13;
+            rectImage.height = 13;
         }
-    } else if (name == "snail") {
-        images.push_back(LoadTexture("images/enemy-snail.png"));
-        imageSize = 3;
-        rectImage.width = 12;
-        rectImage.height = 13;
-        dmgs[1] = 2;
+    } else {
+        if (name == "bee") {
+            images.push_back(LoadTexture("images/enemy-bee.png"));
+            imageSize = 2;
+            rectImage.width = 12;
+            rectImage.height = 13;
+            dmgs[0] = 1;
+            rect.y += 1*SCALE;
 
-        id = 2;
-        vx = 1;
-        vy = 0;
-
-
-        ground = grounder;
-        HBFeet = {rect.x, rect.y+(rectImage.height+1)*SCALE, rectImage.width*SCALE, (float) 2*SCALE};
-        vision = {rect.x+(rectImage.width+1)*SCALE, rect.y+(rectImage.height*SCALE/2+1)*SCALE, (float) 2*SCALE, (float) 2*SCALE};
-        behavior = 0; // *90º clock-wise
-        rect.y = ground.rect.y - 1*SCALE - rectImage.height*SCALE;
-    } else if (name == "butterfly") {
-        images.push_back(LoadTexture("images/enemy-butterfly.png"));
-        imageSize = 2;
-        rectImage.width = 11;
-        rectImage.height = 11;
-        dmgs[2] = 1;
-
-        id = 3;
-        vx = 0;
-        vy = 0;
-        angle = 0;
-        behavior = 0;
-        orbit.x = x;
-        orbit.y = y;
-    } else if (name == "crab") {
-        images.push_back(LoadTexture("images/enemy-crab.png"));
-        imageSize = 4;
-        dmgs[3] = 1;
-
-        id = 4;
-        behavior = 0;
-
-        vx = 2;
-        vy = 0;
-
-        rectImage.width = 9;
-        rectImage.height = 9;
-        rect.y += 2*SCALE;
-        int sizeB = Blocks.size();
-        for (int i = 0; i < sizeB; i++) {
-            Block bloquinho = Blocks[i];
-            if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
-                if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
-                    border2 = bloquinho;
-                }
-                if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
-                    border1 = bloquinho;
+            id = 1;
+            patrol1 = rect.x -20*SCALE;
+            patrol2 = rect.x +20*SCALE;
+            vx = 1*SCALE;
+            vy = 0;
+            int sizeB = Blocks.size();
+            for (int i = 0; i < sizeB; i++) {
+                Block bloquinho = Blocks[i];
+                if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
+                    if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
+                        border2 = bloquinho;
+                    }
+                    if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
+                        border1 = bloquinho;
+                    }
                 }
             }
-        }
-        rect.y -= 2*SCALE;
-        rectImage.width = 13;
-        rectImage.height = 13;
+        } else if (name == "snail") {
+            images.push_back(LoadTexture("images/enemy-snail.png"));
+            imageSize = 3;
+            rectImage.width = 12;
+            rectImage.height = 13;
+            dmgs[1] = 2;
 
-        ground = grounder;
-        int j = 0;
-        for (; j < sizeB; j++) { // gambiarra
-            Block temp = Blocks[j];
-            if (ground.rect.x == temp.rect.x and ground.rect.y == temp.rect.y) {
-                break;
+            id = 2;
+            vx = 1;
+            vy = 0;
+
+
+            ground = grounder;
+            HBFeet = {rect.x, rect.y+(rectImage.height+1)*SCALE, rectImage.width*SCALE, (float) 2*SCALE};
+            vision = {rect.x+(rectImage.width+1)*SCALE, rect.y+(rectImage.height*SCALE/2+1)*SCALE, (float) 2*SCALE, (float) 2*SCALE};
+            behavior = 0; // *90º clock-wise
+            rect.y = ground.rect.y - 1*SCALE - rectImage.height*SCALE;
+        } else if (name == "butterfly") {
+            images.push_back(LoadTexture("images/enemy-butterfly.png"));
+            imageSize = 2;
+            rectImage.width = 11;
+            rectImage.height = 11;
+            dmgs[2] = 1;
+
+            id = 3;
+            vx = 0;
+            vy = 0;
+            angle = 0;
+            behavior = 0;
+            orbit.x = x;
+            orbit.y = y;
+        } else if (name == "crab") {
+            images.push_back(LoadTexture("images/enemy-crab.png"));
+            imageSize = 4;
+            dmgs[3] = 1;
+
+            id = 4;
+            behavior = 0;
+
+            vx = 2;
+            vy = 0;
+
+            rectImage.width = 9;
+            rectImage.height = 9;
+            rect.y += 2*SCALE;
+            int sizeB = Blocks.size();
+            for (int i = 0; i < sizeB; i++) {
+                Block bloquinho = Blocks[i];
+                if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
+                    if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
+                        border2 = bloquinho;
+                    }
+                    if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
+                        border1 = bloquinho;
+                    }
+                }
             }
-        }
+            rect.y -= 2*SCALE;
+            rectImage.width = 13;
+            rectImage.height = 13;
 
-        Block leftGround = ground;
-        patrol1 = ground.rect.x;
-        int k = j;
-        while (true) {
-            k--;
-            Block newLeftGround = Blocks[k];
-            if (newLeftGround.rect.y == leftGround.rect.y and newLeftGround.rect.x+newLeftGround.rect.width >= leftGround.rect.x) {
-                leftGround = newLeftGround;
-            } else {
-                break;
+            ground = grounder;
+            int j = 0;
+            for (; j < sizeB; j++) { // gambiarra
+                Block temp = Blocks[j];
+                if (ground.rect.x == temp.rect.x and ground.rect.y == temp.rect.y) {
+                    break;
+                }
             }
-        }
-        patrol1 = leftGround.rect.x;
 
-
-        Block rightGround = ground;
-        patrol2 = ground.rect.x+ground.rectImage.width*SCALE;
-        k = j;
-        while (true) {
-            k++;
-            Block newRightGround = Blocks[k];
-            if (newRightGround.rect.y == rightGround.rect.y and newRightGround.rect.x <= rightGround.rect.x+rightGround.rect.width) {
-                rightGround = newRightGround;
-            } else {
-                break;
+            Block leftGround = ground;
+            patrol1 = ground.rect.x;
+            int k = j;
+            while (true) {
+                k--;
+                Block newLeftGround = Blocks[k];
+                if (newLeftGround.rect.y == leftGround.rect.y and newLeftGround.rect.x+newLeftGround.rect.width >= leftGround.rect.x) {
+                    leftGround = newLeftGround;
+                } else {
+                    break;
+                }
             }
-        }
-        patrol2 = rightGround.rect.x+rightGround.rect.width;
-    } else if (name == "meldrop") {
-        images.push_back(LoadTexture("images/enemy-meldrop.png"));
-        imageSize = 2;
-        rectImage.width = 13;
-        rectImage.height = 13;
-        dmgs[4] = 1;
+            patrol1 = leftGround.rect.x;
 
-        id = 5;
-        vx = 0;
-        vy = 0;
-        angle = 0;
-        behavior = 0;
+
+            Block rightGround = ground;
+            patrol2 = ground.rect.x+ground.rectImage.width*SCALE;
+            k = j;
+            while (true) {
+                k++;
+                Block newRightGround = Blocks[k];
+                if (newRightGround.rect.y == rightGround.rect.y and newRightGround.rect.x <= rightGround.rect.x+rightGround.rect.width) {
+                    rightGround = newRightGround;
+                } else {
+                    break;
+                }
+            }
+            patrol2 = rightGround.rect.x+rightGround.rect.width;
+        } else if (name == "meldrop") {
+            images.push_back(LoadTexture("images/enemy-meldrop.png"));
+            imageSize = 2;
+            rectImage.width = 13;
+            rectImage.height = 13;
+            dmgs[4] = 1;
+
+            id = 5;
+            vx = 0;
+            vy = 0;
+            angle = 0;
+            behavior = 0;
+        }
     }
-    
     
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;

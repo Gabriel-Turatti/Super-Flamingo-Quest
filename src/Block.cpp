@@ -19,7 +19,19 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         image = LoadTexture("images/block_brick.png");
         friction = 1.8;
     } else if (namer == "gate-hope") {
-        image = LoadTexture("images/block_gates.png");
+        image = LoadTexture("images/block_gate_hope_closed.png");
+        friction = 1.5;
+    } else if (namer == "gate-resilience") {
+        image = LoadTexture("images/block_gate_resilience_closed.png");
+        friction = 1.5;
+    } else if (namer == "gate-power") {
+        image = LoadTexture("images/block_gate_power_closed.png");
+        friction = 1.5;
+    } else if (namer == "gate-courage") {
+        image = LoadTexture("images/block_gate_courage_closed.png");
+        friction = 1.5;
+    } else if (namer == "gate-wisdom") {
+        image = LoadTexture("images/block_gate_wisdom_closed.png");
         friction = 1.5;
     } else if (namer == "platform") {
         image = LoadTexture("images/platform.png");
@@ -35,17 +47,24 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         if (rotator == 0) {
             rect.y += 5*SCALE;
         } else if (rotator == 1) {
-            rectImage.width = 8;
-            rectImage.height = 13;
-            rect.x += (13-rectImage.width)*SCALE;
+            rect.x += (rectImage.height)*SCALE;
         } else if (rotator == 2) {
             rect.y += (8-rectImage.height)*SCALE;
         } else if (rotator == 3) {
-            rectImage.width = 8;
-            rectImage.height = 13;
         }
+    } else if (namer == "nextLevel") {
+        image = LoadTexture("images/block_nextLevel.png");
+        friction = 1;
     }
 
+    if (rotator != 0) {
+        float WBucket = rectImage.height;
+        float HBucket = rectImage.width;
+        if (rotator == 1 or rotator == 3) {
+            rectImage.height = HBucket;
+            rectImage.width = WBucket;
+        }
+    }
 
     background = backgrounder;
     rect.width = rectImage.width*SCALE;

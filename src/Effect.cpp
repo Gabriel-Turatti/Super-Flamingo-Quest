@@ -17,7 +17,9 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
     dmg[4] = damager[4];
 
     if (id == 1) {
-        PlaySound(LoadSound("sfx/meldrop-shot.wav"));
+        Sound sfxtemp = LoadSound("sfx/meldrop-shot.wav");
+        PlaySound(sfxtemp);
+        UnloadSound(sfxtemp);
         image = LoadTexture("images/effect-meldrop-shot.png");
         imageSize = 2;
         rectImage.width = 6;

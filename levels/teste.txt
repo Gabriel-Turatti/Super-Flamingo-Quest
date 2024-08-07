@@ -82,16 +82,3 @@ P3
 32-146-"crab"
 7-151-"meldrop"
 endmap
-
-
-
-quando buscar uma posição no mapa
-subtraia 4 da linha e 2 da coluna.
-
-A = altar
-G = grama
-D = dirt
-S = spike
-Pp = plataform
-K(h|r|p|c|w) = gate
-|- = ignore

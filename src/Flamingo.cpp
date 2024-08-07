@@ -34,6 +34,21 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
 
 Flamingo::Flamingo() {}
 
+void Flamingo::unload() {
+    UnloadSound(sfxCoin);
+    UnloadSound(sfxFood);
+    UnloadSound(sfxJump);
+    UnloadSound(sfxHeartPiece);
+    UnloadSound(sfxSecret);
+    UnloadSound(sfxKey);
+    UnloadSound(sfxDoor);
+    UnloadSound(sfxVulnerable);
+    UnloadSound(sfxHurt);
+    UnloadSound(sfxFall);
+    UnloadSound(sfxPearlPiece);
+    UnloadSound(sfxSpecial);
+}
+
 void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
     keyPress(Blocks, effects);
     gravity();
@@ -321,6 +336,9 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
             return 0;
         }
     }
+    if (temp.name == "nextLevel") {
+        return 0;
+    }
     Dspace = colision(HBox, temp.rect);
     if (vert) {
         rect.y += Dspace.y;
@@ -337,6 +355,26 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
         }
         if (temp.name == "gate-hope" and keyHope > 0) {
             keyHope -= 1;
+            temp.background = true;
+            PlaySound(sfxDoor);
+            doReturn = 3;
+        } else if (temp.name == "gate-resilience" and keyResilience > 0) {
+            keyResilience -= 1;
+            temp.background = true;
+            PlaySound(sfxDoor);
+            doReturn = 3;
+        } else if (temp.name == "gate-power" and keyPower > 0) {
+            keyPower -= 1;
+            temp.background = true;
+            PlaySound(sfxDoor);
+            doReturn = 3;
+        } else if (temp.name == "gate-courage" and keyCourage > 0) {
+            keyCourage -= 1;
+            temp.background = true;
+            PlaySound(sfxDoor);
+            doReturn = 3;
+        } else if (temp.name == "gate-wisdom" and keyWisdom > 0) {
+            keyWisdom -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
             doReturn = 3;
@@ -698,6 +736,14 @@ void Flamingo::collect(Item item) {
         }
     } else if (item.name == "key-hope") {
         keyHope += 1;
+    } else if (item.name == "key-resilience") {
+        keyResilience += 1;
+    } else if (item.name == "key-power") {
+        keyPower += 1;
+    } else if (item.name == "key-courage") {
+        keyCourage += 1;
+    } else if (item.name == "key-wisdom") {
+        keyWisdom += 1;
     } else if (item.name == "courage-potion") {
         Health(7, 'C');
     } else if (item.name == "power-dash") {

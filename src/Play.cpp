@@ -4,7 +4,7 @@
 Play::Play() {
     loader = MapLoader(SCALE, BS, WT, HT);
     rng = std::mt19937(dev());
-    RNG100 = std::uniform_int_distribution<std::mt19937::result_type>(0, 100);
+    RNG100 = std::uniform_int_distribution<std::mt19937::result_type>(1, 100);
     RNGe3 = std::uniform_int_distribution<std::mt19937::result_type>(0, 1000);
 }
 
@@ -146,6 +146,74 @@ void Play::HubMapEditor() {
     }
 }
 
+int Play::complexityCalc(Item temp) {
+    if (temp.name == "coin-copper") {
+        return 1;
+    } else if (temp.name == "silver-coin") {
+        return 8;
+    } else if (temp.name == "gold-coin") {
+        return 18;
+    } else if (temp.name == "food-banana") {
+        return 2;
+    } else if (temp.name == "food-pear") {
+        return 3;
+    } else if (temp.name == "food-blueberry") {
+        return 4;
+    } else if (temp.name == "food-pepper") {
+        return 5;
+    } else if (temp.name == "food-orange") {
+        return 6;
+    } else if (temp.name == "potion-courage") {
+        return 10;
+    } else if (temp.name == "potion-party") {
+        return 10;
+    } else if (temp.name == "Hshard-hope") {
+        return 35;
+    } else if (temp.name == "Hshard-resilience") {
+        return 40;
+    } else if (temp.name == "Hshard-power") {
+        return 45;
+    } else if (temp.name == "Hshard-courage") {
+        return 50;
+    } else if (temp.name == "Hshard-wisdom") {
+        return 55;
+    } else if (temp.name == "Pshard-wind") {
+        return 45;
+    } else if (temp.name == "Pshard-party") {
+        return 50;
+    } else if (temp.name == "Pshard-fun") {
+        return 60;
+    } else if (temp.name == "Pshard-hard") {
+        return 70;
+    } else if (temp.name == "Pshard-eloise") {
+        return 80;
+    } else if (temp.name == "power-dash") {
+        return 60;
+    } else if (temp.name == "power-boost") {
+        return 70;
+    } else if (temp.name == "power-spear") {
+        return 80;
+    } else if (temp.name == "power-transmutation") {
+        return 100;
+    }
+    return 0;
+}
+
+int Play::complexityCalc(Enemy temp) {
+    if (temp.name == "bee") {
+        return 12;
+    } else if (temp.name == "snail") {
+        return 21;
+    } else if (temp.name == "butterfly") {
+        return 30;
+    } else if (temp.name == "crab") {
+        return 43;
+    } else if (temp.name == "meldrop") {
+        return 60;
+    }
+    return 0;
+}
+
 void Play::EditLevel(std::string name) {
     Map LevelMap = loader.LoadFile(name);
     Blocks = LevelMap.Blocks;
@@ -157,7 +225,7 @@ void Play::EditLevel(std::string name) {
 
     float cx = WT/2;
     float cy = HT/2;
-    bool W, A, S, D, E;
+    bool W, A, S, D, E, R, Q;
     Vector2 relativePos;
     Texture2D grid = LoadTexture("images/grid.png");
     Rectangle mouseRect = {0, 0, 2, 2};
@@ -169,6 +237,15 @@ void Play::EditLevel(std::string name) {
     BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS, "grass", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS, "brick", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "spike", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "altar", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "gate-hope", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "gate-resilience", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "gate-power", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "gate-courage", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "gate-wisdom", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS, "platform", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "nextLevel", SCALE));
     std::vector<Item> ItemOptions;
     ItemOptions.push_back(Item(0, 0, "coin-copper", SCALE, 'C'));
     ItemOptions.push_back(Item(0, 0, "coin-silver", SCALE, 'C'));
@@ -192,10 +269,20 @@ void Play::EditLevel(std::string name) {
     ItemOptions.push_back(Item(0, 0, "Pshard-hard", SCALE, 'P'));
     ItemOptions.push_back(Item(0, 0, "Pshard-eloise", SCALE, 'P'));
     ItemOptions.push_back(Item(0, 0, "key-hope", SCALE, 'K'));
+    ItemOptions.push_back(Item(0, 0, "key-resilience", SCALE, 'K'));
+    ItemOptions.push_back(Item(0, 0, "key-power", SCALE, 'K'));
+    ItemOptions.push_back(Item(0, 0, "key-courage", SCALE, 'K'));
+    ItemOptions.push_back(Item(0, 0, "key-wisdom", SCALE, 'K'));
     ItemOptions.push_back(Item(0, 0, "power-dash", SCALE, 'S'));
-    ItemOptions.push_back(Item(0, 0, "power-transmutation", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-boost", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-spear", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "power-transmutation", SCALE, 'S'));
+    std::vector<Enemy> EnemyOptions;
+    EnemyOptions.push_back(Enemy(0, 0, "bee", SCALE, Blocks, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "snail", SCALE, Blocks, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "butterfly", SCALE, Blocks, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "crab", SCALE, Blocks, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "meldrop", SCALE, Blocks, 0));
 
 
     float Px = WT*2/3 + 30;
@@ -238,14 +325,96 @@ void Play::EditLevel(std::string name) {
     }
 
 
+    Px = WT*2/3 + 30;
+    Py = 50;
+    MaxHeight = 0;
+    bc = 0;
+    for (Enemy temp : EnemyOptions) {
+        temp.rect.x = Px;
+        temp.rect.y = Py;
+        Px += temp.rect.width + 10;
+        if (temp.rect.height > MaxHeight) {
+            MaxHeight = temp.rect.height;
+        }
+        if (Px+temp.rect.width > WT) {
+            Px = WT*2/3 + 30;
+            Py += MaxHeight + 10;
+        }
+        EnemyOptions[bc] = temp;
+        bc += 1;
+    }
+
+
+
+
+
     Block mouseBlock;
     Item mouseItem;
     Enemy mouseEnemy;
     bool background = false;
+    int rotation = 0;
+
+    const int MAX_CHARS = 40;
+
+    Rectangle SelectSong = {WT*2/3+100, 50, WT/3-110, 30};
+    char SongName[MAX_CHARS + 1] = "\0";
+    char SongNameFinal[MAX_CHARS + 1 + 10] = "songs/MainTheme.wav\0";
+    Music LevelTheme = LoadMusicStream(SongNameFinal);
+    int SongLetterCount = 0;
+    bool SongFocus = false;
+
+
+
+    Rectangle NameLevelRect = {WT*2/3+100, 85, WT/3-110, 30};
+    char NameLevel[MAX_CHARS + 1] = "\0";
+    int NameLetterCount = 0;
+    bool NameFocus = false;
+
+
+
+    std::vector<Block> FinishLines;
+    std::vector<std::string> FinishLinesDestination;
+    std::vector<int> FLDsize;
+    int FLFocus = 0;
+    int sizeFL = 0;
+    Rectangle FinishRect = {WT*2/3+100, 325, WT/3-110, 30};
+
+
+
+    int ItemComplexity = 0;
+    int EnemyComplexity = 0;
+
+    for (Enemy temp : enemies) {
+        EnemyComplexity += complexityCalc(temp);
+    }
+
+    
+    for (Item temp : itens) {
+        ItemComplexity += complexityCalc(temp);
+    }
+
+
+    int levelTime = 0;
+    int recomendedTime = 0;
+    int finalTime = 0;
+    Rectangle timeRect = {WT*2/3+130, 190+44, WT/3-210, 30};
+    char timeSet[MAX_CHARS + 1] = "\0";
+    int timeSize = 0;
+    bool timeFocus = false;
+
+
+    Rectangle PlayTest = {WT*2/3+100, 280, 120, 30};
+    bool playTestFocus = false;
+
+
+
+
+
 
 
     while (!WindowShouldClose()) {
-        UpdateMusicStream(theme);
+        UpdateMusicStream(LevelTheme);
+
         sizeB = Blocks.size();
         sizeE = enemies.size();
         sizeI = itens.size();
@@ -258,12 +427,15 @@ void Play::EditLevel(std::string name) {
         mouseBlock.rect.y = posM.y;
         mouseItem.rect.x = posM.x;
         mouseItem.rect.y = posM.y;
+        mouseEnemy.rect.x = posM.x;
+        mouseEnemy.rect.y = posM.y;
 
         W = IsKeyDown(KEY_W);
         A = IsKeyDown(KEY_A);
         S = IsKeyDown(KEY_S);
         D = IsKeyDown(KEY_D);
         E = IsKeyPressed(KEY_E);
+        R = IsKeyPressed(KEY_R);
 
         if (W) {
             cy -= BS-SCALE;
@@ -280,33 +452,50 @@ void Play::EditLevel(std::string name) {
         if (E) {
             background = !background;
         }
-
-        // one = Blocks/ two = Itens/ Three = Enemies
-        if (IsKeyPressed(KEY_ONE)) {
-            if (Menu == 1) {
-                Menu = 0;
-            } else {
-                Menu = 1;
+        if (R) {
+            rotation += 1;
+            if (rotation > 3) {
+                rotation = 0;
             }
-        }
-        if (IsKeyPressed(KEY_TWO)) {
-            if (Menu == 2) {
-                Menu = 0;
-            } else {
-                Menu = 2;
+            if (mouseBlock.SCALE != 0) {
+                mouseBlock = Block(mouseRect.x, mouseRect.y, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, rotation, background);
             }
-        }
-        if (IsKeyPressed(KEY_THREE)) {
-            if (Menu == 3) {
-                Menu = 0;
-            } else {
-                Menu = 3;
-            }
-        }
-        if (IsKeyPressed(KEY_ZERO)) {
-            Menu = 0;
         }
 
+        // one = Blocks / two = Itens / Three = Enemies
+        if (!timeFocus) {
+            if (IsKeyPressed(KEY_ONE)) {
+                if (Menu == 1) {
+                    Menu = 0;
+                } else {
+                    Menu = 1;
+                }
+            }
+            if (IsKeyPressed(KEY_TWO)) {
+                if (Menu == 2) {
+                    Menu = 0;
+                } else {
+                    Menu = 2;
+                }
+            }
+            if (IsKeyPressed(KEY_THREE)) {
+                if (Menu == 3) {
+                    Menu = 0;
+                } else {
+                    Menu = 3;
+                }
+            }
+            if (IsKeyPressed(KEY_FOUR)) {
+                if (Menu == 4) {
+                    Menu = 0;
+                } else {
+                    Menu = 4;
+                }
+            }
+            if (IsKeyPressed(KEY_ZERO)) {
+                Menu = 0;
+            }
+        }
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             if (mouseRect.x > WT/3) {
@@ -322,7 +511,60 @@ void Play::EditLevel(std::string name) {
                             mouseItem = Item(mouseRect.x, mouseRect.y, itemOption.name, SCALE, itemOption.category);
                         }
                     }
+                } else if (Menu == 3) {
+                    for (Enemy enemyOption : EnemyOptions) {
+                        if (GenericColision(mouseRect, enemyOption.rect)) {
+                            mouseEnemy = Enemy(mouseRect.x, mouseRect.y, enemyOption.name, SCALE, Blocks, 0);
+                        }
+                    }
+                } else if (Menu == 4) {
+                    if (GenericColision(SelectSong, mouseRect)) {
+                        SongFocus = true;
+                    } else {
+                        SongFocus = false;
+                    }
+
+                    if (GenericColision(NameLevelRect, mouseRect)) {
+                        NameFocus = true;
+                    } else {
+                        NameFocus = false;
+                    }
+
+                    if (GenericColision(timeRect, mouseRect)) {
+                        timeFocus = true;
+                    } else {
+                        timeFocus = false;
+                    }
+
+                    if (GenericColision(PlayTest, mouseRect)) {
+                        std::vector<Item> backupItens = itens;
+                        std::vector<Block> backupBlocks = Blocks;
+                        std::vector<Enemy> backupEnemies = enemies;
+                        
+                        Music Musica = LoadMusicStream(SongNameFinal);
+                        mainLoop(Musica);
+                        UnloadMusicStream(Musica);
+
+                        levelTime = tick/30;
+                        recomendedTime = levelTime*2;
+                        finalTime = recomendedTime;
+                        Blocks = backupBlocks;
+                        enemies = backupEnemies;
+                        itens = backupItens;
+                    }
+
+                    FLFocus = 0;
+                    sizeFL = FinishLines.size();
+                    for (int i = 0; i < sizeFL; i++) {
+                        Rectangle temp = {FinishRect.x, FinishRect.y+30*i, FinishRect.width, FinishRect.height};
+                        if (GenericColision(temp, mouseRect)) {
+                            FLFocus = i+1;
+                            break;
+                        }
+                    }
                 }
+            } else {
+                FLFocus = 0;
             }
         } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
             Rectangle mouseRectTemp = mouseRect;
@@ -332,6 +574,20 @@ void Play::EditLevel(std::string name) {
                 if (mouseBlock.SCALE == 0) {
                     for (int i = 0; i < sizeB; i++) {
                         if (GenericColision(Blocks[i].rect, mouseRectTemp)) {
+                            if (Blocks[i].name == "nextLevel") {
+                                sizeFL = FinishLines.size();
+                                for (int j = 0; j < sizeFL; j++) {
+                                    if (Blocks[i].rect.x == FinishLines[j].rect.x and Blocks[i].rect.y == FinishLines[j].rect.y) {
+                                        auto it1 = std::next(FinishLines.begin(), j);
+                                        auto it2 = std::next(FinishLinesDestination.begin(), j);
+                                        auto it3 = std::next(FLDsize.begin(), j);
+                                        FinishLines.erase(it1);
+                                        FinishLinesDestination.erase(it2);
+                                        FLDsize.erase(it3);
+                                        break;
+                                    }
+                                }
+                            }
                             auto it = std::next(Blocks.begin(), i);
                             Blocks.erase(it);
                             sizeB -= 1;
@@ -345,6 +601,7 @@ void Play::EditLevel(std::string name) {
                 if (mouseItem.SCALE == 0) {
                     for (int i = 0; i < sizeI; i++) {
                         if (GenericColision(itens[i].rect, mouseRectTemp)) {
+                            ItemComplexity -= complexityCalc(itens[i]);
                             auto it = std::next(itens.begin(), i);
                             itens.erase(it);
                             sizeI -= 1;
@@ -354,13 +611,32 @@ void Play::EditLevel(std::string name) {
                 } else {
                     mouseItem.SCALE = 0;
                 }
+            } else if (Menu == 3) {
+                if (mouseEnemy.SCALE == 0) {
+                    for (int i = 0; i < sizeE; i++) {
+                        if (GenericColision(enemies[i].rect, mouseRectTemp)) {
+                            EnemyComplexity -= complexityCalc(enemies[i]);
+                            auto it = std::next(enemies.begin(), i);
+                            enemies.erase(it);
+                            sizeE -= 1;
+                            break;
+                        }
+                    }
+                } else {
+                    mouseEnemy.SCALE = 0;
+                }
             }
         }
 
-
+        if (GenericColision(mouseRect, PlayTest)) {
+            playTestFocus = true;
+        } else {
+            playTestFocus = false;
+        }
 
         Block placeBlock;
         Item placeItem;
+        Enemy placeEnemy;
         bool placeable = false;
 
         // Drawing MAP
@@ -372,16 +648,18 @@ void Play::EditLevel(std::string name) {
         for (int i = 0; i < BHT+3; i++) {
             for (int j = 0; j < BWT+3; j++) {
                 DrawTextureEx(grid, posGrid, 0, SCALE, WHITE);
-                if (mouseRect.x <= WT*2/3 and (mouseBlock.SCALE != 0 or mouseItem.SCALE != 0)) {
+                if (mouseRect.x <= WT*2/3 and (mouseBlock.SCALE != 0 or mouseItem.SCALE != 0 or mouseEnemy.SCALE != 0)) {
                     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                         Rectangle gridrect = {posGrid.x, posGrid.y, BS, BS};
                         if (GenericColision(gridrect, mouseRect)) {
                             float Bx = cx -WT/2 +posGrid.x;
                             float By = cy -HT/2 +posGrid.y;
                             if (Menu == 1) {
-                                placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, 0, background);
+                                placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, mouseBlock.direction, background);
                             } else if (Menu == 2) {
                                 placeItem = Item(Bx, By, mouseItem.name, SCALE, mouseItem.category);
+                            } else if (Menu == 3) {
+                                placeEnemy = Enemy(Bx, By, mouseEnemy.name, SCALE, Blocks, 0);
                             }
                             placeable = true;
                         }
@@ -393,13 +671,10 @@ void Play::EditLevel(std::string name) {
             posGrid.y += (BS-SCALE);
         }
 
-
-        // if (IsMouseButtonPressed())
-
         
         relativePos.x = WT/2 +player.rect.x -cx;
         relativePos.y = HT/2 +player.rect.y -cy;
-        DrawTextureEx(player.images[player.imageCount], relativePos, 0, 1, WHITE);
+        DrawTextureEx(player.images[player.imageCount], relativePos, 0, SCALE, WHITE);
 
         
         // Desenhando blocos Background
@@ -407,7 +682,7 @@ void Play::EditLevel(std::string name) {
             if (!Blocks[i].background) {
                 continue;
             }
-            if (Menu == 1) {
+            if (Menu == 1 and background) {
                 if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
                     placeBlock.rect.x += 2*SCALE;
                     placeBlock.rect.y += 2*SCALE;
@@ -443,28 +718,58 @@ void Play::EditLevel(std::string name) {
                 // cut.height = 25;
                 // DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, GRAY);
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
-            } else {
+            } else if (Blocks[i].name == "spike") {
+                if (Blocks[i].direction == 1) {
+                    relativePos.y += Blocks[i].rect.height;
+                } else if (Blocks[i].direction == 2) {
+                    relativePos.x += Blocks[i].rect.width;
+                    relativePos.y += Blocks[i].rect.height;
+                } else if (Blocks[i].direction == 3) {
+                    relativePos.x += Blocks[i].rect.width;
+                }
+                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, GRAY);
+             } else {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
             }
         }
 
         // Desenhando inimigos
         for (int i = 0; i < sizeE; i++) {
+            if (Menu == 3) {
+                if (GenericColision(enemies[i].rect, placeEnemy.rect)) {
+                    placeEnemy.rect.x += 2*SCALE;
+                    placeEnemy.rect.y += 2*SCALE;
+                    if (GenericColision(enemies[i].rect, placeEnemy.rect)) {
+                        placeEnemy.rect.x -= 4*SCALE;
+                        placeEnemy.rect.y -= 4*SCALE;
+                        if (GenericColision(enemies[i].rect, placeEnemy.rect)) {
+                            placeable = false;
+                        } else {
+                            placeEnemy.rect.x += 2*SCALE;
+                            placeEnemy.rect.y += 2*SCALE;
+                        }
+                    } else {
+                        placeEnemy.rect.x -= 2*SCALE;
+                        placeEnemy.rect.y -= 2*SCALE;
+                    }
+                }
+            }
+
             relativePos.x = WT/2 +enemies[i].rect.x -cx;
             relativePos.y = HT/2 +enemies[i].rect.y -cy;
-            // Rectangle source, dest;
-            // source.x = 0 + enemies[i].imageCount*(enemies[i].rectImage.width+1);
-            // source.y = 0;
-            // source.width = enemies[i].rectImage.width;
-            // source.height = enemies[i].rectImage.height;
 
-            // dest.x = relativePos.x;
-            // dest.y = relativePos.y;
-            // dest.width = enemies[i].rect.width;
-            // dest.height = enemies[i].rect.height;
+            Rectangle source, dest;
+            source.x = 0;
+            source.y = 0;
+            source.width = enemies[i].rectImage.width;
+            source.height = enemies[i].rectImage.height;
 
-            DrawTextureEx(enemies[i].images[0], relativePos, 0, 1, WHITE);
-            // DrawTexturePro(enemies[i].images[0], source, enemies[i].rect, {0, 0}, 0, WHITE);
+            dest.x = relativePos.x;
+            dest.y = relativePos.y;
+            dest.width = enemies[i].rect.width;
+            dest.height = enemies[i].rect.height;
+
+            DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
         }
 
         // Desenhando blocos Ground
@@ -472,7 +777,7 @@ void Play::EditLevel(std::string name) {
             if (Blocks[i].background) {
                 continue;
             }
-            if (Menu == 1) {
+            if (Menu == 1 and !background) {
                 if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
                     placeBlock.rect.x += 2*SCALE;
                     placeBlock.rect.y += 2*SCALE;
@@ -508,9 +813,29 @@ void Play::EditLevel(std::string name) {
                         placeItem.rect.y -= 2*SCALE;
                     }
                 }
+            } else if (Menu == 3) {
+                if (GenericColision(Blocks[i].rect, placeEnemy.rect)) {
+                    placeEnemy.rect.x += 2*SCALE;
+                    placeEnemy.rect.y += 2*SCALE;
+                    if (GenericColision(Blocks[i].rect, placeEnemy.rect)) {
+                        placeEnemy.rect.x -= 4*SCALE;
+                        placeEnemy.rect.y -= 4*SCALE;
+                        if (GenericColision(Blocks[i].rect, placeEnemy.rect)) {
+                            placeable = false;
+                        } else {
+                            placeEnemy.rect.x += 2*SCALE;
+                            placeEnemy.rect.y += 2*SCALE;
+                        }
+                    } else {
+                        placeEnemy.rect.x -= 2*SCALE;
+                        placeEnemy.rect.y -= 2*SCALE;
+                    }
+                }
             }
+            
             relativePos.x = WT/2 +Blocks[i].rect.x -cx;
             relativePos.y = HT/2 +Blocks[i].rect.y -cy;
+            
             if (Blocks[i].name == "gate-hope") {
                 // Rectangle cut, dest;
                 // dest.x = relativePos.x;
@@ -526,12 +851,12 @@ void Play::EditLevel(std::string name) {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
             } else if (Blocks[i].name == "spike") {
                 if (Blocks[i].direction == 1) {
-                    relativePos.y += Blocks[i].rect.height;
+                    relativePos.y += Blocks[i].rect.width;
                 } else if (Blocks[i].direction == 2) {
                     relativePos.x += Blocks[i].rect.width;
                     relativePos.y += Blocks[i].rect.height;
                 } else if (Blocks[i].direction == 3) {
-                    relativePos.x += Blocks[i].rect.width;
+                    relativePos.x += Blocks[i].rect.height;
                 }
 
                 DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
@@ -573,8 +898,17 @@ void Play::EditLevel(std::string name) {
         if (placeable) {
             if (Menu == 1) {
                 Blocks.push_back(placeBlock);
+                if (placeBlock.name == "nextLevel") {
+                    FinishLines.push_back(placeBlock);
+                    FinishLinesDestination.push_back("Fill\0");
+                    FLDsize.push_back(0);
+                }
             } else if (Menu == 2) {
                 itens.push_back(placeItem);
+                ItemComplexity += complexityCalc(placeItem);
+            } else if (Menu == 3) {
+                enemies.push_back(placeEnemy);
+                EnemyComplexity += complexityCalc(placeEnemy);
             }
         }
 
@@ -582,10 +916,12 @@ void Play::EditLevel(std::string name) {
 
         // Drawing HUD
 
+        // Gray side-bar
         if (Menu != 0) {
             DrawRectangle(WT*2/3, 0, WT/3, HT, GRAY);
         }
 
+        // Side-Bar Object Options
         if (Menu == 1) {
             for (Block blockOption : BlockOptions) {
                 DrawTextureEx(blockOption.image, {blockOption.rect.x, blockOption.rect.y}, 0, SCALE, WHITE);
@@ -594,18 +930,220 @@ void Play::EditLevel(std::string name) {
             for (Item itemOption : ItemOptions) {
                 DrawTextureEx(itemOption.image, {itemOption.rect.x, itemOption.rect.y}, 0, SCALE, WHITE);
             }
+        } else if (Menu == 3) {
+            for (Enemy enemyOption : EnemyOptions) {
+                Rectangle source, dest;
+                source.x = 0;
+                source.y = 0;
+                source.width = enemyOption.rectImage.width;
+                source.height = enemyOption.rectImage.height;
+
+                dest.x = enemyOption.rect.x;
+                dest.y = enemyOption.rect.y;
+                dest.width = enemyOption.rect.width;
+                dest.height = enemyOption.rect.height;
+
+                DrawTexturePro(enemyOption.images[0], source, dest, {0, 0}, 0, WHITE);
+            }
+        } else if (Menu == 4) {
+            DrawText("Select Song: ", SelectSong.x-90, SelectSong.y+5, 15, BLACK);
+            DrawRectangle(SelectSong.x-2, SelectSong.y-2, SelectSong.width+4, SelectSong.height+4, BLACK);
+            DrawRectangle(SelectSong.x, SelectSong.y, SelectSong.width, SelectSong.height, LIGHTGRAY);
+            DrawText(SongName, (int)SelectSong.x + 5, (int)SelectSong.y + 4, 20, MAROON);
+
+            if (SongFocus) {
+                int key = GetCharPressed();
+                while (key > 0) {
+                    if ((key >= 32) && (key <= 125) && (SongLetterCount < MAX_CHARS)) {
+                        SongName[SongLetterCount] = (char)key;
+                        SongName[SongLetterCount+1] = '\0';
+                        SongLetterCount++;
+                    }
+
+                    key = GetCharPressed();
+                }
+                if (IsKeyPressed(KEY_BACKSPACE)) {
+                    SongLetterCount--;
+                    if (SongLetterCount < 0) {
+                        SongLetterCount = 0;
+                    }
+                    SongName[SongLetterCount] = '\0';
+                }
+                if (IsKeyPressed(KEY_ENTER)) {
+                    UnloadMusicStream(LevelTheme);
+                    std::string temp = "songs/" + (std::string)SongName + ".wav";
+                    strcpy(SongNameFinal, temp.c_str());
+                    LevelTheme = LoadMusicStream(SongNameFinal);
+                    PlayMusicStream(LevelTheme);
+                }
+            }
+
+
+
+
+
+
+
+            DrawText("Level Name: ", NameLevelRect.x-90, NameLevelRect.y+5, 15, BLACK);
+            DrawRectangle(NameLevelRect.x-2, NameLevelRect.y-2, NameLevelRect.width+4, NameLevelRect.height+4, BLACK);
+            DrawRectangle(NameLevelRect.x, NameLevelRect.y, NameLevelRect.width, NameLevelRect.height, LIGHTGRAY);
+            DrawText(NameLevel, (int)NameLevelRect.x + 5, (int)NameLevelRect.y + 4, 20, MAROON);
+
+            if (NameFocus) {
+                int key = GetCharPressed();
+                while (key > 0) {
+                    if ((key >= 32) && (key <= 125) && (NameLetterCount < MAX_CHARS)) {
+                        NameLevel[NameLetterCount] = (char)key;
+                        NameLevel[NameLetterCount+1] = '\0';
+                        NameLetterCount++;
+                    }
+
+                    key = GetCharPressed();
+                }
+                if (IsKeyPressed(KEY_BACKSPACE)) {
+                    NameLetterCount--;
+                    if (NameLetterCount < 0) {
+                        NameLetterCount = 0;
+                    }
+                    NameLevel[NameLetterCount] = '\0';
+                }
+            }
+
+
+
+
+
+
+            DrawText(TextFormat("Item Complexity: %d", ItemComplexity), (int)NameLevelRect.x - 90, (int)NameLevelRect.y + 4 +35, 20, MAROON);
+            DrawText(TextFormat("Enemy Complexity: %d", EnemyComplexity), (int)NameLevelRect.x - 90, (int)NameLevelRect.y + 4 +35*2, 20, MAROON);
+
+
+
+
+
+
+            DrawText(TextFormat("Level Time: %d", levelTime), (int)timeRect.x -125, (int)timeRect.y -40, 20, DARKBLUE);
+            DrawText(TextFormat("Recomended Time: %d", recomendedTime), (int)timeRect.x -125, (int)timeRect.y -20, 20, DARKBLUE);
+            DrawText(TextFormat("Final Time:"), (int)timeRect.x -125, (int)timeRect.y, 20, DARKBLUE);
+            DrawRectangle(timeRect.x-2, timeRect.y-2, timeRect.width+4, timeRect.height+4, BLACK);
+            DrawRectangle(timeRect.x, timeRect.y, timeRect.width, timeRect.height, LIGHTGRAY);
+            DrawText(TextFormat("%d", finalTime), (int)timeRect.x + 5, (int)timeRect.y + 5, 20, DARKBLUE);
+
+            if (timeFocus) {
+                int key = GetCharPressed();
+                while (key > 0) {
+                    if ((key >= 32) && (key <= 125) && (timeSize < MAX_CHARS)) {
+                        timeSet[timeSize] = (char)key;
+                        timeSet[timeSize+1] = '\0';
+                        timeSize++;
+                    }
+
+                    key = GetCharPressed();
+                }
+                if (IsKeyPressed(KEY_BACKSPACE)) {
+                    timeSize--;
+                    if (timeSize < 0) {
+                        timeSize = 0;
+                    }
+                    timeSet[timeSize] = '\0';
+                }
+                finalTime = atoi(timeSet);
+            }
+
+
+
+
+
+
+            
+            DrawRectangle(PlayTest.x-2, PlayTest.y-2, PlayTest.width+4, PlayTest.height+4, BLACK);
+            if (playTestFocus) {
+                DrawRectangle(PlayTest.x, PlayTest.y, PlayTest.width, PlayTest.height, RED);
+            } else {
+                DrawRectangle(PlayTest.x, PlayTest.y, PlayTest.width, PlayTest.height, GREEN);
+            }
+            DrawText("Play Test!", (int)PlayTest.x + 5, (int)PlayTest.y + 5, 20, PURPLE);
+
+
+
+            sizeFL = FinishLines.size();
+            for (int i = 0; i < sizeFL; i++) {
+                DrawText(TextFormat("Exit %d: ", i+1), FinishRect.x-90, FinishRect.y+5+i*30, 15, BLACK);
+                DrawRectangle(FinishRect.x-2, FinishRect.y-2+i*30, FinishRect.width+4, FinishRect.height+4, BLACK);
+                DrawRectangle(FinishRect.x, FinishRect.y+i*30, FinishRect.width, FinishRect.height, LIGHTGRAY);
+                char* temp;
+                strcpy(temp, FinishLinesDestination[i].c_str());
+                DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON); // so scarlet, it was... MAROON
+
+
+
+                if (FLFocus-1 == i) { // Tive que botar essa parte aqui dentro porque POR ALGUM MOTIVO NÃO FUNCIONA LA EM BAIXO, AAAAAAAAAAAAAAAAAAAA RAIVA
+                    int LNCount = FLDsize[FLFocus-1];
+                    int key = GetCharPressed();
+                    while (key > 0) {
+                        if ((key >= 32) && (key <= 125) && (LNCount < MAX_CHARS)) {
+                            temp[LNCount] = (char)key;
+                            temp[LNCount+1] = '\0';
+                            LNCount++;
+                        }
+
+                        key = GetCharPressed();
+                    }
+                    if (IsKeyPressed(KEY_BACKSPACE)) {
+                        LNCount--;
+                        if (LNCount < 0) {
+                            LNCount = 0;
+                        }
+                        temp[SongLetterCount] = '\0';
+                    }
+                    FinishLinesDestination[FLFocus-1] = (std::string)temp;
+                    FLDsize[FLFocus-1] = LNCount;
+                }
+            }
+
+            // if (FLFocus > 0) {
+            //     int key = GetCharPressed();
+            //     char* temp;
+            //     strcpy(temp, FinishLinesDestination[FLFocus-1].c_str());
+                
+            // }
+
+
+
         }
 
-        if (mouseBlock.SCALE != 0 or mouseItem.SCALE != 0) {
-            if (Menu == 1) {
-                if (background) {
-                    DrawTextureEx(mouseBlock.image, {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, GRAY);
-                } else {
-                    DrawTextureEx(mouseBlock.image, {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, WHITE);
-                }
-            } else if (Menu == 2) {
-                DrawTextureEx(mouseItem.image, {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
+
+        // Object in Mouse
+        if (Menu == 1 and mouseBlock.SCALE != 0) {
+            relativePos.x = mouseBlock.rect.x;
+            relativePos.y = mouseBlock.rect.y;
+            if (mouseBlock.direction == 1) {
+                // relativePos.y += mouseBlock.rect.height;
+            } else if (mouseBlock.direction == 2) {
+                relativePos.x += mouseBlock.rect.width;
+                relativePos.y += mouseBlock.rect.height;
+            } else if (mouseBlock.direction == 3) {
+                relativePos.x += mouseBlock.rect.width;
             }
+            if (background) {
+                DrawTextureEx(mouseBlock.image, {relativePos.x, relativePos.y}, mouseBlock.direction*-90, SCALE, GRAY);
+            } else {
+                DrawTextureEx(mouseBlock.image, {relativePos.x, relativePos.y}, mouseBlock.direction*-90, SCALE, WHITE);
+            }
+        } else if (Menu == 2 and mouseItem.SCALE != 0) {
+            DrawTextureEx(mouseItem.image, {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
+        } else if (Menu == 3 and mouseEnemy.SCALE != 0) {
+            Rectangle source, dest;
+            source.x = 0;
+            source.y = 0;
+            source.width = mouseEnemy.rectImage.width;
+            source.height = mouseEnemy.rectImage.height;
+
+            dest.x = mouseEnemy.rect.x;
+            dest.y = mouseEnemy.rect.y;
+            dest.width = mouseEnemy.rect.width;
+            dest.height = mouseEnemy.rect.height;
+            DrawTexturePro(mouseEnemy.images[0], source, dest, {0, 0}, 0, WHITE);
         }
 
 
@@ -615,6 +1153,7 @@ void Play::EditLevel(std::string name) {
         EndDrawing();
     }
 
+    UnloadMusicStream(LevelTheme);
 }
 
 
@@ -689,9 +1228,9 @@ void Play::PlayLevel(std::string levelname) {
 
     Music LevelTheme;
     int song = RNG100(rng);
-    if (song <= 0) {
+    if (song <= 1) {
         LevelTheme = LoadMusicStream("songs/BrighterWays.wav");
-    }else if (song <= 2) {
+    }else if (song <= 3) {
         LevelTheme = LoadMusicStream("songs/Couragetheme.wav");
     } else if (song <= 7) {
         LevelTheme = LoadMusicStream("songs/Powertheme.wav");
@@ -713,7 +1252,9 @@ void Play::mainLoop(Music LevelTheme) {
 
     PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
-    
+    Sound finish = LoadSound("sfx/finishLine.wav");
+    tick = 1;
+
     while (!WindowShouldClose()) {
         UpdateMusicStream(LevelTheme);
         sizeB = Blocks.size();
@@ -936,6 +1477,18 @@ void Play::mainLoop(Music LevelTheme) {
             if (Blocks[i].background) {
                 continue;
             }
+            if (Blocks[i].name == "nextLevel") {
+                if (GenericColision(player.rect, Blocks[i].rect)) {
+                    PlaySound(finish);
+                    int fadeout = 80;
+                    while(fadeout > 0) {
+                        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 1});
+                        fadeout -= 1;
+                    }
+                    UnloadSound(finish);
+                    return;
+                }
+            }
             Vector2 relativePos;
             relativePos.x = center.x +Blocks[i].rect.x -player.rect.x;
             relativePos.y = center.y +Blocks[i].rect.y -player.rect.y;
@@ -1024,93 +1577,89 @@ void Play::mainLoop(Music LevelTheme) {
 
 
 
-
-
         // fun-mode
-        if (tick % 30 == 0 and sizeI < 200) {
-            int RNG_X = (RNGWidth(rng))*(BS-SCALE);
-            int RNG_Y = (RNGHeight(rng)-1)*(BS-SCALE);
-            bool freespace = true;
-            Rectangle tempItem = {(float) RNG_X, (float) RNG_Y, 13, 13};
-            for (int i = 0; i < sizeB; i++) {
-                Block temp = Blocks[i];
-                if (GenericColision(tempItem, temp.rect)) {
-                    int value = RNGe3(rng);
-                    if (value <= 1) {
-                        enemies.push_back(Enemy(RNG_X, RNG_Y, "snail", SCALE, Blocks, RNG100(rng), temp));
-                    } else if (value <= 5) {
-                        bool spawnable;
-                        for(int j = 0; j < sizeB; j++) {
-                            Block tempCeil = Blocks[j];
-                            if (tempCeil.rect.x+tempCeil.rect.width > temp.rect.x and tempCeil.rect.x < temp.rect.x+temp.rect.width) {
-                                if (tempCeil.rect.y+tempCeil.rect.height > temp.rect.y and tempCeil.rect.y < temp.rect.y) {
-                                    spawnable = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if (spawnable) {
-                            enemies.push_back(Enemy(RNG_X, RNG_Y, "crab", SCALE, Blocks, RNG100(rng), temp));
-                        }
-                    }
-                    freespace = false;
-                    break;
-                }
-            }
-            if (freespace) {
-                int value = RNGe3(rng);
-                if (value <= 1) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-eloise", SCALE, 'P'));
-                } else if (value <= 4) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-hard", SCALE, 'P'));
-                } else if (value <= 8) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-fun", SCALE, 'P'));
-                } else if (value <= 13) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-party", SCALE, 'P'));
-                } else if (value <= 19) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Pshard-wind", SCALE, 'P'));
-                } else if (value <= 28) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE, 'H'));
-                } else if (value <= 38) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-courage", SCALE, 'H'));
-                } else if (value <= 50) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE, 'H'));
-                } else if (value <= 64) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE, 'H'));
-                } else if (value <= 80) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
-                } else if (value <= 82) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "courage-potion", SCALE, 'I'));
-                } else if (value <= 90) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
-                } else if (value <= 130) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "coin-silver", SCALE, 'C'));
-                } else if (value <= 200) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "coin-copper", SCALE, 'C'));
-                } else if (value <= 280) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE, 'F'));
-                } else if (value <= 370) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE, 'F'));
-                } else if (value <= 540) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
-                } else if (value <= 680) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE, 'F'));
-                } else if (value <= 997) {
-                    itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE, 'F'));
-                } else if (value <= 998) {
-                    enemies.push_back(Enemy(RNG_X, RNG_Y, "bee", SCALE, Blocks, RNG100(rng)));
-                } else if (value <= 999) {
-                    enemies.push_back(Enemy(RNG_X, RNG_Y, "butterfly", SCALE, Blocks, RNG100(rng)));
-                } else if (value <= 1000) {
-                    enemies.push_back(Enemy(RNG_X, RNG_Y, "meldrop", SCALE, Blocks, RNG100(rng)));
-                } else {
-                    itens.push_back(Item(RNG_X, RNG_Y, "key-hope", SCALE, 'K'));
-                }
-                sizeI += 1;
-            }
-        }
-
-
+        // if (tick % 30 == 0 and sizeI < 200) {
+        //     int RNG_X = (RNGWidth(rng))*(BS-SCALE);
+        //     int RNG_Y = (RNGHeight(rng)-1)*(BS-SCALE);
+        //     bool freespace = true;
+        //     Rectangle tempItem = {(float) RNG_X, (float) RNG_Y, 13, 13};
+        //     for (int i = 0; i < sizeB; i++) {
+        //         Block temp = Blocks[i];
+        //         if (GenericColision(tempItem, temp.rect)) {
+        //             int value = RNGe3(rng);
+        //             if (value <= 1) {
+        //                 enemies.push_back(Enemy(RNG_X, RNG_Y, "snail", SCALE, Blocks, RNG100(rng), temp));
+        //             } else if (value <= 5) {
+        //                 bool spawnable;
+        //                 for(int j = 0; j < sizeB; j++) {
+        //                     Block tempCeil = Blocks[j];
+        //                     if (tempCeil.rect.x+tempCeil.rect.width > temp.rect.x and tempCeil.rect.x < temp.rect.x+temp.rect.width) {
+        //                         if (tempCeil.rect.y+tempCeil.rect.height > temp.rect.y and tempCeil.rect.y < temp.rect.y) {
+        //                             spawnable = false;
+        //                             break;
+        //                         }
+        //                     }
+        //                 }
+        //                 if (spawnable) {
+        //                     enemies.push_back(Enemy(RNG_X, RNG_Y, "crab", SCALE, Blocks, RNG100(rng), temp));
+        //                 }
+        //             }
+        //             freespace = false;
+        //             break;
+        //         }
+        //     }
+        //     if (freespace) {
+        //         int value = RNGe3(rng);
+        //         if (value <= 1) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Pshard-eloise", SCALE, 'P'));
+        //         } else if (value <= 4) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Pshard-hard", SCALE, 'P'));
+        //         } else if (value <= 8) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Pshard-fun", SCALE, 'P'));
+        //         } else if (value <= 13) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Pshard-party", SCALE, 'P'));
+        //         } else if (value <= 19) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Pshard-wind", SCALE, 'P'));
+        //         } else if (value <= 28) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Hshard-wisdom", SCALE, 'H'));
+        //         } else if (value <= 38) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Hshard-courage", SCALE, 'H'));
+        //         } else if (value <= 50) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Hshard-power", SCALE, 'H'));
+        //         } else if (value <= 64) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Hshard-resilience", SCALE, 'H'));
+        //         } else if (value <= 80) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "Hshard-hope", SCALE, 'H'));
+        //         } else if (value <= 82) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "courage-potion", SCALE, 'I'));
+        //         } else if (value <= 90) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "coin-gold", SCALE, 'C'));
+        //         } else if (value <= 130) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "coin-silver", SCALE, 'C'));
+        //         } else if (value <= 200) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "coin-copper", SCALE, 'C'));
+        //         } else if (value <= 280) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "food-orange", SCALE, 'F'));
+        //         } else if (value <= 370) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "food-pepper", SCALE, 'F'));
+        //         } else if (value <= 540) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "food-blueberry", SCALE, 'F'));
+        //         } else if (value <= 680) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "food-pear", SCALE, 'F'));
+        //         } else if (value <= 997) {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "food-banana", SCALE, 'F'));
+        //         } else if (value <= 998) {
+        //             enemies.push_back(Enemy(RNG_X, RNG_Y, "bee", SCALE, Blocks, RNG100(rng)));
+        //         } else if (value <= 999) {
+        //             enemies.push_back(Enemy(RNG_X, RNG_Y, "butterfly", SCALE, Blocks, RNG100(rng)));
+        //         } else if (value <= 1000) {
+        //             enemies.push_back(Enemy(RNG_X, RNG_Y, "meldrop", SCALE, Blocks, RNG100(rng)));
+        //         } else {
+        //             itens.push_back(Item(RNG_X, RNG_Y, "key-hope", SCALE, 'K'));
+        //         }
+        //         sizeI += 1;
+        //     }
+        // }
 
 
 
@@ -1149,11 +1698,6 @@ void Play::mainLoop(Music LevelTheme) {
             DrawTextureEx(player.P5image, {(float) GetScreenWidth()/2+100*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("5", (float) GetScreenWidth()/2+107*SCALE, 20+15*SCALE, 20, BLACK);
         }
-
-
-
-
-
 
 
 
@@ -1308,6 +1852,7 @@ void Play::mainLoop(Music LevelTheme) {
         tick++;
     }
 
+    UnloadSound(finish);
 }
 
 void Play::DesenharHeart() {
