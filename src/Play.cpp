@@ -225,7 +225,7 @@ void Play::EditLevel(std::string name) {
 
     float cx = WT/2;
     float cy = HT/2;
-    bool W, A, S, D, E, R, Q;
+    bool W, A, S, D, E, R, Q, F;
     Vector2 relativePos;
     Texture2D grid = LoadTexture("images/grid.png");
     Rectangle mouseRect = {0, 0, 2, 2};
@@ -246,6 +246,7 @@ void Play::EditLevel(std::string name) {
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "gate-wisdom", SCALE));
     BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS, "platform", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "nextLevel", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "startLevel", SCALE));
     std::vector<Item> ItemOptions;
     ItemOptions.push_back(Item(0, 0, "coin-copper", SCALE, 'C'));
     ItemOptions.push_back(Item(0, 0, "coin-silver", SCALE, 'C'));
@@ -360,6 +361,7 @@ void Play::EditLevel(std::string name) {
     char SongName[MAX_CHARS + 1] = "\0";
     char SongNameFinal[MAX_CHARS + 1 + 10] = "songs/MainTheme.wav\0";
     Music LevelTheme = LoadMusicStream(SongNameFinal);
+    PlayMusicStream(LevelTheme);
     int SongLetterCount = 0;
     bool SongFocus = false;
 
@@ -379,6 +381,11 @@ void Play::EditLevel(std::string name) {
     int sizeFL = 0;
     Rectangle FinishRect = {WT*2/3+100, 325, WT/3-110, 30};
 
+    std::vector<Block> StartLines;
+    std::vector<std::string> StartLinesDestination;
+    int SLFocus = 0;
+    std::vector<int> SLDsize;
+    int sizeSL = 0;
 
 
     int ItemComplexity = 0;
@@ -388,7 +395,7 @@ void Play::EditLevel(std::string name) {
         EnemyComplexity += complexityCalc(temp);
     }
 
-    
+
     for (Item temp : itens) {
         ItemComplexity += complexityCalc(temp);
     }
@@ -406,7 +413,8 @@ void Play::EditLevel(std::string name) {
     Rectangle PlayTest = {WT*2/3+100, 280, 120, 30};
     bool playTestFocus = false;
 
-
+    Rectangle SaveFileRect = {WT*2/3+250, 280, 125, 30};
+    bool SaveFileFocus = false;
 
 
 
@@ -553,14 +561,32 @@ void Play::EditLevel(std::string name) {
                         itens = backupItens;
                     }
 
+                    if (GenericColision(SaveFileRect, mouseRect)) {
+                        break;
+                    }
+
                     FLFocus = 0;
                     sizeFL = FinishLines.size();
-                    for (int i = 0; i < sizeFL; i++) {
+                    int i = 0;
+                    for (; i < sizeFL; i++) {
                         Rectangle temp = {FinishRect.x, FinishRect.y+30*i, FinishRect.width, FinishRect.height};
                         if (GenericColision(temp, mouseRect)) {
                             FLFocus = i+1;
+                            SLFocus = 0;
                             break;
                         }
+                    }
+
+                    SLFocus = 0;
+                    sizeSL = StartLines.size();
+                    for (int j = 0; j < sizeSL; j++) {
+                        Rectangle temp = {FinishRect.x, FinishRect.y+30*i, FinishRect.width, FinishRect.height};
+                        if (GenericColision(temp, mouseRect)) {
+                            SLFocus = j+1;
+                            FLFocus = 0;
+                            break;
+                        }
+                        i++;
                     }
                 }
             } else {
@@ -584,6 +610,19 @@ void Play::EditLevel(std::string name) {
                                         FinishLines.erase(it1);
                                         FinishLinesDestination.erase(it2);
                                         FLDsize.erase(it3);
+                                        break;
+                                    }
+                                }
+                            } else if (Blocks[i].name == "startLevel") {
+                                sizeSL = StartLines.size();
+                                for (int j = 0; j < sizeSL; j++) {
+                                    if (Blocks[i].rect.x == StartLines[j].rect.x and Blocks[i].rect.y == StartLines[j].rect.y) {
+                                        auto it1 = std::next(StartLines.begin(), j);
+                                        auto it2 = std::next(StartLinesDestination.begin(), j);
+                                        auto it3 = std::next(SLDsize.begin(), j);
+                                        StartLines.erase(it1);
+                                        StartLinesDestination.erase(it2);
+                                        SLDsize.erase(it3);
                                         break;
                                     }
                                 }
@@ -634,6 +673,12 @@ void Play::EditLevel(std::string name) {
             playTestFocus = false;
         }
 
+        if (GenericColision(mouseRect, SaveFileRect)) {
+            SaveFileFocus = true;
+        } else {
+            SaveFileFocus = false;
+        }
+
         Block placeBlock;
         Item placeItem;
         Enemy placeEnemy;
@@ -672,9 +717,6 @@ void Play::EditLevel(std::string name) {
         }
 
         
-        relativePos.x = WT/2 +player.rect.x -cx;
-        relativePos.y = HT/2 +player.rect.y -cy;
-        DrawTextureEx(player.images[player.imageCount], relativePos, 0, SCALE, WHITE);
 
         
         // Desenhando blocos Background
@@ -900,13 +942,20 @@ void Play::EditLevel(std::string name) {
                 Blocks.push_back(placeBlock);
                 if (placeBlock.name == "nextLevel") {
                     FinishLines.push_back(placeBlock);
-                    FinishLinesDestination.push_back("Fill\0");
-                    FLDsize.push_back(0);
+                    FinishLinesDestination.push_back("Goes to\0");
+                    FLDsize.push_back(7);
+                } else if (placeBlock.name == "startLevel") {
+                    player.rect.x = placeBlock.rect.x;
+                    player.rect.y = placeBlock.rect.y;
+                    StartLines.push_back(placeBlock);
+                    StartLinesDestination.push_back("Arrives from\0");
+                    SLDsize.push_back(12);
                 }
             } else if (Menu == 2) {
                 itens.push_back(placeItem);
                 ItemComplexity += complexityCalc(placeItem);
             } else if (Menu == 3) {
+                placeEnemy.tick += 1;
                 enemies.push_back(placeEnemy);
                 EnemyComplexity += complexityCalc(placeEnemy);
             }
@@ -1064,15 +1113,24 @@ void Play::EditLevel(std::string name) {
             }
             DrawText("Play Test!", (int)PlayTest.x + 5, (int)PlayTest.y + 5, 20, PURPLE);
 
+            
+            DrawRectangle(SaveFileRect.x-2, SaveFileRect.y-2, SaveFileRect.width+4, SaveFileRect.height+4, BLACK);
+            if (SaveFileFocus) {
+                DrawRectangle(SaveFileRect.x, SaveFileRect.y, SaveFileRect.width, SaveFileRect.height, RED);
+            } else {
+                DrawRectangle(SaveFileRect.x, SaveFileRect.y, SaveFileRect.width, SaveFileRect.height, GREEN);
+            }
+            DrawText("Save Level!", (int)SaveFileRect.x + 5, (int)SaveFileRect.y + 5, 20, PURPLE);
+
 
 
             sizeFL = FinishLines.size();
-            for (int i = 0; i < sizeFL; i++) {
+            int i = 0;
+            for (; i < sizeFL; i++) {
                 DrawText(TextFormat("Exit %d: ", i+1), FinishRect.x-90, FinishRect.y+5+i*30, 15, BLACK);
                 DrawRectangle(FinishRect.x-2, FinishRect.y-2+i*30, FinishRect.width+4, FinishRect.height+4, BLACK);
                 DrawRectangle(FinishRect.x, FinishRect.y+i*30, FinishRect.width, FinishRect.height, LIGHTGRAY);
-                char* temp;
-                strcpy(temp, FinishLinesDestination[i].c_str());
+                char* temp = strdup(FinishLinesDestination[i].c_str());
                 DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON); // so scarlet, it was... MAROON
 
 
@@ -1094,12 +1152,48 @@ void Play::EditLevel(std::string name) {
                         if (LNCount < 0) {
                             LNCount = 0;
                         }
-                        temp[SongLetterCount] = '\0';
+                        temp[LNCount] = '\0';
                     }
                     FinishLinesDestination[FLFocus-1] = (std::string)temp;
                     FLDsize[FLFocus-1] = LNCount;
                 }
             }
+
+            sizeSL = StartLines.size();
+            for (int j = 0; j < sizeSL; j++) {
+                DrawText(TextFormat("Entrance %d: ", j+1), FinishRect.x-90, FinishRect.y+5+i*30, 15, BLACK);
+                DrawRectangle(FinishRect.x-2, FinishRect.y-2+i*30, FinishRect.width+4, FinishRect.height+4, BLACK);
+                DrawRectangle(FinishRect.x, FinishRect.y+i*30, FinishRect.width, FinishRect.height, LIGHTGRAY);
+                char* temp = strdup(StartLinesDestination[j].c_str());
+                // strcpy(temp, StartLinesDestination[i].c_str()); <- essa linha simplesmente parou de funcionar e eu n sei pq...
+                DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON); // so scarlet, it was... MAROON
+
+
+
+                if (SLFocus-1 == j) {
+                    int LNCount = SLDsize[SLFocus-1];
+                    int key = GetCharPressed();
+                    while (key > 0) {
+                        if ((key >= 32) && (key <= 125) && (LNCount < MAX_CHARS)) {
+                            temp[LNCount] = (char)key;
+                            temp[LNCount+1] = '\0';
+                            LNCount++;
+                        }
+                        key = GetCharPressed();
+                    }
+                    if (IsKeyPressed(KEY_BACKSPACE)) {
+                        LNCount--;
+                        if (LNCount < 0) {
+                            LNCount = 0;
+                        }
+                        temp[LNCount] = '\0';
+                    }
+                    StartLinesDestination[SLFocus-1] = (std::string)temp;
+                    SLDsize[SLFocus-1] = LNCount;
+                }
+                i++;
+            }
+
 
             // if (FLFocus > 0) {
             //     int key = GetCharPressed();
@@ -1153,7 +1247,23 @@ void Play::EditLevel(std::string name) {
         EndDrawing();
     }
 
+
+
+
+
     UnloadMusicStream(LevelTheme);
+
+    Map finalLevel;
+    finalLevel.Blocks = Blocks;
+    finalLevel.enemies = enemies;
+    finalLevel.itens = itens;
+    finalLevel.playerX = player.rect.x;
+    finalLevel.playerY = player.rect.y;
+    finalLevel.name = (std::string) NameLevel;
+    finalLevel.levelTheme = SongNameFinal;
+    finalLevel.entrances = StartLinesDestination;
+    finalLevel.exits = FinishLinesDestination;
+    loader.SaveLevel(finalLevel);
 }
 
 
@@ -1254,104 +1364,112 @@ void Play::mainLoop(Music LevelTheme) {
     Vector2 mousePosition;
     Sound finish = LoadSound("sfx/finishLine.wav");
     tick = 1;
+    
+    int fadeout = 0;
 
     while (!WindowShouldClose()) {
-        UpdateMusicStream(LevelTheme);
+        if (fadeout == 0) {
+            UpdateMusicStream(LevelTheme);
+        }
         sizeB = Blocks.size();
         sizeE = enemies.size();
         sizeD = dusts.size();
         sizeS = effects.size();
         sizeI = itens.size();
 
+        Rectangle center;
+        if (fadeout == 0) {
 
-        // Entities Updates
-        for (int i = 0; i < sizeE; i++) {
-            enemies[i].update(Blocks, player, effects);
-        }
-        player.update(Blocks, itens, enemies, effects);
-        if (player.isBoost) {
-            float posY = player.rect.y + RNG100(rng)*player.rect.height/100;
-            Dust D1;
-            D1.pos.x = player.cx;
-            D1.pos.y = posY;
-            D1.dt.x = 0;
-            D1.dt.y = 0;
-            D1.cor = {0, 255, 255, 127};
-            D1.timer = RNG100(rng);
-
-            dusts.push_back(D1);
-        }
-
-        if (abs(player.vy) > 8 or abs(player.vx) > 8) {
-            tickBlockUpdate = 1;
-        } else {
-            tickBlockUpdate = 5;
-        }
-
-        // Particles
-        for (int i = 0; i < sizeD; i++) {
-            Dust D = dusts[i];
-            D.timer -= 1;
-            if (D.timer <= 0) {
-                auto it = std::next(dusts.begin(), i);
-                dusts.erase(it);
-            } else {
-                D.pos.x += D.dt.x;
-                D.pos.y += D.dt.y;
-                D.dt.y += 0.1;
-                dusts[i] = D;
+            // Entities Updates
+            for (int i = 0; i < sizeE; i++) {
+                enemies[i].update(Blocks, player, effects);
             }
-        }
-
-        // Effects
-        for (int i = 0; i < sizeS; i++) {
-            if (effects[i].update(Blocks, player, itens, enemies)) {
-                Dust D1, D2, D3;
-                D1.pos.x = effects[i].cx;
-                D1.pos.y = effects[i].cy;
-                D2.pos.x = effects[i].cx;
-                D2.pos.y = effects[i].cy;
-                D3.pos.x = effects[i].cx;
-                D3.pos.y = effects[i].cy;
-
-                D1.dt.x = RNG100(rng)*5/100;
-                D1.dt.y = RNG100(rng)*5/100;
-                D2.dt.x = RNG100(rng)*5/100;
-                D2.dt.y = RNG100(rng)*5/100;
-                D3.dt.x = RNG100(rng)*5/100;
-                D3.dt.y = RNG100(rng)*5/100;
-
-                unsigned char color1 = RNG100(rng)*255/100;
-                unsigned char color2 = RNG100(rng)*255/100;
-                unsigned char color3 = RNG100(rng)*255/100;
-                D1.cor = {color1, color2, color3, 127};
+            player.update(Blocks, itens, enemies, effects);
+            if (player.isBoost) {
+                float posY = player.rect.y + RNG100(rng)*player.rect.height/100;
+                Dust D1;
+                D1.pos.x = player.cx;
+                D1.pos.y = posY;
+                D1.dt.x = 0;
+                D1.dt.y = 0;
+                D1.cor = {0, 255, 255, 127};
                 D1.timer = RNG100(rng);
 
-                D2.cor = {color1, color2, color3, 127};
-                D2.timer = RNG100(rng);
-
-                D3.cor = {color1, color2, color3, 127};
-                D3.timer = RNG100(rng);
-
                 dusts.push_back(D1);
-                dusts.push_back(D2);
-                dusts.push_back(D3);
-
-                auto it = std::next(effects.begin(), i);
-                effects.erase(it);
             }
-        }
 
-        Rectangle center = {WT/2, HT/2, player.rect.width, player.rect.height};
+            if (abs(player.vy) > 8 or abs(player.vx) > 8) {
+                tickBlockUpdate = 1;
+            } else {
+                tickBlockUpdate = 5;
+            }
 
-        mousePosition = GetMousePosition();
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            player.rect.x = mousePosition.x +player.rect.x - center.x;
-            player.rect.y = mousePosition.y +player.rect.y - center.y;
-        }
+            // Particles
+            for (int i = 0; i < sizeD; i++) {
+                Dust D = dusts[i];
+                D.timer -= 1;
+                if (D.timer <= 0) {
+                    auto it = std::next(dusts.begin(), i);
+                    dusts.erase(it);
+                } else {
+                    D.pos.x += D.dt.x;
+                    D.pos.y += D.dt.y;
+                    D.dt.y += 0.1;
+                    dusts[i] = D;
+                }
+            }
 
-        if (tick % 30 == 0) {
-            seconds += 1;
+            // Effects
+            for (int i = 0; i < sizeS; i++) {
+                if (effects[i].update(Blocks, player, itens, enemies)) {
+                    Dust D1, D2, D3;
+                    D1.pos.x = effects[i].cx;
+                    D1.pos.y = effects[i].cy;
+                    D2.pos.x = effects[i].cx;
+                    D2.pos.y = effects[i].cy;
+                    D3.pos.x = effects[i].cx;
+                    D3.pos.y = effects[i].cy;
+
+                    D1.dt.x = RNG100(rng)*5/100;
+                    D1.dt.y = RNG100(rng)*5/100;
+                    D2.dt.x = RNG100(rng)*5/100;
+                    D2.dt.y = RNG100(rng)*5/100;
+                    D3.dt.x = RNG100(rng)*5/100;
+                    D3.dt.y = RNG100(rng)*5/100;
+
+                    unsigned char color1 = RNG100(rng)*255/100;
+                    unsigned char color2 = RNG100(rng)*255/100;
+                    unsigned char color3 = RNG100(rng)*255/100;
+                    D1.cor = {color1, color2, color3, 127};
+                    D1.timer = RNG100(rng);
+
+                    D2.cor = {color1, color2, color3, 127};
+                    D2.timer = RNG100(rng);
+
+                    D3.cor = {color1, color2, color3, 127};
+                    D3.timer = RNG100(rng);
+
+                    dusts.push_back(D1);
+                    dusts.push_back(D2);
+                    dusts.push_back(D3);
+
+                    auto it = std::next(effects.begin(), i);
+                    effects.erase(it);
+                }
+            }
+
+            center = {WT/2, HT/2, player.rect.width, player.rect.height};
+
+            mousePosition = GetMousePosition();
+            // Fun-mode
+            // if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            //     player.rect.x = mousePosition.x +player.rect.x - center.x;
+            //     player.rect.y = mousePosition.y +player.rect.y - center.y;
+            // }
+
+            if (tick % 30 == 0) {
+                seconds += 1;
+            }
         }
 
 
@@ -1477,16 +1595,10 @@ void Play::mainLoop(Music LevelTheme) {
             if (Blocks[i].background) {
                 continue;
             }
-            if (Blocks[i].name == "nextLevel") {
+            if (Blocks[i].name == "nextLevel" and fadeout == 0) {
                 if (GenericColision(player.rect, Blocks[i].rect)) {
+                    fadeout = 1;
                     PlaySound(finish);
-                    int fadeout = 80;
-                    while(fadeout > 0) {
-                        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 1});
-                        fadeout -= 1;
-                    }
-                    UnloadSound(finish);
-                    return;
                 }
             }
             Vector2 relativePos;
@@ -1750,6 +1862,15 @@ void Play::mainLoop(Music LevelTheme) {
         // DrawRectangle(100, 50, 60, 60, test);
 
 
+        if (fadeout > 0) {
+            // Maybe change to loop so it can have that sweet Happyland Adventures vibe.
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, (unsigned char)fadeout});
+            fadeout += 1;
+            if (fadeout >= 180) {
+                break;
+            }
+        }
+
 
         if (DEBUG) {
             Vector2 relativePos;
@@ -1851,6 +1972,7 @@ void Play::mainLoop(Music LevelTheme) {
         EndDrawing();
         tick++;
     }
+    tick -= 180;
 
     UnloadSound(finish);
 }

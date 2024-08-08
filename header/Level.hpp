@@ -15,6 +15,11 @@ public:
     int heightLevel;
     float playerX;
     float playerY;
+    std::string name;
+    char* levelTheme;
+    int time;
+    std::vector<std::string> entrances;
+    std::vector<std::string> exits;
 };
 
 #endif

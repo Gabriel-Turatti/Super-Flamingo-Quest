@@ -12,7 +12,6 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
             images.push_back(LoadTexture("images/enemy-bee.png"));
             rectImage.width = 12;
             rectImage.height = 13;
-            rect.y += 1*SCALE;
         } else if (name == "snail") {
             images.push_back(LoadTexture("images/enemy-snail.png"));
             rectImage.width = 12;

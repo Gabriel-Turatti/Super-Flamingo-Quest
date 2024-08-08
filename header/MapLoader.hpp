@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <random>
+#include <string.h>
 
 #include "Block.hpp"
 #include "Effect.hpp"
@@ -38,6 +39,9 @@ public:
     MapLoader();
 
     Map LoadFile(std::string name);
+    void SaveLevel(Map level);
+    void SaveFlamingo(Flamingo player);
+    Flamingo LoadFlamingo();
 };
 
 #endif

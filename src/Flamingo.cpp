@@ -336,7 +336,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
             return 0;
         }
     }
-    if (temp.name == "nextLevel") {
+    if (temp.name == "nextLevel" or temp.name == "startLevel") {
         return 0;
     }
     Dspace = colision(HBox, temp.rect);

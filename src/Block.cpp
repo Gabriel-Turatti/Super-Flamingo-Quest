@@ -55,7 +55,14 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     } else if (namer == "nextLevel") {
         image = LoadTexture("images/block_nextLevel.png");
         friction = 1;
+    } else if (namer == "startLevel") {
+        image = LoadTexture("images/block_StartLevel.png");
+        friction = 1;
     }
+    // If you're adding a new block, make sure to also add it to:
+    // editLevel
+    // SaveFile
+
 
     if (rotator != 0) {
         float WBucket = rectImage.height;

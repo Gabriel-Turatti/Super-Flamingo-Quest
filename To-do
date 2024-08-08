@@ -62,12 +62,14 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Item selector
     (X) [+] Enemy selector
     (X) [+] Complexity calculation
-    ( ) [+] Flamingo Savefile
+    (X) [+] Flamingo Savefile
     (X) [+] Map Loading Class
     (X) [+] Game Class
-    ( ) [+] Map testing
+    (X) [+] Map testing
     (X) [+] Map Loading
-    ( ) [+] Map Saving
+    (X) [+] Map Saving
+    ( ) [+] Secret blocks
+    ( ) [+] Rotating gates and exits
 
 
 

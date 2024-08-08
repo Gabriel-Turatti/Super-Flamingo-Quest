@@ -43,8 +43,8 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         image = LoadTexture("images/food-pear.png");
         rectImage.width = 13;
         rectImage.height = 13;
-        rect.x -= 1*SCALE;
-        rect.y -= 1*SCALE;
+        rect.x -= 0*SCALE;
+        rect.y -= 0*SCALE;
     } else if (name == "food-blueberry") {
         image = LoadTexture("images/food-blueberry.png");
         rectImage.width = 9;
@@ -190,6 +190,10 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
     }
+
+    // if you're adding an item here, don't forget to also add it to:
+    // SaveFile (Twice)
+    // EditLevel
 
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;
