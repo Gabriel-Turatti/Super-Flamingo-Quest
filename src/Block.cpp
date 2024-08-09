@@ -47,7 +47,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         if (rotator == 0) {
             rect.y += 5*SCALE;
         } else if (rotator == 1) {
-            rect.x += (rectImage.height)*SCALE;
+            rect.x += 5*SCALE;
         } else if (rotator == 2) {
             rect.y += (8-rectImage.height)*SCALE;
         } else if (rotator == 3) {
@@ -62,6 +62,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     // If you're adding a new block, make sure to also add it to:
     // editLevel
     // SaveFile
+    // LoadFile
 
 
     if (rotator != 0) {

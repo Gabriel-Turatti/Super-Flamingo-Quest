@@ -215,7 +215,7 @@ int Play::complexityCalc(Enemy temp) {
 }
 
 void Play::EditLevel(std::string name) {
-    Map LevelMap = loader.LoadFile(name);
+    Map LevelMap = loader.LoadLevel(name);
     Blocks = LevelMap.Blocks;
     itens = LevelMap.itens;
     enemies = LevelMap.enemies;
@@ -359,7 +359,11 @@ void Play::EditLevel(std::string name) {
 
     Rectangle SelectSong = {WT*2/3+100, 50, WT/3-110, 30};
     char SongName[MAX_CHARS + 1] = "\0";
-    char SongNameFinal[MAX_CHARS + 1 + 10] = "songs/MainTheme.wav\0";
+    char SongNameFinal[MAX_CHARS + 1 + 10];
+    std::string bucket = LevelMap.levelTheme;
+    bucket = bucket.substr(6,-1);
+    strcpy(SongName, bucket.c_str());
+    strcpy(SongNameFinal, LevelMap.levelTheme);
     Music LevelTheme = LoadMusicStream(SongNameFinal);
     PlayMusicStream(LevelTheme);
     int SongLetterCount = 0;
@@ -371,6 +375,7 @@ void Play::EditLevel(std::string name) {
     char NameLevel[MAX_CHARS + 1] = "\0";
     int NameLetterCount = 0;
     bool NameFocus = false;
+    strcpy(NameLevel, LevelMap.name.c_str());
 
 
 
@@ -380,13 +385,30 @@ void Play::EditLevel(std::string name) {
     int FLFocus = 0;
     int sizeFL = 0;
     Rectangle FinishRect = {WT*2/3+100, 325, WT/3-110, 30};
+    FinishLinesDestination = LevelMap.exits;
 
     std::vector<Block> StartLines;
     std::vector<std::string> StartLinesDestination;
-    int SLFocus = 0;
     std::vector<int> SLDsize;
+    int SLFocus = 0;
     int sizeSL = 0;
+    StartLinesDestination = LevelMap.entrances;
 
+
+    int in = 0;
+    int out = 0;
+    for (Block temp : Blocks) {
+        if (temp.name == "nextLevel") {
+            FinishLines.push_back(temp);
+            FLDsize.push_back(FinishLinesDestination[out].size()-1);
+            out++;
+        }
+        if (temp.name == "startLevel") {
+            StartLines.push_back(temp);
+            SLDsize.push_back(StartLinesDestination[in].size()-1);
+            in++;
+        }
+    }
 
     int ItemComplexity = 0;
     int EnemyComplexity = 0;
@@ -405,9 +427,10 @@ void Play::EditLevel(std::string name) {
     int recomendedTime = 0;
     int finalTime = 0;
     Rectangle timeRect = {WT*2/3+130, 190+44, WT/3-210, 30};
-    char timeSet[MAX_CHARS + 1] = "\0";
+    char timeSet[MAX_CHARS + 1];
     int timeSize = 0;
     bool timeFocus = false;
+    strcpy(timeSet, std::to_string(LevelMap.time).c_str());
 
 
     Rectangle PlayTest = {WT*2/3+100, 280, 120, 30};
@@ -418,7 +441,10 @@ void Play::EditLevel(std::string name) {
 
 
 
-
+    // int Debug1 = 0;
+    // int Debug2 = 0;
+    // int Debug3 = 0;
+    // int Debug4 = 0;
 
     while (!WindowShouldClose()) {
         UpdateMusicStream(LevelTheme);
@@ -506,7 +532,7 @@ void Play::EditLevel(std::string name) {
         }
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            if (mouseRect.x > WT/3) {
+            if (mouseRect.x > WT*2/3) {
                 if (Menu == 1) {
                     for (Block blockOption : BlockOptions) {
                         if (GenericColision(mouseRect, blockOption.rect)) {
@@ -550,6 +576,8 @@ void Play::EditLevel(std::string name) {
                         std::vector<Enemy> backupEnemies = enemies;
                         
                         Music Musica = LoadMusicStream(SongNameFinal);
+                        player.rect.x = StartLines[0].rect.x;
+                        player.rect.y = StartLines[0].rect.y-SCALE; // test
                         mainLoop(Musica);
                         UnloadMusicStream(Musica);
 
@@ -562,6 +590,18 @@ void Play::EditLevel(std::string name) {
                     }
 
                     if (GenericColision(SaveFileRect, mouseRect)) {
+                        Map finalLevel;
+                        finalLevel.Blocks = Blocks;
+                        finalLevel.enemies = enemies;
+                        finalLevel.itens = itens;
+                        finalLevel.playerX = player.rect.x;
+                        finalLevel.playerY = player.rect.y;
+                        finalLevel.name = (std::string) NameLevel;
+                        finalLevel.time = finalTime;
+                        finalLevel.levelTheme = SongNameFinal;
+                        finalLevel.entrances = StartLinesDestination;
+                        finalLevel.exits = FinishLinesDestination;
+                        loader.SaveLevel(finalLevel);
                         break;
                     }
 
@@ -573,6 +613,7 @@ void Play::EditLevel(std::string name) {
                         if (GenericColision(temp, mouseRect)) {
                             FLFocus = i+1;
                             SLFocus = 0;
+                            i++;
                             break;
                         }
                     }
@@ -591,6 +632,7 @@ void Play::EditLevel(std::string name) {
                 }
             } else {
                 FLFocus = 0;
+                SLFocus = 0;
             }
         } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
             Rectangle mouseRectTemp = mouseRect;
@@ -666,6 +708,7 @@ void Play::EditLevel(std::string name) {
                 }
             }
         }
+
 
         if (GenericColision(mouseRect, PlayTest)) {
             playTestFocus = true;
@@ -893,12 +936,12 @@ void Play::EditLevel(std::string name) {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
             } else if (Blocks[i].name == "spike") {
                 if (Blocks[i].direction == 1) {
-                    relativePos.y += Blocks[i].rect.width;
+                    relativePos.y += Blocks[i].rect.height;
                 } else if (Blocks[i].direction == 2) {
                     relativePos.x += Blocks[i].rect.width;
                     relativePos.y += Blocks[i].rect.height;
                 } else if (Blocks[i].direction == 3) {
-                    relativePos.x += Blocks[i].rect.height;
+                    relativePos.x += Blocks[i].rect.width;
                 }
 
                 DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
@@ -1166,7 +1209,7 @@ void Play::EditLevel(std::string name) {
                 DrawRectangle(FinishRect.x, FinishRect.y+i*30, FinishRect.width, FinishRect.height, LIGHTGRAY);
                 char* temp = strdup(StartLinesDestination[j].c_str());
                 // strcpy(temp, StartLinesDestination[i].c_str()); <- essa linha simplesmente parou de funcionar e eu n sei pq...
-                DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON); // so scarlet, it was... MAROON
+                DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON);
 
 
 
@@ -1195,15 +1238,18 @@ void Play::EditLevel(std::string name) {
             }
 
 
+
+            // DrawText(TextFormat("Debug Signal 1 = %d: ", Debug1), 50, 50, 25, RED);
+            // DrawText(TextFormat("Debug Signal 2 = %d: ", Debug2), 50, 90, 25, RED);
+            // DrawText(TextFormat("Debug Signal 3 = %d: ", Debug3), 50, 130, 25, RED);
+            // DrawText(TextFormat("Debug Signal 4 = %d: ", Debug4), 50, 170, 25, RED);
+
             // if (FLFocus > 0) {
             //     int key = GetCharPressed();
             //     char* temp;
             //     strcpy(temp, FinishLinesDestination[FLFocus-1].c_str());
                 
             // }
-
-
-
         }
 
 
@@ -1241,8 +1287,12 @@ void Play::EditLevel(std::string name) {
         }
 
 
-
-
+        for (Block temp : Blocks) {
+            if (temp.name == "spike") {
+                DrawText(TextFormat("Rotation = %d", temp.direction), 50, 50, 25, RED);
+                break;
+            }
+        }
 
         EndDrawing();
     }
@@ -1252,18 +1302,6 @@ void Play::EditLevel(std::string name) {
 
 
     UnloadMusicStream(LevelTheme);
-
-    Map finalLevel;
-    finalLevel.Blocks = Blocks;
-    finalLevel.enemies = enemies;
-    finalLevel.itens = itens;
-    finalLevel.playerX = player.rect.x;
-    finalLevel.playerY = player.rect.y;
-    finalLevel.name = (std::string) NameLevel;
-    finalLevel.levelTheme = SongNameFinal;
-    finalLevel.entrances = StartLinesDestination;
-    finalLevel.exits = FinishLinesDestination;
-    loader.SaveLevel(finalLevel);
 }
 
 
@@ -1324,7 +1362,7 @@ void Play::HubLevelSelect() {
 }
 
 void Play::PlayLevel(std::string levelname) {
-    Map Level = loader.LoadFile(levelname);
+    Map Level = loader.LoadLevel(levelname);
     if (Level.playerX == -1) {
         return;
     }

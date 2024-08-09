@@ -38,10 +38,10 @@ public:
     MapLoader(int SCALER, int BSer, float width, float height);
     MapLoader();
 
-    Map LoadFile(std::string name);
     void SaveLevel(Map level);
     void SaveFlamingo(Flamingo player);
     Flamingo LoadFlamingo();
+    Map LoadLevel(std::string name);
 };
 
 #endif

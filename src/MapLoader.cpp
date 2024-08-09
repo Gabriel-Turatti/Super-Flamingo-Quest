@@ -11,263 +11,64 @@ MapLoader::MapLoader(int SCALER, int BSer, float width, float height) {
 
 MapLoader::MapLoader() {}
 
-Map MapLoader::LoadFile(std::string name) {
-    std::ifstream level("levels/"+name);
-    if (!level) {
-        level.close();
-        Map Error;
-        Error.playerX = -1;
-        Error.playerY = -1;
-        return Error;
-    }
-
-    std::string line;
-    std::string previousLine;
-    int CHL; // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
-    int widthLevel;
-    int heightLevel;
-    std::getline(level, line);
-    heightLevel = std::stoi(line);
-    std::getline(level, line);
-    widthLevel = std::stoi(line);
-
-    float playerX;
-    float playerY;
-
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> RNG100(0, 100);
-
-    int RenderPhase = 0; // 1 = Blocks; 2 = Itens; 3 = Enemies;
-    
-    Blocks.clear();
-    itens.clear();
-    enemies.clear();
-    while (!level.eof()) {
-        std::getline(level, line);
-        if (line == "endmap") {
-            break;
-        }
-        if (line[0] == 'P') {
-            CHL = 0;
-            RenderPhase += 1;
-            continue;
-        }
-        if (RenderPhase == 1) {
-            for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
-                if (line[CWL] == '-' or line[CWL] == '|' or line[CWL] == 'p' or line[CWL] == 'h') {
-                    continue;
-                }
-                if (line[CWL] == 'F') {
-                    playerX = CWL*(BS-SCALE);
-                    playerY = CHL*(BS-SCALE);
-                    continue;
-                }
-                Block tile;
-                if (line[CWL] == 'G') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE);
-                } else if (line[CWL] == 'D') {
-                    if (line[CWL+1] == '2') {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE);
-                        CWL++;
-                    } else {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE);
-                    }
-                } else if (line[CWL] == 'K') {
-                    bool rotation = false;
-                    std::string type;
-                    if (line[CWL-1] == '|') {
-                        rotation = true;
-                    }
-                    if (line[CWL+1] == 'h') {
-                        type = "hope";
-                    }
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation, false);
-                } else if (line[CWL] == 'P') {
-                    if (line[CWL+1] == 'p') {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0, false);
-                    } else {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90, false);
-                    }
-                } else if (line[CWL] == 'A') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE);
-                } else if (line[CWL] == 'S') {
-                    int orientation = 0;
-                    if (line[CWL-1] == 'S' or line[CWL+1] == 'S') {
-                        if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
-                            orientation = 2;
-                        }
-                    }
-                    if (line[CWL-1] != 'S' and line[CWL+1] != 'S') {
-                        if (line[CWL-1] != '-') {
-                            orientation = 3;
-                        } else if (line[CWL+1] != '-') {
-                            orientation = 1;
-                        } else if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
-                            orientation = 2;
-                        }
-                    }
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation, false);
-                }
-                Blocks.push_back(tile);
-            }
-            CHL++;
-            previousLine = line;
-        } else if (RenderPhase == 2) {
-            int i = 0;
-            int CWL;
-            std::string text = "";
-            std::string name = "";
-            char category;
-
-            for (; line[i] != '-'; i++) {
-                if (isdigit(line[i])) {
-                    text += line[i];
-                }
-            }
-            i++;
-            CWL = std::stoi(text);
-            text = "";
-
-
-            for (; line[i] != '-'; i++) {
-                if (isdigit(line[i])) {
-                    text += line[i];
-                }
-            }
-            i++;
-            CHL = std::stoi(text);
-            text = "";
-
-
-            for (; line[i] != '\0'; i++) {
-                if (line[i] == '\"') {
-                    continue;
-                }
-                if (line[i] == '-') {
-                    if (text == "coin") {
-                        category = 'C';
-                    } else if (text == "food") {
-                        category = 'F';
-                    } else if (text == "Hshard") {
-                        category = 'H';
-                    } else if (text == "key") {
-                        category = 'K';
-                    } else if (text == "power") {
-                        category = 'S';
-                    }
-                }
-                text += line[i];
-            }
-            name = text;
-
-            Item novoItem(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, category);
-            itens.push_back(novoItem);
-        } else if (RenderPhase == 3) {
-            int i = 0;
-            int CWL;
-            std::string text = "";
-            std::string name = "";
-
-            for (; line[i] != '-'; i++) {
-                if (isdigit(line[i])) {
-                    text += line[i];
-                }
-            }
-            i++;
-            CWL = std::stoi(text);
-            text = "";
-
-
-            for (; line[i] != '-'; i++) {
-                if (isdigit(line[i])) {
-                    text += line[i];
-                }
-            }
-            i++;
-            CHL = std::stoi(text);
-            text = "";
-
-
-            for (; line[i] != '\0'; i++) {
-                if (line[i] == '\"') {
-                    continue;
-                }
-                text += line[i];
-            }
-            name = text;
-
-            Block ground;
-            if (name == "snail" or name == "crab") {
-                int sizeB = Blocks.size();
-                for (int j = 0; j < sizeB; j++) {
-                    ground = Blocks[j];
-                    if (ground.rect.x == (float)(CHL)*(BS-SCALE) and ground.rect.y == (float)CWL*(BS-SCALE)) {
-                        break;
-                    }
-                }
-            }
-            if (name == "snail") {
-                enemies.push_back(Enemy((CHL-1)*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
-            } else if (name == "butterfly") {
-                enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-            } else if (name == "crab") {
-                enemies.push_back(Enemy(CHL*(BS-SCALE), (CWL-1)*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
-            } else if (name == "meldrop") {
-                enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-            } else {
-                enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-            }
-        }
-    }
-    
-    level.close();
-
-    Map Level;
-    Level.Blocks = Blocks;
-    Level.itens = itens;
-    Level.enemies = enemies;
-    Level.widthLevel = widthLevel;
-    Level.heightLevel = heightLevel;
-    Level.playerX = playerX;
-    Level.playerY = playerY;
-    return Level;
-}
-
 void MapLoader::SaveLevel(Map level) {
-    Block leftMostBlock;
-    Block upMostBlock;
-    Block rightMostBlock;
-    Block downMostBlock;
+    float leftMostBlock = 1.5;
+    float upMostBlock = 1.5;
+    float rightMostBlock = 1.5;
+    float downMostBlock = 1.5;
 
     for (Block temp : level.Blocks) {
-        if (leftMostBlock.SCALE == 0 or temp.rect.x < leftMostBlock.rect.x) {
-            leftMostBlock = temp;
+        if (leftMostBlock == 1.5 or temp.rect.x < leftMostBlock) {
+            leftMostBlock = temp.rect.x;
         }
-        if (upMostBlock.SCALE == 0 or temp.rect.y < upMostBlock.rect.y) {
-            upMostBlock = temp;
+        if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
+            upMostBlock = temp.rect.y;
         }
-        if (rightMostBlock.SCALE == 0 or temp.rect.x > rightMostBlock.rect.x) {
-            rightMostBlock = temp;
+        if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
+            rightMostBlock = temp.rect.x+temp.rect.width;
         }
-        if (downMostBlock.SCALE == 0 or temp.rect.y > downMostBlock.rect.y) {
-            downMostBlock = temp;
+        if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
+            downMostBlock = temp.rect.y+temp.rect.height;
+        }
+    }
+    for (Item temp : level.itens) {
+        if (leftMostBlock == 1.5 or temp.rect.x < leftMostBlock) {
+            leftMostBlock = temp.rect.x;
+        }
+        if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
+            upMostBlock = temp.rect.y;
+        }
+        if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
+            rightMostBlock = temp.rect.x+temp.rect.width;
+        }
+        if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
+            downMostBlock = temp.rect.y+temp.rect.height;
         }
     }
 
-    level.widthLevel = (int) (rightMostBlock.rect.x - leftMostBlock.rect.x)/BS;
-    level.heightLevel = (int) (upMostBlock.rect.y - downMostBlock.rect.y)/BS;
+    level.widthLevel = (int) (rightMostBlock - leftMostBlock -SCALE)/(BS-SCALE);
+    level.heightLevel = (int) (downMostBlock - upMostBlock -SCALE)/(BS-SCALE);
 
-    int lineOffset = leftMostBlock.rect.x/BS;
-    int columnOffset = upMostBlock.rect.y/BS;
+    int lineOffset;
+    int columnOffset;
+    if (leftMostBlock < 0) {
+        columnOffset = (leftMostBlock)/(BS-SCALE);
+    } else {
+        columnOffset = (leftMostBlock)/(BS-SCALE);
+    }
+    if (upMostBlock < 0) {
+        lineOffset = (upMostBlock)/(BS-SCALE);
+    } else {
+        lineOffset = (upMostBlock)/(BS-SCALE);
+    }
 
     std::map<int, std::map<int, Block>> NewBlocksGround;
     std::map<int, std::map<int, Block>> NewBlocksBackground;
     std::map<int, std::map<int, Item>> NewItens;
 
-    for (Block temp : level.Blocks) {
-        int LinePos = (int) (temp.rect.y/BS) - lineOffset;
-        int ColumnPos = (int) (temp.rect.x/BS) - columnOffset;
+    for (Block temp : level.Blocks) { // May cause bugs if position is negative
+        int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
+        int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
         if (temp.background) {
             NewBlocksBackground[LinePos][ColumnPos] = temp;
         } else {
@@ -278,7 +79,7 @@ void MapLoader::SaveLevel(Map level) {
 
     for (Item temp : level.itens) {
         std::string name = temp.name;
-         if (name == "coin-copper") {
+        if (name == "coin-copper") {
             temp.rect.x -= 2*SCALE;
             temp.rect.y -= 1*SCALE;
         } else if (name == "coin-silver") {
@@ -370,8 +171,8 @@ void MapLoader::SaveLevel(Map level) {
             temp.rect.y += 1*SCALE;
         }
 
-        int LinePos = (int) (temp.rect.y/BS) - lineOffset;
-        int ColumnPos = (int) (temp.rect.x/BS) - columnOffset;
+        int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
+        int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
         NewItens[LinePos][ColumnPos] = temp;
     }
 
@@ -379,7 +180,7 @@ void MapLoader::SaveLevel(Map level) {
 
     std::ofstream LevelSave("levels/"+level.name);
     if (LevelSave.is_open()) {
-        std::string emptyLine('-', level.widthLevel);
+        std::string emptyLine(level.widthLevel, '-');
 
         LevelSave << std::to_string(level.heightLevel) << '\n';
         LevelSave << std::to_string(level.widthLevel) << '\n';
@@ -398,7 +199,7 @@ void MapLoader::SaveLevel(Map level) {
         LevelSave << "P1\n";
         for (int i = 0; i < level.heightLevel; i++) {
             if (NewBlocksGround.count(i) == 0) {
-                LevelSave << emptyLine;
+                LevelSave << emptyLine << '\n';
                 continue;
             }
             for (int j = 0; j < level.widthLevel; j++) {
@@ -428,11 +229,11 @@ void MapLoader::SaveLevel(Map level) {
                     } else if (NewBlocksGround[i][j].name == "spike") {
                         LevelSave << "(S" + std::to_string(NewBlocksGround[i][j].direction) + ")";
                     } else if (NewBlocksGround[i][j].name == "altar") {
-                        LevelSave << "A";
+                        LevelSave << 'A';
                     } else if (NewBlocksGround[i][j].name == "nextLevel") {
-                        LevelSave << "N";
+                        LevelSave << 'N';
                     } else if (NewBlocksGround[i][j].name == "startLevel") {
-                        LevelSave << "F";
+                        LevelSave << 'F';
                     }
                 } else {
                     LevelSave << '-';
@@ -448,7 +249,7 @@ void MapLoader::SaveLevel(Map level) {
         LevelSave << "P2\n";
         for (int i = 0; i < level.heightLevel; i++) {
             if (NewBlocksBackground.count(i) == 0) {
-                LevelSave << emptyLine;
+                LevelSave << emptyLine << '\n';
                 continue;
             }
             for (int j = 0; j < level.widthLevel; j++) {
@@ -497,7 +298,7 @@ void MapLoader::SaveLevel(Map level) {
         LevelSave << "P3\n";
         for (int i = 0; i < level.heightLevel; i++) {
             if (NewItens.count(i) == 0) {
-                LevelSave << emptyLine;
+                LevelSave << emptyLine << '\n';
                 continue;
             }
             for (int j = 0; j < level.widthLevel; j++) {
@@ -589,14 +390,12 @@ void MapLoader::SaveLevel(Map level) {
 
         LevelSave << "P4\n";
         for (Enemy temp : level.enemies) {
-            int columnPos = temp.rect.x/BS;
-            int linePos = temp.rect.y/BS;
+            int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
+            int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
             if (temp.name == "snail") {
-                columnPos += 1;
-            } else if (temp.name == "crab") {
-                linePos += 1;
+                LinePos += 1;
             }
-            LevelSave << std::to_string(columnPos) << '-' << std::to_string(linePos) << '-' << '\"' << temp.name << "\"\n";
+            LevelSave << std::to_string(LinePos) << '-' << std::to_string(ColumnPos) << '-' << '\"' << temp.name << "\"\n";
         }
 
 
@@ -776,17 +575,26 @@ Map MapLoader::LoadLevel(std::string name) {
     }
 
     std::string line;
-    std::string previousLine;
-    int CHL; // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
+    int CHL = 0; // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
     int widthLevel;
     int heightLevel;
+    float playerX;
+    float playerY;
+    std::vector<std::string> exits;
+    std::vector<std::string> entrances;
+
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> RNG100(0, 100);
+
+    int charPoint = 0;
+
+
+
     std::getline(level, line);
     heightLevel = std::stoi(line);
     std::getline(level, line);
     widthLevel = std::stoi(line);
-
-    float playerX;
-    float playerY;
 
     std::getline(level, line);
     char* LevelTheme = strdup(line.c_str());
@@ -794,221 +602,279 @@ Map MapLoader::LoadLevel(std::string name) {
     std::getline(level, line);
     int timeLimit = std::stoi(line);
 
+
+
     std::getline(level, line);
-    std::vector<std::string> exits;
     while (line[0] == 'S') {
         line = line.substr(2, line.size() - 1);
         exits.push_back(line);
         std::getline(level, line);
     }
-    std::vector<std::string> entrances;
     while (line[0] == 'E') {
         line = line.substr(2, line.size() - 1);
         entrances.push_back(line);
         std::getline(level, line);
     }
 
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> RNG100(0, 100);
 
 
 
-    // to-do Below
+    int RenderPhase = 0;
+    // 1 = Blocks Ground;
+    // 2 = Blocks Background;
+    // 3 = Itens;
+    // 4 = Enemies;
+    if (line == "P1") {
+        RenderPhase = 1;
+    }
 
-    int RenderPhase = 0; // 1 = Blocks Ground; 2 = Blocks Background; 3 = Itens; 4 = Enemies;
+    std::vector<Block> Blocks;
+    std::map<int, std::map<int, Block>> BlocksMap;
+    std::vector<Item> itens;
+    std::vector<Enemy> enemies;
+    while (!level.eof()) {
+        std::getline(level, line);
+        if (line == "endmap") {
+            break;
+        }
+        if (line[0] == 'P' and line[1] != 'p') {
+            CHL = 0;
+            if (line[1] == '2') {
+                RenderPhase = 2;
+            } else if (line[1] == '3') {
+                RenderPhase = 3;
+            } else if (line[1] == '4') {
+                RenderPhase = 4;
+            }
+            continue;
+        }
+        if (RenderPhase == 1 or RenderPhase == 2) {
+            charPoint = -1;
+            for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
+                charPoint++;
+                if (line[charPoint] == '-' or line[charPoint] == 'p') {
+                    continue;
+                }
+                Block tile;
+                if (line[charPoint] == 'F') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "startLevel", SCALE);
+                    playerX = CWL*(BS-SCALE); // to-do
+                    playerY = CHL*(BS-SCALE)-SCALE;
+                } else if (line[charPoint] == 'N') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "nextLevel", SCALE);
+                } else if (line[charPoint] == 'G') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE);
+                } else if (line[charPoint] == 'B') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "brick", SCALE);
+                } else if (line[charPoint] == 'D') {
+                    if (line[charPoint+1] == '2') {
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE);
+                        charPoint++;
+                        CWL++;
+                    } else {
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE);
+                    }
+                } else if (line[charPoint] == 'P') {
+                    if (line[charPoint+1] == 'p') {
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0, false);
+                    } else {
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90, false);
+                    }
+                } else if (line[charPoint] == 'A') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE);
+                } else if (line[charPoint] == '(') {
+                    if (line[charPoint+1] == 'K') {
+                        int rotation = 0;
+                        std::string type;
+                        if (line[charPoint+2] == 'h') {
+                            type = "hope";
+                        }
+                        if (line[charPoint+2] == 'r') {
+                            type = "resilience";
+                        }
+                        if (line[charPoint+2] == 'p') {
+                            type = "power";
+                        }
+                        if (line[charPoint+2] == 'c') {
+                            type = "courage";
+                        }
+                        if (line[charPoint+2] == 'w') {
+                            type = "wisdom";
+                        }
+                        rotation = line[charPoint+3] - '0';
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation, false);
+                        charPoint += 4;
+                    } else if (line[charPoint+1] == 'S') {
+                        int orientation = line[charPoint+2] - '0';
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation, false);
+                        charPoint += 3;
+                    }
+                } else {
+                    continue;
+                }
+                if (RenderPhase == 2) {
+                    tile.background = true;
+                }
+                BlocksMap[CHL][CWL] = tile;
+                Blocks.push_back(tile);
+            }
+            CHL++;
+        } else if (RenderPhase == 3) {
+            charPoint = -1;
+            for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
+                charPoint++;
+                if (line[charPoint] == '-') {
+                    continue;
+                }
+                Item temp;
+                if (line[charPoint] == 'C') {
+                    temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "courage-potion", SCALE, 'S');
+                } else if (line[charPoint] == 'P') {
+                    temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "party-potion", SCALE, 'S');
+                } else if (line[charPoint] == '(') {
+                    if (line[charPoint+1] == 'C') {
+                        std::string addon = "copper";
+                        if (line[charPoint+2] == 'p') {
+                            addon = "silver";
+                        } else if (line[charPoint+2] == 'g') {
+                            addon = "gold";
+                        } else if (line[charPoint+2] == 'd') {
+                            addon = "death";
+                        }
+                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "coin-"+addon, SCALE, 'C');
+                    } else if (line[charPoint+1] == 'F') {
+                        std::string addon = "banana";
+                        if (line[charPoint+2] == 'r') {
+                            addon = "pear";
+                        } else if (line[charPoint+2] == 'p') {
+                            addon = "blueberry";
+                        } else if (line[charPoint+2] == 'c') {
+                            addon = "pepper";
+                        } else if (line[charPoint+2] == 'w') {
+                            addon = "orange";
+                        }
+                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "food-"+addon, SCALE, 'F');
+                    } else if (line[charPoint+1] == 'H') {
+                        std::string addon = "hope";
+                        if (line[charPoint+2] == 'r') {
+                            addon = "resilience";
+                        } else if (line[charPoint+2] == 'p') {
+                            addon = "power";
+                        } else if (line[charPoint+2] == 'c') {
+                            addon = "courage";
+                        } else if (line[charPoint+2] == 'w') {
+                            addon = "wisdom";
+                        }
+                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Hshard-"+addon, SCALE, 'H');
+                    } else if (line[charPoint+1] == 'K') {
+                        std::string addon = "hope";
+                        if (line[charPoint+2] == 'r') {
+                            addon = "resilience";
+                        } else if (line[charPoint+2] == 'p') {
+                            addon = "power";
+                        } else if (line[charPoint+2] == 'c') {
+                            addon = "courage";
+                        } else if (line[charPoint+2] == 'w') {
+                            addon = "wisdom";
+                        }
+                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "key-"+addon, SCALE, 'K');
+                    } else if (line[charPoint+1] == 'P') {
+                        std::string addon = "wind";
+                        if (line[charPoint+2] == 'p') {
+                            addon = "party";
+                        } else if (line[charPoint+2] == 'f') {
+                            addon = "fun";
+                        } else if (line[charPoint+2] == 'h') {
+                            addon = "hard";
+                        } else if (line[charPoint+2] == 'e') {
+                            addon = "eloise";
+                        }
+                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Pshard-"+addon, SCALE, 'P');
+                    } else if (line[charPoint+1] == 'S') {
+                        std::string addon = "dash";
+                        if (line[charPoint+2] == 'p') {
+                            addon = "party";
+                        } else if (line[charPoint+2] == 'f') {
+                            addon = "boost";
+                        } else if (line[charPoint+2] == 'h') {
+                            addon = "spear";
+                        } else if (line[charPoint+2] == 'e') {
+                            addon = "transmutation";
+                        }
+                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "power-"+addon, SCALE, 'S');
+                    }
+                    charPoint += 3;
+                }
+                itens.push_back(temp);
+            }
+            CHL++;
+        } else if (RenderPhase == 4) {
+            int i = 0;
+            int CWL;
+            std::string text = "";
+            std::string name = "";
+
+            for (; line[i] != '-'; i++) {
+                if (isdigit(line[i])) {
+                    text += line[i];
+                }
+            }
+            i++;
+            CHL = std::stoi(text);
+            text = "";
+
+
+            for (; line[i] != '-'; i++) {
+                if (isdigit(line[i])) {
+                    text += line[i];
+                }
+            }
+            i++;
+            CWL = std::stoi(text);
+            text = "";
+
+
+            for (; line[i] != '\0'; i++) {
+                if (line[i] == '\"') {
+                    continue;
+                }
+                text += line[i];
+            }
+            name = text;
+
+            Block ground;
+            if (name == "snail" or name == "crab") {
+                ground = BlocksMap[CHL][CWL];
+            }
+            if (name == "snail") {
+                enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
+            } else if (name == "butterfly") {
+                enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
+            } else if (name == "crab") {
+                enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
+            } else if (name == "meldrop") {
+                enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
+            } else {
+                enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
+            }
+        }
+    }
     
-    // Blocks.clear();
-    // itens.clear();
-    // enemies.clear();
-    // while (!level.eof()) {
-    //     std::getline(level, line);
-    //     if (line == "endmap") {
-    //         break;
-    //     }
-    //     if (line[0] == 'P') {
-    //         CHL = 0;
-    //         RenderPhase += 1;
-    //         continue;
-    //     }
-    //     if (RenderPhase == 1) {
-    //         for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
-    //             if (line[CWL] == '-' or line[CWL] == '|' or line[CWL] == 'p' or line[CWL] == 'h') {
-    //                 continue;
-    //             }
-    //             if (line[CWL] == 'F') {
-    //                 playerX = CWL*(BS-SCALE);
-    //                 playerY = CHL*(BS-SCALE);
-    //                 continue;
-    //             }
-    //             Block tile;
-    //             if (line[CWL] == 'G') {
-    //                 tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE);
-    //             } else if (line[CWL] == 'D') {
-    //                 if (line[CWL+1] == '2') {
-    //                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE);
-    //                     CWL++;
-    //                 } else {
-    //                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE);
-    //                 }
-    //             } else if (line[CWL] == 'K') {
-    //                 bool rotation = false;
-    //                 std::string type;
-    //                 if (line[CWL-1] == '|') {
-    //                     rotation = true;
-    //                 }
-    //                 if (line[CWL+1] == 'h') {
-    //                     type = "hope";
-    //                 }
-    //                 tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation, false);
-    //             } else if (line[CWL] == 'P') {
-    //                 if (line[CWL+1] == 'p') {
-    //                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0, false);
-    //                 } else {
-    //                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90, false);
-    //                 }
-    //             } else if (line[CWL] == 'A') {
-    //                 tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE);
-    //             } else if (line[CWL] == 'S') {
-    //                 int orientation = 0;
-    //                 if (line[CWL-1] == 'S' or line[CWL+1] == 'S') {
-    //                     if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
-    //                         orientation = 2;
-    //                     }
-    //                 }
-    //                 if (line[CWL-1] != 'S' and line[CWL+1] != 'S') {
-    //                     if (line[CWL-1] != '-') {
-    //                         orientation = 3;
-    //                     } else if (line[CWL+1] != '-') {
-    //                         orientation = 1;
-    //                     } else if (previousLine[CWL] != '-' and previousLine[CWL] != 'S') {
-    //                         orientation = 2;
-    //                     }
-    //                 }
-    //                 tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation, false);
-    //             }
-    //             Blocks.push_back(tile);
-    //         }
-    //         CHL++;
-    //         previousLine = line;
-    //     } else if (RenderPhase == 2) {
-    //         int i = 0;
-    //         int CWL;
-    //         std::string text = "";
-    //         std::string name = "";
-    //         char category;
+    level.close();
 
-    //         for (; line[i] != '-'; i++) {
-    //             if (isdigit(line[i])) {
-    //                 text += line[i];
-    //             }
-    //         }
-    //         i++;
-    //         CWL = std::stoi(text);
-    //         text = "";
-
-
-    //         for (; line[i] != '-'; i++) {
-    //             if (isdigit(line[i])) {
-    //                 text += line[i];
-    //             }
-    //         }
-    //         i++;
-    //         CHL = std::stoi(text);
-    //         text = "";
-
-
-    //         for (; line[i] != '\0'; i++) {
-    //             if (line[i] == '\"') {
-    //                 continue;
-    //             }
-    //             if (line[i] == '-') {
-    //                 if (text == "coin") {
-    //                     category = 'C';
-    //                 } else if (text == "food") {
-    //                     category = 'F';
-    //                 } else if (text == "Hshard") {
-    //                     category = 'H';
-    //                 } else if (text == "key") {
-    //                     category = 'K';
-    //                 } else if (text == "power") {
-    //                     category = 'S';
-    //                 }
-    //             }
-    //             text += line[i];
-    //         }
-    //         name = text;
-
-    //         Item novoItem(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, category);
-    //         itens.push_back(novoItem);
-    //     } else if (RenderPhase == 3) {
-    //         int i = 0;
-    //         int CWL;
-    //         std::string text = "";
-    //         std::string name = "";
-
-    //         for (; line[i] != '-'; i++) {
-    //             if (isdigit(line[i])) {
-    //                 text += line[i];
-    //             }
-    //         }
-    //         i++;
-    //         CWL = std::stoi(text);
-    //         text = "";
-
-
-    //         for (; line[i] != '-'; i++) {
-    //             if (isdigit(line[i])) {
-    //                 text += line[i];
-    //             }
-    //         }
-    //         i++;
-    //         CHL = std::stoi(text);
-    //         text = "";
-
-
-    //         for (; line[i] != '\0'; i++) {
-    //             if (line[i] == '\"') {
-    //                 continue;
-    //             }
-    //             text += line[i];
-    //         }
-    //         name = text;
-
-    //         Block ground;
-    //         if (name == "snail" or name == "crab") {
-    //             int sizeB = Blocks.size();
-    //             for (int j = 0; j < sizeB; j++) {
-    //                 ground = Blocks[j];
-    //                 if (ground.rect.x == (float)(CHL)*(BS-SCALE) and ground.rect.y == (float)CWL*(BS-SCALE)) {
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //         if (name == "snail") {
-    //             enemies.push_back(Enemy((CHL-1)*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
-    //         } else if (name == "butterfly") {
-    //             enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-    //         } else if (name == "crab") {
-    //             enemies.push_back(Enemy(CHL*(BS-SCALE), (CWL-1)*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
-    //         } else if (name == "meldrop") {
-    //             enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-    //         } else {
-    //             enemies.push_back(Enemy(CHL*(BS-SCALE), CWL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-    //         }
-    //     }
-    // }
-    
-    // level.close();
-
-    // Map Level;
-    // Level.Blocks = Blocks;
-    // Level.itens = itens;
-    // Level.enemies = enemies;
-    // Level.widthLevel = widthLevel;
-    // Level.heightLevel = heightLevel;
-    // Level.playerX = playerX;
-    // Level.playerY = playerY;
-    // Level.time = timeLimit;
-    // return Level;
+    Map Level;
+    Level.Blocks = Blocks;
+    Level.itens = itens;
+    Level.enemies = enemies;
+    Level.widthLevel = widthLevel;
+    Level.heightLevel = heightLevel;
+    Level.playerX = playerX;
+    Level.playerY = playerY;
+    Level.time = timeLimit;
+    Level.name = name;
+    Level.levelTheme = LevelTheme;
+    Level.time = timeLimit;
+    Level.entrances = entrances;
+    Level.exits = exits;
+    return Level;
 }

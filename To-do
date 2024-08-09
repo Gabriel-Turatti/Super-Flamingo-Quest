@@ -7,6 +7,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [B] Spikes teleport from left to right
     ( ) [B] Not able to walk backwards, when turning around not possible
     ( ) [B] Crabs spawning inside walls
+    ( ) [B] Meldrop not animating correctly attacks
 
 ## Alterações gerais
     ( ) [+] Different levels of jumping
@@ -70,6 +71,9 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Map Saving
     ( ) [+] Secret blocks
     ( ) [+] Rotating gates and exits
+    ( ) [+] Levels connecting
+    ( ) [B] Time not resseting on playtests
+    ( ) [R] Redo crab entirely
 
 
 

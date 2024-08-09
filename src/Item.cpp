@@ -193,6 +193,7 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
 
     // if you're adding an item here, don't forget to also add it to:
     // SaveFile (Twice)
+    // LoadLevel
     // EditLevel
 
     rect.width = rectImage.width*SCALE;

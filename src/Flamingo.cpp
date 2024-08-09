@@ -530,6 +530,9 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
 }
 
 bool Flamingo::groundCheck(Block ground) {
+    if (ground.name == "startLevel" or ground.name == "nextLevel") {
+        return false;
+    }
     if (crouch) {
         HB1.x = HitboxA.x+4*SCALE;
         HB1.y = HitboxA.y+16*SCALE;
