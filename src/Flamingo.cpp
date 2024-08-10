@@ -92,9 +92,9 @@ void Flamingo::CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &
         int sizeI = itens.size();
         for (int i = 0; i < sizeI; i++) {
             int dx = abs(itens[i].cx - cx);
-            if (dx < rect.width*2) {
+            if (dx < rect.width*3) {
                 int dy = abs(itens[i].cy - cy);
-                if (dy < rect.height*2) {
+                if (dy < rect.height*3) {
                     CIs.push_back(i);
                 }
             }
@@ -430,44 +430,11 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
 }
 
 void Flamingo::Physics(std::vector<Block> &Blocks) {
-    // Horizontal Axis checing
-    rect.x += vx;
-    updateHitbox();
-    int bsize = CBs.size();
-    for (int i = 0; i < bsize; i++) {
-        Block temp = Blocks[CBs[i]];
-        int doColide = 0, returned = 0;
-
-        if (crouch) {
-            doColide = blockColision(HitboxA, temp, false);
-        } else {
-            doColide = blockColision(Hitbox1, temp, false);
-            returned = blockColision(Hitbox2, temp, false);
-            if (returned > doColide) {
-                doColide = returned;
-            }
-            returned = blockColision(Hitbox3, temp, false);
-            if (returned > doColide) {
-                doColide = returned;
-            }
-        }
-        if (doColide == 1) {
-            Blocks[CBs[i]] = temp;
-            continue;
-        } else if (doColide == 2) {
-            // break;
-        } else if (doColide == 3) {
-            Blocks[CBs[i]] = temp;
-            break;
-        }
-    
-    }
-
-
     // Vertical Axis checking
     rect.y += vy;
     updateHitbox();
     
+    int bsize = CBs.size();
     for (int i = 0; i < bsize; i++) {
         Block temp = Blocks[CBs[i]];
         int doColide = 0, returned = 0;
@@ -506,7 +473,42 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
             break;
         }
     }
+
+    // Horizontal Axis checing
+    rect.x += vx;
+    updateHitbox();
+    for (int i = 0; i < bsize; i++) {
+        Block temp = Blocks[CBs[i]];
+        int doColide = 0, returned = 0;
+
+        if (crouch) {
+            doColide = blockColision(HitboxA, temp, false);
+        } else {
+            doColide = blockColision(Hitbox1, temp, false);
+            returned = blockColision(Hitbox2, temp, false);
+            if (returned > doColide) {
+                doColide = returned;
+            }
+            returned = blockColision(Hitbox3, temp, false);
+            if (returned > doColide) {
+                doColide = returned;
+            }
+        }
+        if (doColide == 1) {
+            Blocks[CBs[i]] = temp;
+            continue;
+        } else if (doColide == 2) {
+            // break;
+        } else if (doColide == 3) {
+            Blocks[CBs[i]] = temp;
+            break;
+        }
     
+    }
+
+
+
+
     cx = rect.x + rect.width/2;
     cy = rect.y + rect.height/2;
     if (crouch) {

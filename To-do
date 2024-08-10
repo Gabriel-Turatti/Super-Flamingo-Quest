@@ -1,4 +1,4 @@
-Se está dando bug, já tentou checar se você usou SCALE corretamente?
+Se está dando bug, já tentou ver se você não confundiu as variáveis de Height e Width pela 105 vez?
 
 ## Correção de Bugs
     ( ) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
@@ -8,6 +8,9 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [B] Not able to walk backwards, when turning around not possible
     ( ) [B] Crabs spawning inside walls
     ( ) [B] Meldrop not animating correctly attacks
+    ( ) [B] block clipping
+    ( ) [B] Black Lines from sprites
+    ( ) [B] The Misterious Forbidden Item
 
 ## Alterações gerais
     ( ) [+] Different levels of jumping
@@ -30,6 +33,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ( ) [+] Gate Rotation
     ( ) [+] Idle animation beaking feathers
     ( ) [+] Auto Complete Music name editor
+    ( ) [+] Not grab potion if full
 
 ## Refatoração
     ## Quality of code
@@ -44,6 +48,7 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     ## Quality of life
     ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
     ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
+    ( ) [R] Secrets reveal completely
 
 
 
@@ -53,8 +58,9 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Separate file class for map loading
     (X) [R] Pretty Makefile
     (X) [+] Song Selector
-    ( ) [+] Time limit
-    ( ) [+] Hope and Wisdom Regeneration
+    (X) [+] Levels connecting
+    (X) [+] Time limit
+    (X) [+] Hope and Wisdom Regeneration
     (X) [+] Level's name.
     (X) [+] Level's finish line.
     (X) [+] Finish line's direction.
@@ -69,11 +75,18 @@ Se está dando bug, já tentou checar se você usou SCALE corretamente?
     (X) [+] Map testing
     (X) [+] Map Loading
     (X) [+] Map Saving
-    ( ) [+] Secret blocks
+    (X) [+] Secret blocks
     ( ) [+] Rotating gates and exits
-    ( ) [+] Levels connecting
-    ( ) [B] Time not resseting on playtests
-    ( ) [R] Redo crab entirely
+    (X) [B] Time not resseting on playtests
+    (X) [B] Platform height click editor
+    (X) [B] Level save eating the borders
+    (X) [B] Coins not being collectable
+    (X) [R] Redo crab spawn entirely
+    (X) [R] Redo snail spawn entirely
+    (X) [B] Crashing when closing main game
+    (X) [B] Flamingo crouch being smushed
+    ( ) [B] Align Pears again
+    (X) [+] Camera fix in screen limits
 
 
 

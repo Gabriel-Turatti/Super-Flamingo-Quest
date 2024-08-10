@@ -13,8 +13,6 @@ public:
     std::vector<Enemy> enemies;
     int widthLevel;
     int heightLevel;
-    float playerX;
-    float playerY;
     std::string name;
     char* levelTheme;
     int time;

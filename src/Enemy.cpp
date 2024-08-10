@@ -1,7 +1,7 @@
 #include "../header/Enemy.hpp"
 
 
-Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> Blocks, int ticker, Block grounder) {
+Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, std::map<int, Block>> Blocks, int ticker, int i, int j) {
     rect.x = x;
     rect.y = y;
     name = namer;
@@ -39,19 +39,26 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
             rect.y += 1*SCALE;
 
             id = 1;
-            patrol1 = rect.x -20*SCALE;
-            patrol2 = rect.x +20*SCALE;
+            patrol1 = rect.x -30*SCALE;
+            patrol2 = rect.x +30*SCALE;
             vx = 1*SCALE;
             vy = 0;
-            int sizeB = Blocks.size();
-            for (int i = 0; i < sizeB; i++) {
-                Block bloquinho = Blocks[i];
-                if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
-                    if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
-                        border2 = bloquinho;
+
+            if (Blocks.count(i) > 0) {
+                for (int k = j; k > 0; k--) {
+                    if (Blocks[i].count(k) > 0) {
+                        border1 = Blocks[i][k];
+                        break;
                     }
-                    if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
-                        border1 = bloquinho;
+                }
+            }
+
+            if (Blocks.count(i) > 0) {
+                int sizeB = Blocks[i].size();
+                for (int k = j; k < sizeB; k++) {
+                    if (Blocks[i].count(k) > 0) {
+                        border2 = Blocks[i][k];
+                        break;
                     }
                 }
             }
@@ -67,11 +74,11 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
             vy = 0;
 
 
-            ground = grounder;
+            ground = Blocks[i][j];
             HBFeet = {rect.x, rect.y+(rectImage.height+1)*SCALE, rectImage.width*SCALE, (float) 2*SCALE};
             vision = {rect.x+(rectImage.width+1)*SCALE, rect.y+(rectImage.height*SCALE/2+1)*SCALE, (float) 2*SCALE, (float) 2*SCALE};
             behavior = 0; // *90º clock-wise
-            rect.y = ground.rect.y - 1*SCALE - rectImage.height*SCALE;
+            rect.y = ground.rect.y - rectImage.height*SCALE + SCALE;
         } else if (name == "butterfly") {
             images.push_back(LoadTexture("images/enemy-butterfly.png"));
             imageSize = 2;
@@ -97,62 +104,83 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
             vx = 2;
             vy = 0;
 
-            rectImage.width = 9;
-            rectImage.height = 9;
-            rect.y += 2*SCALE;
-            int sizeB = Blocks.size();
-            for (int i = 0; i < sizeB; i++) {
-                Block bloquinho = Blocks[i];
-                if (rect.y+rectImage.height*SCALE > bloquinho.rect.y and bloquinho.rect.y+bloquinho.rect.height > rect.y) {
-                    if ((border2.SCALE == 0) or (bloquinho.rect.x > rect.x and bloquinho.rect.x < border2.rect.x)) {
-                        border2 = bloquinho;
-                    }
-                    if ((border1.SCALE == 0) or (bloquinho.rect.x < rect.x and bloquinho.rect.x > border1.rect.x)) {
-                        border1 = bloquinho;
-                    }
-                }
-            }
-            rect.y -= 2*SCALE;
             rectImage.width = 13;
             rectImage.height = 13;
 
-            ground = grounder;
-            int j = 0;
-            for (; j < sizeB; j++) { // gambiarra
-                Block temp = Blocks[j];
-                if (ground.rect.x == temp.rect.x and ground.rect.y == temp.rect.y) {
-                    break;
-                }
+            if (Blocks.count(i+1) == 0) {
+                tick = 0;
+                return;
             }
 
-            Block leftGround = ground;
-            patrol1 = ground.rect.x;
+            border1 = Blocks[i+1][j];
+            for (int k = j; k >= 0; k--) {
+                if (Blocks[i+1].count(k) > 0) {
+                    border1 = Blocks[i+1][k];
+                    continue;
+                }
+                if (Blocks[i+1].count(k-1) and Blocks[i+1][k-1].rect.x+Blocks[i+1][k-1].rect.width > border1.rect.x) {
+                    border1 = Blocks[i+1][k-1];
+                    k--;
+                    continue;
+                }
+                break;
+            }
+            border2 = Blocks[i+1][j];
             int k = j;
             while (true) {
-                k--;
-                Block newLeftGround = Blocks[k];
-                if (newLeftGround.rect.y == leftGround.rect.y and newLeftGround.rect.x+newLeftGround.rect.width >= leftGround.rect.x) {
-                    leftGround = newLeftGround;
-                } else {
-                    break;
+                if (Blocks[i+1].count(k) > 0) {
+                    border2 = Blocks[i+1][k];
+                    k++;
+                    continue;
                 }
+                if (Blocks[i+1].count(k+1) > 0 and border2.rect.x+border2.rect.width > Blocks[i+1][k+1].rect.x) {
+                    k++;
+                    continue;
+                }
+                break;
             }
-            patrol1 = leftGround.rect.x;
+            
+            patrol1 = border1.rect.x;
+            patrol2 = border2.rect.x+border2.rect.width;
 
 
-            Block rightGround = ground;
-            patrol2 = ground.rect.x+ground.rectImage.width*SCALE;
-            k = j;
-            while (true) {
-                k++;
-                Block newRightGround = Blocks[k];
-                if (newRightGround.rect.y == rightGround.rect.y and newRightGround.rect.x <= rightGround.rect.x+rightGround.rect.width) {
-                    rightGround = newRightGround;
-                } else {
-                    break;
+            if (Blocks.count(i) == 0) {
+                for (int k = j; k >= 0; k--) {
+                    if (Blocks[i].count(k) > 0) {
+                        if (Blocks[i][k].rect.x+Blocks[i][k].rect.width > patrol1) {
+                            patrol1 = Blocks[i][k].rect.x+Blocks[i][k].rect.width;
+                            break;
+                        }
+                        if (Blocks.count(i-1) > 0 and Blocks[i-1].count(k) > 0 and Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width > patrol1 and Blocks[i-1][k].rect.y+Blocks[i-1][k].rect.height > border1.rect.y) {
+                            patrol1 = Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width;
+                            break;
+                        }
+                        if (Blocks[i][k].rect.x+Blocks[i][k].rect.width < patrol1) {
+                            break;
+                        }
+                    }
+                }
+
+                k = j;
+                int limit = Blocks[i].size();
+                while (limit < 0) {
+                    if (Blocks[i].count(k) > 0) {
+                        if (Blocks[i][k].rect.x < patrol2) {
+                            patrol2 = Blocks[i][k].rect.x;
+                            break;
+                        }
+                        if (Blocks.count(i-1) > 0 and Blocks[i-1].count(k) > 0 and Blocks[i-1][k].rect.x < patrol2 and Blocks[i-1][k].rect.y+Blocks[i-1][k].rect.height > border2.rect.y) {
+                            patrol2 = Blocks[i-1][k].rect.x;
+                            break;
+                        }
+                        if (Blocks[i][k].rect.x > patrol2) {
+                            break;
+                        }
+                    }
+                    k++;
+                    limit--;
                 }
             }
-            patrol2 = rightGround.rect.x+rightGround.rect.width;
         } else if (name == "meldrop") {
             images.push_back(LoadTexture("images/enemy-meldrop.png"));
             imageSize = 2;
@@ -177,6 +205,9 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::vector<Bl
 Enemy::Enemy() {SCALE = 0;}
 
 void Enemy::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects) {
+    if (tick == 0) {
+        return;
+    }
     switch(id) {
         case (1):
             bee();
@@ -212,7 +243,7 @@ void Enemy::bee() {
     rect.x += vx;
     cx += vx;
 
-    if (GenericColision(border1.rect, rect) or GenericColision(border2.rect, rect)) {
+    if ((border1.SCALE != 0 and GenericColision(border1.rect, rect)) or border2.SCALE != 0 and GenericColision(border2.rect, rect)) {
         vx = -vx;
     }
 }
@@ -408,9 +439,6 @@ void Enemy::crab(Flamingo &player) {
     if (rect.x < patrol1) {
         rect.x = patrol1;
         cx = rect.x+rect.width/2;
-    }
-    if (GenericColision(border1.rect, rect) or GenericColision(border2.rect, rect)) {
-        vx = -vx;
     }
 }
 

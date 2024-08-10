@@ -1,6 +1,6 @@
 #include "../header/Block.hpp"
 
-Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator, bool backgrounder) {
+Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator, bool backgrounder, bool secreter) {
     rect.x = x;
     rect.y = y;
     SCALE = SCALER;
@@ -75,6 +75,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     }
 
     background = backgrounder;
+    secret = secreter;
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;
     if (namer == "platform") {

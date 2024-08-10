@@ -52,7 +52,7 @@ public:
     // all
     int behavior;
 
-    Enemy(float x, float y, std::string namer, int imagescale, std::vector<Block> Blocks, int ticker, Block grounder = Block());
+    Enemy(float x, float y, std::string namer, int imagescale, std::map<int, std::map<int, Block>>, int ticker, int i = 0, int j = 0);
 
     Enemy();
 

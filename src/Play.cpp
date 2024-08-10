@@ -219,8 +219,16 @@ void Play::EditLevel(std::string name) {
     Blocks = LevelMap.Blocks;
     itens = LevelMap.itens;
     enemies = LevelMap.enemies;
-    player.rect.x = LevelMap.playerX;
-    player.rect.y = LevelMap.playerY;
+    seconds = LevelMap.time;
+    widthLevel = LevelMap.widthLevel;
+    heightLevel = LevelMap.heightLevel;
+
+    for (Block temp : Blocks) {
+        if (temp.name == "startLevel") {
+            player.rect.x = temp.rect.x;
+            player.rect.y = temp.rect.y-SCALE;
+        }
+    }
 
 
     float cx = WT/2;
@@ -279,11 +287,12 @@ void Play::EditLevel(std::string name) {
     ItemOptions.push_back(Item(0, 0, "power-spear", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-transmutation", SCALE, 'S'));
     std::vector<Enemy> EnemyOptions;
-    EnemyOptions.push_back(Enemy(0, 0, "bee", SCALE, Blocks, 0));
-    EnemyOptions.push_back(Enemy(0, 0, "snail", SCALE, Blocks, 0));
-    EnemyOptions.push_back(Enemy(0, 0, "butterfly", SCALE, Blocks, 0));
-    EnemyOptions.push_back(Enemy(0, 0, "crab", SCALE, Blocks, 0));
-    EnemyOptions.push_back(Enemy(0, 0, "meldrop", SCALE, Blocks, 0));
+    std::map<int, std::map<int, Block>> templates;
+    EnemyOptions.push_back(Enemy(0, 0, "bee", SCALE, templates, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "snail", SCALE, templates, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "butterfly", SCALE, templates, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "crab", SCALE, templates, 0));
+    EnemyOptions.push_back(Enemy(0, 0, "meldrop", SCALE, templates, 0));
 
 
     float Px = WT*2/3 + 30;
@@ -353,6 +362,7 @@ void Play::EditLevel(std::string name) {
     Item mouseItem;
     Enemy mouseEnemy;
     bool background = false;
+    bool secret = false;
     int rotation = 0;
 
     const int MAX_CHARS = 40;
@@ -423,9 +433,9 @@ void Play::EditLevel(std::string name) {
     }
 
 
-    int levelTime = 0;
-    int recomendedTime = 0;
-    int finalTime = 0;
+    int levelTime = seconds;
+    int recomendedTime = seconds;
+    int finalTime = seconds;
     Rectangle timeRect = {WT*2/3+130, 190+44, WT/3-210, 30};
     char timeSet[MAX_CHARS + 1];
     int timeSize = 0;
@@ -484,7 +494,15 @@ void Play::EditLevel(std::string name) {
             cx += BS-SCALE;
         }
         if (E) {
-            background = !background;
+            if (secret) {
+                secret = false;
+            } else if (background) {
+                background = false;
+                secret = true;
+            } else {
+                secret = false;
+                background = true;
+            }
         }
         if (R) {
             rotation += 1;
@@ -492,7 +510,7 @@ void Play::EditLevel(std::string name) {
                 rotation = 0;
             }
             if (mouseBlock.SCALE != 0) {
-                mouseBlock = Block(mouseRect.x, mouseRect.y, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, rotation, background);
+                mouseBlock = Block(mouseRect.x, mouseRect.y, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, rotation, background, secret);
             }
         }
 
@@ -534,9 +552,16 @@ void Play::EditLevel(std::string name) {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             if (mouseRect.x > WT*2/3) {
                 if (Menu == 1) {
+                    Rectangle temp;
                     for (Block blockOption : BlockOptions) {
+                        if (blockOption.name == "platform") {
+                            temp = {blockOption.rect.x, blockOption.rect.y, blockOption.rectImage.width*SCALE, blockOption.rectImage.height*SCALE};
+                            if (GenericColision(mouseRect, temp)) {
+                                mouseBlock = Block(mouseRect.x, mouseRect.y, blockOption.rect.width, blockOption.rect.height, blockOption.name, SCALE, 0, background, secret);
+                            }
+                        }
                         if (GenericColision(mouseRect, blockOption.rect)) {
-                            mouseBlock = Block(mouseRect.x, mouseRect.y, blockOption.rect.width, blockOption.rect.height, blockOption.name, SCALE, 0, background);
+                            mouseBlock = Block(mouseRect.x, mouseRect.y, blockOption.rect.width, blockOption.rect.height, blockOption.name, SCALE, 0, background, secret);
                         }
                     }
                 } else if (Menu == 2) {
@@ -548,7 +573,7 @@ void Play::EditLevel(std::string name) {
                 } else if (Menu == 3) {
                     for (Enemy enemyOption : EnemyOptions) {
                         if (GenericColision(mouseRect, enemyOption.rect)) {
-                            mouseEnemy = Enemy(mouseRect.x, mouseRect.y, enemyOption.name, SCALE, Blocks, 0);
+                            mouseEnemy = Enemy(mouseRect.x, mouseRect.y, enemyOption.name, SCALE, templates, 0);
                         }
                     }
                 } else if (Menu == 4) {
@@ -570,23 +595,26 @@ void Play::EditLevel(std::string name) {
                         timeFocus = false;
                     }
 
-                    if (GenericColision(PlayTest, mouseRect)) {
+                    if (GenericColision(PlayTest, mouseRect) and StartLines.size() > 0) {
                         std::vector<Item> backupItens = itens;
                         std::vector<Block> backupBlocks = Blocks;
                         std::vector<Enemy> backupEnemies = enemies;
+
                         
                         Music Musica = LoadMusicStream(SongNameFinal);
                         player.rect.x = StartLines[0].rect.x;
                         player.rect.y = StartLines[0].rect.y-SCALE; // test
+                        tick = 1;
+                        seconds = finalTime;
                         mainLoop(Musica);
                         UnloadMusicStream(Musica);
 
                         levelTime = tick/30;
                         recomendedTime = levelTime*2;
-                        finalTime = recomendedTime;
                         Blocks = backupBlocks;
                         enemies = backupEnemies;
                         itens = backupItens;
+                        tick = 1;
                     }
 
                     if (GenericColision(SaveFileRect, mouseRect)) {
@@ -594,8 +622,6 @@ void Play::EditLevel(std::string name) {
                         finalLevel.Blocks = Blocks;
                         finalLevel.enemies = enemies;
                         finalLevel.itens = itens;
-                        finalLevel.playerX = player.rect.x;
-                        finalLevel.playerY = player.rect.y;
                         finalLevel.name = (std::string) NameLevel;
                         finalLevel.time = finalTime;
                         finalLevel.levelTheme = SongNameFinal;
@@ -732,7 +758,7 @@ void Play::EditLevel(std::string name) {
         ClearBackground(BLUE);
 
 
-        Vector2 posGrid = {0, 0};
+        Vector2 posGrid = {0, 0}; // Draw Grid
         for (int i = 0; i < BHT+3; i++) {
             for (int j = 0; j < BWT+3; j++) {
                 DrawTextureEx(grid, posGrid, 0, SCALE, WHITE);
@@ -743,11 +769,11 @@ void Play::EditLevel(std::string name) {
                             float Bx = cx -WT/2 +posGrid.x;
                             float By = cy -HT/2 +posGrid.y;
                             if (Menu == 1) {
-                                placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, mouseBlock.direction, background);
+                                placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, mouseBlock.direction, background, secret);
                             } else if (Menu == 2) {
                                 placeItem = Item(Bx, By, mouseItem.name, SCALE, mouseItem.category);
                             } else if (Menu == 3) {
-                                placeEnemy = Enemy(Bx, By, mouseEnemy.name, SCALE, Blocks, 0);
+                                placeEnemy = Enemy(Bx, By, mouseEnemy.name, SCALE, templates, 0);
                             }
                             placeable = true;
                         }
@@ -948,6 +974,11 @@ void Play::EditLevel(std::string name) {
             } else {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
             }
+            if (Blocks[i].secret) {
+                relativePos.x = WT/2 +Blocks[i].rect.x -cx;
+                relativePos.y = HT/2 +Blocks[i].rect.y -cy;
+                DrawText("S", relativePos.x, relativePos.y, BS, WHITE);
+            }
         }
 
         // Desenhando itens
@@ -984,15 +1015,61 @@ void Play::EditLevel(std::string name) {
             if (Menu == 1) {
                 Blocks.push_back(placeBlock);
                 if (placeBlock.name == "nextLevel") {
-                    FinishLines.push_back(placeBlock);
-                    FinishLinesDestination.push_back("Goes to\0");
-                    FLDsize.push_back(7);
+                    int i = 0;
+                    bool sucess = false;
+                    for (Block temp : FinishLines) {
+                        if (placeBlock.rect.y < temp.rect.y) {
+                            FinishLines.insert(FinishLines.begin() + i, placeBlock);
+                            FinishLinesDestination.insert(FinishLinesDestination.begin() + i, "Goes to\0");
+                            FLDsize.insert(FLDsize.begin() + i, 7);
+                            sucess = true;
+                            break;
+                        }
+                        if (placeBlock.rect.y == temp.rect.y) {
+                            if (placeBlock.rect.x < temp.rect.x) {
+                                FinishLines.insert(FinishLines.begin() + i, placeBlock);
+                                FinishLinesDestination.insert(FinishLinesDestination.begin() + i, "Goes to\0");
+                                FLDsize.insert(FLDsize.begin() + i, 7);
+                                sucess = true;
+                                break;
+                            }
+                        }
+                        i++;
+                    }
+                    if (!sucess) {
+                        FinishLines.insert(FinishLines.begin() + i, placeBlock);
+                        FinishLinesDestination.insert(FinishLinesDestination.begin() + i, "Goes to\0");
+                        FLDsize.insert(FLDsize.begin() + i, 7);
+                    }
                 } else if (placeBlock.name == "startLevel") {
+                    int i = 0;
+                    bool sucess = false;
                     player.rect.x = placeBlock.rect.x;
                     player.rect.y = placeBlock.rect.y;
-                    StartLines.push_back(placeBlock);
-                    StartLinesDestination.push_back("Arrives from\0");
-                    SLDsize.push_back(12);
+                    for (Block temp : StartLines) {
+                        if (placeBlock.rect.y < temp.rect.y) {
+                            StartLines.insert(StartLines.begin() + i, placeBlock);
+                            StartLinesDestination.insert(StartLinesDestination.begin() + i, "Arrives from\0");
+                            SLDsize.insert(SLDsize.begin() + i, 12);
+                            sucess = true;
+                            break;
+                        }
+                        if (placeBlock.rect.y == temp.rect.y) {
+                            if (placeBlock.rect.x < temp.rect.x) {
+                                StartLines.insert(StartLines.begin() + i, placeBlock);
+                                StartLinesDestination.insert(StartLinesDestination.begin() + i, "Arrives from\0");
+                                SLDsize.insert(SLDsize.begin() + i, 12);
+                                sucess = true;
+                                break;
+                            }
+                        }
+                        i++;
+                    }
+                    if (!sucess) {
+                        StartLines.insert(StartLines.begin() + i, placeBlock);
+                        StartLinesDestination.insert(StartLinesDestination.begin() + i, "Goes to\0");
+                        SLDsize.insert(SLDsize.begin() + i, 7);
+                    }
                 }
             } else if (Menu == 2) {
                 itens.push_back(placeItem);
@@ -1270,6 +1347,11 @@ void Play::EditLevel(std::string name) {
             } else {
                 DrawTextureEx(mouseBlock.image, {relativePos.x, relativePos.y}, mouseBlock.direction*-90, SCALE, WHITE);
             }
+            if (secret) {
+                int tcx = mouseBlock.rect.x + mouseBlock.rect.width/2;
+                int tcy = mouseBlock.rect.y + mouseBlock.rect.height/2;
+                DrawText("S", tcx, tcy, BS, WHITE);
+            }
         } else if (Menu == 2 and mouseItem.SCALE != 0) {
             DrawTextureEx(mouseItem.image, {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
         } else if (Menu == 3 and mouseEnemy.SCALE != 0) {
@@ -1294,6 +1376,8 @@ void Play::EditLevel(std::string name) {
             }
         }
 
+        // DrawText(TextFormat("Crab POSITION X: %02.02f", enemies[0].rect.x), 50, 50, 50, RED);
+        // DrawText(TextFormat("Crab POSITION Y: %02.02f", enemies[0].rect.y), 50, 100, 50, RED);
         EndDrawing();
     }
 
@@ -1303,6 +1387,7 @@ void Play::EditLevel(std::string name) {
 
     UnloadMusicStream(LevelTheme);
 }
+
 
 
 void Play::HubLevelSelect() {
@@ -1330,7 +1415,13 @@ void Play::HubLevelSelect() {
                 DrawRectangle(positionX, positionY, 200, 25, BLACK);
                 Rectangle levelRect = {positionX, positionY, 200, 25};
                 if (GenericColision(mouseRect, levelRect)) {
-                    PlayLevel(level);
+                    std::string entrance = "";
+                    while(level != "") {
+                        player.Health(7, 'H');
+                        std::string nextLevel = PlayLevel(level, entrance);
+                        entrance = level;
+                        level = nextLevel;
+                    }
                 }
                 positionY += 30;
             }
@@ -1361,42 +1452,61 @@ void Play::HubLevelSelect() {
     }
 }
 
-void Play::PlayLevel(std::string levelname) {
+std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     Map Level = loader.LoadLevel(levelname);
-    if (Level.playerX == -1) {
-        return;
+    if (Level.time == -1) {
+        return "";
     }
     Blocks = Level.Blocks;
     itens = Level.itens;
     enemies = Level.enemies;
-    player.rect.x = Level.playerX;
-    player.rect.y = Level.playerY;
-    RNGWidth = std::uniform_int_distribution<std::mt19937::result_type>(0, Level.widthLevel);
-    RNGHeight = std::uniform_int_distribution<std::mt19937::result_type> (0, Level.heightLevel);
-
-    Music LevelTheme;
-    int song = RNG100(rng);
-    if (song <= 1) {
-        LevelTheme = LoadMusicStream("songs/BrighterWays.wav");
-    }else if (song <= 3) {
-        LevelTheme = LoadMusicStream("songs/Couragetheme.wav");
-    } else if (song <= 7) {
-        LevelTheme = LoadMusicStream("songs/Powertheme.wav");
-    } else if (song <= 15) {
-        LevelTheme = LoadMusicStream("songs/Resiliencetheme.wav");
-    } else if (song <= 30) {
-        LevelTheme = LoadMusicStream("songs/Hopetheme.wav");
-    } else if (song <= 61) {
-        LevelTheme = LoadMusicStream("songs/GrassyWalks.wav");
-    } else {
-        LevelTheme = LoadMusicStream("songs/HumidInsomnia.wav");
+    seconds = Level.time;
+    int trueEntrance = 0;
+    if (entrance != "") {
+        for (std::string option : Level.entrances) {
+            if (option == entrance) {
+                break;
+            }
+            trueEntrance++;
+        }
     }
-    mainLoop(LevelTheme);
+    for (Block temp : Blocks) {
+        if (temp.name == "startLevel") {
+            if (trueEntrance == 0) {
+                player.rect.x = temp.rect.x;
+                player.rect.y = temp.rect.y-SCALE;
+                break;
+            } else {
+                trueEntrance--;
+            }
+        }
+    }
+
+
+    widthLevel = Level.widthLevel;
+    heightLevel = Level.heightLevel;
+    RNGWidth = std::uniform_int_distribution<std::mt19937::result_type>(0, widthLevel);
+    RNGHeight = std::uniform_int_distribution<std::mt19937::result_type> (0, heightLevel);
+
+
+
+    Music LevelTheme = LoadMusicStream(Level.levelTheme);
+    int saida = mainLoop(LevelTheme);
     UnloadMusicStream(LevelTheme);
+
+    if (saida == -1) {
+        return "";
+    }
+
+    std::string nextLevel = Level.exits[saida];
+
+    return nextLevel;
 }
 
-void Play::mainLoop(Music LevelTheme) {
+int Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
+    player.vx = 0;
+    player.vy = 0;
 
     PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
@@ -1404,7 +1514,18 @@ void Play::mainLoop(Music LevelTheme) {
     tick = 1;
     
     int fadeout = 0;
+    int saida = -1;
 
+    Vector2 relativePos;
+    Rectangle cameraCenter = {WT/2, HT/2, player.rect.width, player.rect.height};
+    Rectangle relativeCameraCenter = {player.rect.x, player.rect.y, player.rect.width/SCALE, player.rect.height/SCALE};
+    Rectangle playerDest = {0, 0, player.rect.width, player.rect.height};
+
+    float leftLimit, rightLimit, upperLimit, downLimit;
+    leftLimit = 1*BS;
+    upperLimit = 0;
+    rightLimit = (widthLevel+1)*BS;
+    downLimit = heightLevel*BS;
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
             UpdateMusicStream(LevelTheme);
@@ -1415,7 +1536,6 @@ void Play::mainLoop(Music LevelTheme) {
         sizeS = effects.size();
         sizeI = itens.size();
 
-        Rectangle center;
         if (fadeout == 0) {
 
             // Entities Updates
@@ -1496,30 +1616,50 @@ void Play::mainLoop(Music LevelTheme) {
                 }
             }
 
-            center = {WT/2, HT/2, player.rect.width, player.rect.height};
 
             mousePosition = GetMousePosition();
             // Fun-mode
             // if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            //     player.rect.x = mousePosition.x +player.rect.x - center.x;
-            //     player.rect.y = mousePosition.y +player.rect.y - center.y;
+            //     player.rect.x = mousePosition.x +player.rect.x - cameraCenter.x;
+            //     player.rect.y = mousePosition.y +player.rect.y - cameraCenter.y;
             // }
 
             if (tick % 30 == 0) {
-                seconds += 1;
+                seconds -= 1;
+            }
+            if (seconds < 0 and tick % 60 == 0) {
+                player.Health(-1, 'H');
             }
         }
 
+        
+        // relative Camera movement
+        if (relativeCameraCenter.x > player.rect.x+BS) {
+            relativeCameraCenter.x -= (relativeCameraCenter.x - player.rect.x)/BS;
+        }
+        if (relativeCameraCenter.x < player.rect.x-BS) {
+            relativeCameraCenter.x -= (relativeCameraCenter.x - player.rect.x)/BS;
+        }
+        if (relativeCameraCenter.y > player.rect.y+BS) {
+            relativeCameraCenter.y -= (relativeCameraCenter.y - player.rect.y)/BS;
+        }
+        if (relativeCameraCenter.y < player.rect.y-BS) {
+            relativeCameraCenter.y -= (relativeCameraCenter.y - player.rect.y)/BS;
+        }
 
 
-
-
-
-
-
-
-
-
+        if (relativeCameraCenter.x + GetScreenWidth() > rightLimit) {
+            relativeCameraCenter.x = rightLimit - GetScreenWidth();
+        }
+        if (relativeCameraCenter.y + GetScreenHeight()/2 > downLimit) {
+            relativeCameraCenter.y = downLimit - GetScreenHeight()/2;
+        }
+        if (relativeCameraCenter.x - GetScreenWidth()/2 < leftLimit) {
+            relativeCameraCenter.x = leftLimit + GetScreenWidth()/2;
+        }
+        if (relativeCameraCenter.y - GetScreenHeight()/2 < upperLimit) {
+            relativeCameraCenter.y = upperLimit + GetScreenHeight()/2;
+        }
 
 
         // Desenhando coisas
@@ -1534,9 +1674,8 @@ void Play::mainLoop(Music LevelTheme) {
             if (!Blocks[i].background) {
                 continue;
             }
-            Vector2 relativePos;
-            relativePos.x = center.x +Blocks[i].rect.x -player.rect.x;
-            relativePos.y = center.y +Blocks[i].rect.y -player.rect.y;
+            relativePos.x = cameraCenter.x +Blocks[i].rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +Blocks[i].rect.y -relativeCameraCenter.y;
             
             if (Blocks[i].name == "gate-hope") {
                 Rectangle cut, dest;
@@ -1575,21 +1714,25 @@ void Play::mainLoop(Music LevelTheme) {
             playerColor = {255, 255, 0, 255};
         }
 
+
+        playerDest.x = cameraCenter.x +player.rect.x -relativeCameraCenter.x;
+        playerDest.y = cameraCenter.y +player.rect.y -relativeCameraCenter.y;
+        playerDest.width = player.rect.width;
+        playerDest.height = player.rect.height;
         if (player.lookingRight) {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rectImage.width, player.rectImage.height}, center, {0, 0}, 0, playerColor);
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rectImage.width, player.rectImage.height}, playerDest, {0, 0}, 0, playerColor);
         } else {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rectImage.width, player.rectImage.height}, center, {0, 0}, 0, playerColor);
+            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rectImage.width, player.rectImage.height}, playerDest, {0, 0}, 0, playerColor);
         }
 
 
 
         // Desenhando inimigos
         for (int i = 0; i < sizeE; i++) {
-            Vector2 relativePos;
             Rectangle source, dest;
 
-            relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-            relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+            relativePos.x = cameraCenter.x +enemies[i].rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +enemies[i].rect.y -relativeCameraCenter.y;
 
             source.x = 0 + enemies[i].imageCount*(enemies[i].rectImage.width+1);
             source.y = 0;
@@ -1628,6 +1771,13 @@ void Play::mainLoop(Music LevelTheme) {
             }
         }
 
+        // Desenhando itens
+        for (int i = 0; i < sizeI; i++) {
+            relativePos.x = cameraCenter.x +itens[i].rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +itens[i].rect.y -relativeCameraCenter.y;
+            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
+        }
+
         // Desenhando blocos Ground
         for (int i = 0; i < sizeB; i++) {
             if (Blocks[i].background) {
@@ -1636,12 +1786,12 @@ void Play::mainLoop(Music LevelTheme) {
             if (Blocks[i].name == "nextLevel" and fadeout == 0) {
                 if (GenericColision(player.rect, Blocks[i].rect)) {
                     fadeout = 1;
+                    saida = i;
                     PlaySound(finish);
                 }
             }
-            Vector2 relativePos;
-            relativePos.x = center.x +Blocks[i].rect.x -player.rect.x;
-            relativePos.y = center.y +Blocks[i].rect.y -player.rect.y;
+            relativePos.x = cameraCenter.x +Blocks[i].rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +Blocks[i].rect.y -relativeCameraCenter.y;
             if (Blocks[i].name == "gate-hope") {
                 Rectangle cut, dest;
                 dest.x = relativePos.x;
@@ -1670,22 +1820,13 @@ void Play::mainLoop(Music LevelTheme) {
             }
         }
 
-        // Desenhando itens
-        for (int i = 0; i < sizeI; i++) {
-            Vector2 relativePos;
-            relativePos.x = center.x +itens[i].rect.x -player.rect.x;
-            relativePos.y = center.y +itens[i].rect.y -player.rect.y;
-            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
-        }
-
         // Desenhando Efeitos
         for (int i = 0; i < sizeS; i++) {
             Effect temp = effects[i];
-            Vector2 relativePos;
             Rectangle source, dest;
 
-            relativePos.x = center.x +temp.rect.x -player.rect.x;
-            relativePos.y = center.y +temp.rect.y -player.rect.y;
+            relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
 
             source.x = 0 + temp.imageCount*(temp.rectImage.width);
             source.y = 0;
@@ -1712,10 +1853,9 @@ void Play::mainLoop(Music LevelTheme) {
         // Desenhando Particulas
         for (int i = 0; i < sizeD; i++) {
             Dust D = dusts[i];
-            Vector2 relativePos;
 
-            relativePos.x = center.x +D.pos.x -player.rect.x;
-            relativePos.y = center.y +D.pos.y -player.rect.y;
+            relativePos.x = cameraCenter.x +D.pos.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +D.pos.y -relativeCameraCenter.y;
             DrawCircle(relativePos.x, relativePos.y, (D.timer/20)+SCALE, {0, 0, 0, 127});
             DrawCircle(relativePos.x, relativePos.y, (D.timer/20), D.cor);
         }
@@ -1853,8 +1993,12 @@ void Play::mainLoop(Music LevelTheme) {
 
 
 
+        // DrawRectangle(cameraCenter.x, cameraCenter.y, relativeCameraCenter.width, relativeCameraCenter.height, {255, 255, 255, 127});
 
 
+        // DrawText(TextFormat("Limite do mapa: %02.02f", rightLimit), GetScreenWidth()/2, 220, 20, RED);
+        // DrawText(TextFormat("Limite do mapa: %d", widthLevel), GetScreenWidth()/2, 270, 20, RED);
+        // DrawText(TextFormat("Camera position: %02.02f", relativeCameraCenter.x), GetScreenWidth()/2, 270, 20, RED);
 
         // Color test for White Flamingo
 
@@ -1911,99 +2055,107 @@ void Play::mainLoop(Music LevelTheme) {
 
 
         if (DEBUG) {
-            Vector2 relativePos;
-            relativePos.x = WT/2 +player.groundBlock.rect.x -player.rect.x;
-            relativePos.y = HT/2 +player.groundBlock.rect.y -player.rect.y;
+            relativePos.x = WT/2 +player.groundBlock.rect.x -relativeCameraCenter.x;
+            relativePos.y = HT/2 +player.groundBlock.rect.y -relativeCameraCenter.y;
             DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width, player.groundBlock.rect.height, YELLOW);
 
             
             DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player.groundBlock.rect.x, player.groundBlock.rect.y, player.groundBlock.rect.width, player.groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
             if (player.crouch) {
-                relativePos.x = center.x +player.HitboxA.x -player.rect.x;
-                relativePos.y = center.y +player.HitboxA.y -player.rect.y;
+                relativePos.x = cameraCenter.x +player.HitboxA.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player.HitboxA.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width, player.HitboxA.height, RED);
             } else {
-                relativePos.x = center.x +player.Hitbox1.x -player.rect.x;
-                relativePos.y = center.y +player.Hitbox1.y -player.rect.y;
+                relativePos.x = cameraCenter.x +player.Hitbox1.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player.Hitbox1.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player.Hitbox1.width, player.Hitbox1.height, RED);
-                relativePos.x = center.x +player.Hitbox2.x -player.rect.x;
-                relativePos.y = center.y +player.Hitbox2.y -player.rect.y;
+                relativePos.x = cameraCenter.x +player.Hitbox2.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player.Hitbox2.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player.Hitbox2.width, player.Hitbox2.height, RED);
-                relativePos.x = center.x +player.Hitbox3.x -player.rect.x;
-                relativePos.y = center.y +player.Hitbox3.y -player.rect.y;
+                relativePos.x = cameraCenter.x +player.Hitbox3.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player.Hitbox3.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width, player.Hitbox3.height, RED);
             }
-            relativePos.x = center.x +player.HB1.x -player.rect.x;
-            relativePos.y = center.y +player.HB1.y -player.rect.y;
+            relativePos.x = cameraCenter.x +player.HB1.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player.HB1.y -relativeCameraCenter.y;
             DrawRectangle(relativePos.x, relativePos.y, player.HB1.width, player.HB1.height, DARKBLUE);
 
-            relativePos.x = center.x +player.cx -player.rect.x;
-            relativePos.y = center.y +player.cy -player.rect.y;
+            relativePos.x = cameraCenter.x +player.cx -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player.cy -relativeCameraCenter.y;
             DrawCircle(relativePos.x, relativePos.y, 5, PURPLE);
 
 
             int sizeCB = player.CBs.size();
             for (int i = 0; i < sizeCB; i++) {
                 Block temp = Blocks[player.CBs[i]];
-                relativePos.x = center.x +temp.rect.x -player.rect.x;
-                relativePos.y = center.y +temp.rect.y -player.rect.y;
+                relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, temp.rect.width, temp.rect.height, GRAY);
             }
             for (int i = 0; i < sizeE; i++) {
-                // relativePos.x = center.x +enemies[i].rect.x -player.rect.x;
-                // relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                // relativePos.x = cameraCenter.x +enemies[i].rect.x -relativeCameraCenter.x;
+                // relativePos.y = cameraCenter.y +enemies[i].rect.y -relativeCameraCenter.y;
                 // DrawRectangle(relativePos.x, relativePos.y, enemies[i].rect.width, enemies[i].rect.height, RED);
                 if (enemies[i].name == "crab") {
-                    relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
-                    relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].patrol1 -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].ground.rect.y -relativeCameraCenter.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
-                    relativePos.x = center.x +enemies[i].patrol2 -player.rect.x;
-                    relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].patrol2 -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].ground.rect.y -relativeCameraCenter.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
-                    relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].ground.rect.x -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].ground.rect.y -relativeCameraCenter.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width, enemies[i].ground.rect.height, YELLOW);
-                    relativePos.x = center.x +enemies[i].border1.rect.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].border1.rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].border1.rect.x -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].border1.rect.y -relativeCameraCenter.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].border1.rect.width, enemies[i].border1.rect.height, GREEN);
-                    relativePos.x = center.x +enemies[i].border2.rect.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].border2.rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].border2.rect.x -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].border2.rect.y -relativeCameraCenter.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].border2.rect.width, enemies[i].border2.rect.height, GREEN);
                 } else if (enemies[i].name == "butterfly") {
-                    relativePos.x = center.x +enemies[i].orbit.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].orbit.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].orbit.x -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].orbit.y -relativeCameraCenter.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
                 } else if (enemies[i].name == "snail") {
-                    relativePos.x = center.x +enemies[i].vision.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].vision.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].vision.x -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].vision.y -relativeCameraCenter.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].vision.width, enemies[i].vision.height, BLACK);
-                    relativePos.x = center.x +enemies[i].HBFeet.x -player.rect.x;
-                    relativePos.y = center.y +enemies[i].HBFeet.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].HBFeet.x -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].HBFeet.y -relativeCameraCenter.y;
                     DrawRectangle(relativePos.x, relativePos.y, enemies[i].HBFeet.width, enemies[i].HBFeet.height, BLACK);
                     if (enemies[i].ground.SCALE == 0) {
                         DrawText("UNEXPECTED SNAIL BEHAVIOR 2", GetScreenWidth() - 520, 40, 20, RED);
                     } else {
-                        relativePos.x = center.x +enemies[i].ground.rect.x -player.rect.x;
-                        relativePos.y = center.y +enemies[i].ground.rect.y -player.rect.y;
+                        relativePos.x = cameraCenter.x +enemies[i].ground.rect.x -relativeCameraCenter.x;
+                        relativePos.y = cameraCenter.y +enemies[i].ground.rect.y -relativeCameraCenter.y;
                         DrawRectangle(relativePos.x, relativePos.y, enemies[i].ground.rect.width, enemies[i].ground.rect.height, YELLOW);
                     }
                 } else if (enemies[i].name == "bee") {
-                    relativePos.x = center.x +enemies[i].patrol1 -player.rect.x;
-                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].patrol1 -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].rect.y -relativeCameraCenter.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
-                    relativePos.x = center.x +enemies[i].patrol2 -player.rect.x;
-                    relativePos.y = center.y +enemies[i].rect.y -player.rect.y;
+                    relativePos.x = cameraCenter.x +enemies[i].patrol2 -relativeCameraCenter.x;
+                    relativePos.y = cameraCenter.y +enemies[i].rect.y -relativeCameraCenter.y;
                     DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
                 }
-                relativePos.x = center.x +enemies[i].cx -player.rect.x;
-                relativePos.y = center.y +enemies[i].cy -player.rect.y;
+                relativePos.x = cameraCenter.x +enemies[i].cx -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +enemies[i].cy -relativeCameraCenter.y;
                 DrawCircle(relativePos.x, relativePos.y, 5, YELLOW);
             }
             for (int i = 0; i < sizeI; i++) {
-                Vector2 relativePos;
-                relativePos.x = center.x +itens[i].cx -player.rect.x;
-                relativePos.y = center.y +itens[i].cy -player.rect.y;
+                relativePos.x = cameraCenter.x +itens[i].rect.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +itens[i].rect.y -relativeCameraCenter.y;
+                DrawRectangle(relativePos.x, relativePos.y, itens[i].rect.width, itens[i].rect.height, YELLOW);
+                
+                int sizeCI = player.CIs.size();
+                relativePos.x = cameraCenter.x +itens[i].cx -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +itens[i].cy -relativeCameraCenter.y;
                 DrawCircle(relativePos.x, relativePos.y, 5, GREEN);
+                for (int j = 0; j < sizeCI; j++) {
+                    if (player.CIs[j] == i) {
+                        DrawCircle(relativePos.x, relativePos.y, 5, GRAY);
+                    }
+                }
             }
         }
 
@@ -2011,8 +2163,26 @@ void Play::mainLoop(Music LevelTheme) {
         tick++;
     }
     tick -= 180;
+    if (saida == -1) {
+        return -1;
+    }
+
+    if (seconds > 0) {
+        player.Health(seconds/10, 'W');
+    }
+
+    int trueSaida = 0;
+    for (int i = 0; i < sizeB; i++) {
+        if (Blocks[i].name == "nextLevel") {
+            if (i == saida) {
+                break;
+            }
+            trueSaida += 1;
+        }
+    }
 
     UnloadSound(finish);
+    return trueSaida;
 }
 
 void Play::DesenharHeart() {

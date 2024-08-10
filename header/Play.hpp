@@ -86,8 +86,8 @@ public:
 
     int complexityCalc(Item temp);
     int complexityCalc(Enemy temp);
-    void PlayLevel(std::string level);
-    void mainLoop(Music LevelTheme);
+    std::string PlayLevel(std::string level, std::string entrance);
+    int mainLoop(Music LevelTheme);
     void EditLevel(std::string level);
     void DesenharHeart();
     void DesenharPearl();

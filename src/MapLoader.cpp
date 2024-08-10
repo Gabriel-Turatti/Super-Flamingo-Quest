@@ -46,8 +46,8 @@ void MapLoader::SaveLevel(Map level) {
         }
     }
 
-    level.widthLevel = (int) (rightMostBlock - leftMostBlock -SCALE)/(BS-SCALE);
-    level.heightLevel = (int) (downMostBlock - upMostBlock -SCALE)/(BS-SCALE);
+    level.widthLevel = (int) (rightMostBlock - leftMostBlock -SCALE)/(BS-SCALE) +2;
+    level.heightLevel = (int) (downMostBlock - upMostBlock -SCALE)/(BS-SCALE) +2;
 
     int lineOffset;
     int columnOffset;
@@ -61,6 +61,8 @@ void MapLoader::SaveLevel(Map level) {
     } else {
         lineOffset = (upMostBlock)/(BS-SCALE);
     }
+    lineOffset -= 1; // Gambiarra
+    columnOffset -= 1;
 
     std::map<int, std::map<int, Block>> NewBlocksGround;
     std::map<int, std::map<int, Block>> NewBlocksBackground;
@@ -206,13 +208,25 @@ void MapLoader::SaveLevel(Map level) {
                 if (NewBlocksGround[i].count(j) > 0) {
                     if (NewBlocksGround[i][j].name == "grass") {
                         LevelSave << 'G';
+                        if (NewBlocksGround[i][j].secret) {
+                            LevelSave << 's';
+                        }
                     } else if (NewBlocksGround[i][j].name == "dirt") {
-                        LevelSave << 'D';
+                        LevelSave << "D";
+                        if (NewBlocksGround[i][j].secret) {
+                            LevelSave << 's';
+                        }
                     } else if (NewBlocksGround[i][j].name == "dirt2") {
                         LevelSave << "D2";
+                        if (NewBlocksGround[i][j].secret) {
+                            LevelSave << 's';
+                        }
                         j++;
                     } else if (NewBlocksGround[i][j].name == "brick") {
                         LevelSave << 'B';
+                        if (NewBlocksGround[i][j].secret) {
+                            LevelSave << 's';
+                        }
                     } else if (NewBlocksGround[i][j].name == "gate-hope") {
                         LevelSave << "(Kh" + std::to_string(NewBlocksGround[i][j].direction) + ")";
                     } else if (NewBlocksGround[i][j].name == "gate-resilience") {
@@ -569,8 +583,7 @@ Map MapLoader::LoadLevel(std::string name) {
     if (!level) {
         level.close();
         Map Error;
-        Error.playerX = -1;
-        Error.playerY = -1;
+        Error.time = -1;
         return Error;
     }
 
@@ -578,8 +591,6 @@ Map MapLoader::LoadLevel(std::string name) {
     int CHL = 0; // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
     int widthLevel;
     int heightLevel;
-    float playerX;
-    float playerY;
     std::vector<std::string> exits;
     std::vector<std::string> entrances;
 
@@ -658,21 +669,35 @@ Map MapLoader::LoadLevel(std::string name) {
                 Block tile;
                 if (line[charPoint] == 'F') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "startLevel", SCALE);
-                    playerX = CWL*(BS-SCALE); // to-do
-                    playerY = CHL*(BS-SCALE)-SCALE;
                 } else if (line[charPoint] == 'N') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "nextLevel", SCALE);
                 } else if (line[charPoint] == 'G') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE);
+                    if (line[charPoint+1] == 's'){
+                        tile.secret = true;
+                        charPoint++;
+                    }
                 } else if (line[charPoint] == 'B') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "brick", SCALE);
+                    if (line[charPoint+1] == 's'){
+                        tile.secret = true;
+                        charPoint++;
+                    }
                 } else if (line[charPoint] == 'D') {
                     if (line[charPoint+1] == '2') {
                         tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE);
+                        if (line[charPoint+2] == 's'){
+                            tile.secret = true;
+                            charPoint++;
+                        }
                         charPoint++;
                         CWL++;
                     } else {
                         tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE);
+                        if (line[charPoint+1] == 's'){
+                            tile.secret = true;
+                            charPoint++;
+                        }
                     }
                 } else if (line[charPoint] == 'P') {
                     if (line[charPoint+1] == 'p') {
@@ -814,6 +839,10 @@ Map MapLoader::LoadLevel(std::string name) {
             std::string text = "";
             std::string name = "";
 
+            if (line[i] == '-') {
+                continue;
+            } 
+
             for (; line[i] != '-'; i++) {
                 if (isdigit(line[i])) {
                     text += line[i];
@@ -823,6 +852,9 @@ Map MapLoader::LoadLevel(std::string name) {
             CHL = std::stoi(text);
             text = "";
 
+            if (line[i] == '-') {
+                continue;
+            } 
 
             for (; line[i] != '-'; i++) {
                 if (isdigit(line[i])) {
@@ -842,21 +874,18 @@ Map MapLoader::LoadLevel(std::string name) {
             }
             name = text;
 
-            Block ground;
-            if (name == "snail" or name == "crab") {
-                ground = BlocksMap[CHL][CWL];
-            }
-            if (name == "snail") {
-                enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
-            } else if (name == "butterfly") {
-                enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-            } else if (name == "crab") {
-                enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, Blocks, RNG100(rng), ground));
-            } else if (name == "meldrop") {
-                enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-            } else {
-                enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, Blocks, RNG100(rng)));
-            }
+            enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), CHL, CWL));
+            // if (name == "snail") {
+            //     enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), ground));
+            // } else if (name == "butterfly") {
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
+            // } else if (name == "crab") {
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), ground));
+            // } else if (name == "meldrop") {
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
+            // } else {
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
+            // }
         }
     }
     
@@ -868,9 +897,6 @@ Map MapLoader::LoadLevel(std::string name) {
     Level.enemies = enemies;
     Level.widthLevel = widthLevel;
     Level.heightLevel = heightLevel;
-    Level.playerX = playerX;
-    Level.playerY = playerY;
-    Level.time = timeLimit;
     Level.name = name;
     Level.levelTheme = LevelTheme;
     Level.time = timeLimit;

@@ -136,6 +136,7 @@ public:
     std::vector<int> CEs; // List of Enemies that can collide with player
 
     bool isBoost = false;
+    char* nextLevel;
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
