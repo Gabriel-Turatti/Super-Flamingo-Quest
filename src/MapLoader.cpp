@@ -97,8 +97,8 @@ void MapLoader::SaveLevel(Map level) {
             temp.rect.x -= 1*SCALE;
             temp.rect.y -= 1*SCALE;
         } else if (name == "food-pear") {
-            temp.rect.x += 0*SCALE;
-            temp.rect.y += 0*SCALE;
+            temp.rect.x += 1*SCALE;
+            temp.rect.y += 1*SCALE;
         } else if (name == "food-blueberry") {
             temp.rect.x -= 2*SCALE;
             temp.rect.y -= 1*SCALE;
@@ -206,48 +206,40 @@ void MapLoader::SaveLevel(Map level) {
             }
             for (int j = 0; j < level.widthLevel; j++) {
                 if (NewBlocksGround[i].count(j) > 0) {
-                    if (NewBlocksGround[i][j].name == "grass") {
+                    Block temp = NewBlocksGround[i][j];
+                    if (temp.name == "grass") {
                         LevelSave << 'G';
-                        if (NewBlocksGround[i][j].secret) {
-                            LevelSave << 's';
-                        }
-                    } else if (NewBlocksGround[i][j].name == "dirt") {
+                    } else if (temp.name == "dirt") {
                         LevelSave << "D";
-                        if (NewBlocksGround[i][j].secret) {
-                            LevelSave << 's';
-                        }
-                    } else if (NewBlocksGround[i][j].name == "dirt2") {
+                    } else if (temp.name == "dirt2") {
                         LevelSave << "D2";
-                        if (NewBlocksGround[i][j].secret) {
-                            LevelSave << 's';
-                        }
                         j++;
-                    } else if (NewBlocksGround[i][j].name == "brick") {
+                    } else if (temp.name == "brick") {
                         LevelSave << 'B';
-                        if (NewBlocksGround[i][j].secret) {
-                            LevelSave << 's';
-                        }
-                    } else if (NewBlocksGround[i][j].name == "gate-hope") {
-                        LevelSave << "(Kh" + std::to_string(NewBlocksGround[i][j].direction) + ")";
-                    } else if (NewBlocksGround[i][j].name == "gate-resilience") {
-                        LevelSave << "(Kr" + std::to_string(NewBlocksGround[i][j].direction) + ")";
-                    } else if (NewBlocksGround[i][j].name == "gate-power") {
-                        LevelSave << "(Kp" + std::to_string(NewBlocksGround[i][j].direction) + ")";
-                    } else if (NewBlocksGround[i][j].name == "gate-courage") {
-                        LevelSave << "(Kc" + std::to_string(NewBlocksGround[i][j].direction) + ")";
-                    } else if (NewBlocksGround[i][j].name == "gate-wisdom") {
-                        LevelSave << "(Kw" + std::to_string(NewBlocksGround[i][j].direction) + ")";
-                    } else if (NewBlocksGround[i][j].name == "platform") {
-                        LevelSave << "Pp";
-                        j++;
-                    } else if (NewBlocksGround[i][j].name == "spike") {
-                        LevelSave << "(S" + std::to_string(NewBlocksGround[i][j].direction) + ")";
-                    } else if (NewBlocksGround[i][j].name == "altar") {
+                    } else if (temp.name == "gate-hope") {
+                        LevelSave << "(Kh)";
+                    } else if (temp.name == "gate-resilience") {
+                        LevelSave << "(Kr)";
+                    } else if (temp.name == "gate-power") {
+                        LevelSave << "(Kp)";
+                    } else if (temp.name == "gate-courage") {
+                        LevelSave << "(Kc)";
+                    } else if (temp.name == "gate-wisdom") {
+                        LevelSave << "(Kw)";
+                    } else if (temp.name == "platform") {
+                        LevelSave << "P";
+                    } else if (temp.name == "spike") {
+                        LevelSave << "S";
+                    } else if (temp.name == "altar") {
                         LevelSave << 'A';
-                    } else if (NewBlocksGround[i][j].name == "nextLevel") {
+                    } else if (temp.name == "nextLevel") {
                         LevelSave << 'N';
-                    } else if (NewBlocksGround[i][j].name == "startLevel") {
+                    } else if (temp.name == "startLevel") {
                         LevelSave << 'F';
+                    }
+                    LevelSave << std::to_string(temp.direction);
+                    if (temp.secret) {
+                        LevelSave << 's';
                     }
                 } else {
                     LevelSave << '-';
@@ -268,36 +260,40 @@ void MapLoader::SaveLevel(Map level) {
             }
             for (int j = 0; j < level.widthLevel; j++) {
                 if (NewBlocksBackground[i].count(j) > 0) {
-                    if (NewBlocksBackground[i][j].name == "grass") {
+                    Block temp = NewBlocksBackground[i][j];
+                    if (temp.name == "grass") {
                         LevelSave << 'G';
-                    } else if (NewBlocksBackground[i][j].name == "dirt") {
+                    } else if (temp.name == "dirt") {
                         LevelSave << 'D';
-                    } else if (NewBlocksBackground[i][j].name == "dirt2") {
+                    } else if (temp.name == "dirt2") {
                         LevelSave << "D2";
                         j++;
-                    } else if (NewBlocksBackground[i][j].name == "brick") {
+                    } else if (temp.name == "brick") {
                         LevelSave << 'B';
-                    } else if (NewBlocksBackground[i][j].name == "gate-hope") {
-                        LevelSave << "(Kh" + std::to_string(NewBlocksBackground[i][j].direction) + ")";
-                    } else if (NewBlocksBackground[i][j].name == "gate-resilience") {
-                        LevelSave << "(Kr" + std::to_string(NewBlocksBackground[i][j].direction) + ")";
-                    } else if (NewBlocksBackground[i][j].name == "gate-power") {
-                        LevelSave << "(Kp" + std::to_string(NewBlocksBackground[i][j].direction) + ")";
-                    } else if (NewBlocksBackground[i][j].name == "gate-courage") {
-                        LevelSave << "(Kc" + std::to_string(NewBlocksBackground[i][j].direction) + ")";
-                    } else if (NewBlocksBackground[i][j].name == "gate-wisdom") {
-                        LevelSave << "(Kw" + std::to_string(NewBlocksBackground[i][j].direction) + ")";
-                    } else if (NewBlocksBackground[i][j].name == "platform") {
-                        LevelSave << "Pp";
-                        j++;
-                    } else if (NewBlocksBackground[i][j].name == "spike") {
-                        LevelSave << "(S" + std::to_string(NewBlocksBackground[i][j].direction) + ")";
-                    } else if (NewBlocksBackground[i][j].name == "altar") {
+                    } else if (temp.name == "gate-hope") {
+                        LevelSave << "(Kh)";
+                    } else if (temp.name == "gate-resilience") {
+                        LevelSave << "(Kr)";
+                    } else if (temp.name == "gate-power") {
+                        LevelSave << "(Kp)";
+                    } else if (temp.name == "gate-courage") {
+                        LevelSave << "(Kc)";
+                    } else if (temp.name == "gate-wisdom") {
+                        LevelSave << "(Kw)";
+                    } else if (temp.name == "platform") {
+                        LevelSave << "P";
+                    } else if (temp.name == "spike") {
+                        LevelSave << "S";
+                    } else if (temp.name == "altar") {
                         LevelSave << "A";
-                    } else if (NewBlocksBackground[i][j].name == "nextLevel") {
+                    } else if (temp.name == "nextLevel") {
                         LevelSave << "N";
-                    } else if (NewBlocksBackground[i][j].name == "startLevel") {
+                    } else if (temp.name == "startLevel") {
                         LevelSave << "F";
+                    }
+                    LevelSave << std::to_string(temp.direction);
+                    if (temp.secret) {
+                        LevelSave << 's';
                     }
                 } else {
                     LevelSave << '-';
@@ -596,7 +592,7 @@ Map MapLoader::LoadLevel(std::string name) {
 
     std::random_device dev;
     std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> RNG100(0, 100);
+    std::uniform_int_distribution<std::mt19937::result_type> RNG100(1, 100);
 
     int charPoint = 0;
 
@@ -663,53 +659,43 @@ Map MapLoader::LoadLevel(std::string name) {
             charPoint = -1;
             for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
                 charPoint++;
-                if (line[charPoint] == '-' or line[charPoint] == 'p') {
+                if (line[charPoint] == '-') {
                     continue;
                 }
                 Block tile;
+                int direction = line[charPoint+1] - '0';
                 if (line[charPoint] == 'F') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "startLevel", SCALE);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "startLevel", SCALE, direction);
                 } else if (line[charPoint] == 'N') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "nextLevel", SCALE);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "nextLevel", SCALE, direction);
                 } else if (line[charPoint] == 'G') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE);
-                    if (line[charPoint+1] == 's'){
-                        tile.secret = true;
-                        charPoint++;
-                    }
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE, direction);
                 } else if (line[charPoint] == 'B') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "brick", SCALE);
-                    if (line[charPoint+1] == 's'){
-                        tile.secret = true;
-                        charPoint++;
-                    }
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "brick", SCALE, direction);
                 } else if (line[charPoint] == 'D') {
                     if (line[charPoint+1] == '2') {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE);
-                        if (line[charPoint+2] == 's'){
-                            tile.secret = true;
+                        direction = line[charPoint+2] - '0';
+                        if (direction > 3 or direction < 0) {
+                            direction = line[charPoint+1] - '0';
+                            tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE, direction);
+                        } else {
+                            tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE, direction);
                             charPoint++;
+                            CWL++;
                         }
-                        charPoint++;
-                        CWL++;
                     } else {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE);
-                        if (line[charPoint+1] == 's'){
-                            tile.secret = true;
-                            charPoint++;
-                        }
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE, direction);
                     }
                 } else if (line[charPoint] == 'P') {
-                    if (line[charPoint+1] == 'p') {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, 0, false);
-                    } else {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, 90, false);
-                    }
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, direction);
                 } else if (line[charPoint] == 'A') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE, direction);
+                } else if (line[charPoint] == 'S') {
+                    direction = line[charPoint+1] - '0';
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, direction);
                 } else if (line[charPoint] == '(') {
                     if (line[charPoint+1] == 'K') {
-                        int rotation = 0;
+                        direction = line[charPoint+4] - '0';
                         std::string type;
                         if (line[charPoint+2] == 'h') {
                             type = "hope";
@@ -726,17 +712,25 @@ Map MapLoader::LoadLevel(std::string name) {
                         if (line[charPoint+2] == 'w') {
                             type = "wisdom";
                         }
-                        rotation = line[charPoint+3] - '0';
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, rotation, false);
-                        charPoint += 4;
-                    } else if (line[charPoint+1] == 'S') {
-                        int orientation = line[charPoint+2] - '0';
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, orientation, false);
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, direction);
+                        if (line[charPoint+4] == 's') {
+                            tile.secret = true;
+                            charPoint++;
+                        }
                         charPoint += 3;
                     }
                 } else {
                     continue;
                 }
+                
+                if (line[charPoint+2] == 's') {
+                    tile.secret = true;
+                    charPoint++;
+                } else if (line[charPoint+3] == 's' and line[charPoint+1] == '2' and line[charPoint] == 'D') {
+                    tile.secret = true;
+                    charPoint++;
+                }
+                charPoint++;
                 if (RenderPhase == 2) {
                     tile.background = true;
                 }

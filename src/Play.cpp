@@ -225,7 +225,7 @@ void Play::EditLevel(std::string name) {
 
     for (Block temp : Blocks) {
         if (temp.name == "startLevel") {
-            player.rect.x = temp.rect.x;
+            player.rect.x = temp.rect.x + 1;
             player.rect.y = temp.rect.y-SCALE;
         }
     }
@@ -255,6 +255,7 @@ void Play::EditLevel(std::string name) {
     BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS, "platform", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "nextLevel", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "startLevel", SCALE));
+    BlockOptions.push_back(Block(0, 0, (BS-SCALE)*5+SCALE, BS*2-SCALE, "rotator", SCALE));
     std::vector<Item> ItemOptions;
     ItemOptions.push_back(Item(0, 0, "coin-copper", SCALE, 'C'));
     ItemOptions.push_back(Item(0, 0, "coin-silver", SCALE, 'C'));
@@ -510,7 +511,11 @@ void Play::EditLevel(std::string name) {
                 rotation = 0;
             }
             if (mouseBlock.SCALE != 0) {
-                mouseBlock = Block(mouseRect.x, mouseRect.y, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, rotation, background, secret);
+                if (mouseBlock.direction == 1 or mouseBlock.direction == 3) {
+                    mouseBlock = Block(mouseRect.x, mouseRect.y, mouseBlock.rect.height, mouseBlock.rect.width, mouseBlock.name, SCALE, rotation, background, secret);
+                } else {
+                    mouseBlock = Block(mouseRect.x, mouseRect.y, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, rotation, background, secret);
+                }
             }
         }
 
@@ -703,6 +708,7 @@ void Play::EditLevel(std::string name) {
                     }
                 } else {
                     mouseBlock.SCALE = 0;
+                    rotation = 0;
                 }
             } else if (Menu == 2) {
                 if (mouseItem.SCALE == 0) {
@@ -769,7 +775,11 @@ void Play::EditLevel(std::string name) {
                             float Bx = cx -WT/2 +posGrid.x;
                             float By = cy -HT/2 +posGrid.y;
                             if (Menu == 1) {
-                                placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, mouseBlock.direction, background, secret);
+                                if (mouseBlock.direction == 1 or mouseBlock.direction == 3) {
+                                    placeBlock = Block(Bx, By, mouseBlock.rect.height, mouseBlock.rect.width, mouseBlock.name, SCALE, mouseBlock.direction, background, secret);
+                                } else {
+                                    placeBlock = Block(Bx, By, mouseBlock.rect.width, mouseBlock.rect.height, mouseBlock.name, SCALE, mouseBlock.direction, background, secret);
+                                }
                             } else if (Menu == 2) {
                                 placeItem = Item(Bx, By, mouseItem.name, SCALE, mouseItem.category);
                             } else if (Menu == 3) {
@@ -816,20 +826,7 @@ void Play::EditLevel(std::string name) {
 
             relativePos.x = WT/2 +Blocks[i].rect.x -cx;
             relativePos.y = HT/2 +Blocks[i].rect.y -cy;
-            if (Blocks[i].name == "gate-hope") {
-                // Rectangle cut, dest;
-                // dest.x = relativePos.x;
-                // dest.y = relativePos.y;
-                // dest.width = 13*SCALE;
-                // dest.height = 25*SCALE;
-
-                // cut.x = 0;
-                // cut.y = 0;
-                // cut.width = 13;
-                // cut.height = 25;
-                // DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, GRAY);
-                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
-            } else if (Blocks[i].name == "spike") {
+            if (Blocks[i].direction != 0) {
                 if (Blocks[i].direction == 1) {
                     relativePos.y += Blocks[i].rect.height;
                 } else if (Blocks[i].direction == 2) {
@@ -839,7 +836,7 @@ void Play::EditLevel(std::string name) {
                     relativePos.x += Blocks[i].rect.width;
                 }
                 DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, GRAY);
-             } else {
+            } else {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
             }
         }
@@ -947,20 +944,8 @@ void Play::EditLevel(std::string name) {
             relativePos.x = WT/2 +Blocks[i].rect.x -cx;
             relativePos.y = HT/2 +Blocks[i].rect.y -cy;
             
-            if (Blocks[i].name == "gate-hope") {
-                // Rectangle cut, dest;
-                // dest.x = relativePos.x;
-                // dest.y = relativePos.y;
-                // dest.width = 13*SCALE;
-                // dest.height = 25*SCALE;
 
-                // cut.x = 0;
-                // cut.y = 24;
-                // cut.width = 13;
-                // cut.height = 25;
-                // DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, WHITE);
-                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
-            } else if (Blocks[i].name == "spike") {
+            if (Blocks[i].direction != 0) {
                 if (Blocks[i].direction == 1) {
                     relativePos.y += Blocks[i].rect.height;
                 } else if (Blocks[i].direction == 2) {
@@ -969,7 +954,6 @@ void Play::EditLevel(std::string name) {
                 } else if (Blocks[i].direction == 3) {
                     relativePos.x += Blocks[i].rect.width;
                 }
-
                 DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
             } else {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
@@ -1369,13 +1353,6 @@ void Play::EditLevel(std::string name) {
         }
 
 
-        for (Block temp : Blocks) {
-            if (temp.name == "spike") {
-                DrawText(TextFormat("Rotation = %d", temp.direction), 50, 50, 25, RED);
-                break;
-            }
-        }
-
         // DrawText(TextFormat("Crab POSITION X: %02.02f", enemies[0].rect.x), 50, 50, 50, RED);
         // DrawText(TextFormat("Crab POSITION Y: %02.02f", enemies[0].rect.y), 50, 100, 50, RED);
         EndDrawing();
@@ -1524,8 +1501,8 @@ int Play::mainLoop(Music LevelTheme) {
     float leftLimit, rightLimit, upperLimit, downLimit;
     leftLimit = 1*BS;
     upperLimit = 0;
-    rightLimit = (widthLevel+1)*BS;
-    downLimit = heightLevel*BS;
+    rightLimit = (widthLevel-1)*(BS-SCALE);
+    downLimit = (heightLevel)*(BS-SCALE);
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
             UpdateMusicStream(LevelTheme);
@@ -1648,8 +1625,8 @@ int Play::mainLoop(Music LevelTheme) {
         }
 
 
-        if (relativeCameraCenter.x + GetScreenWidth() > rightLimit) {
-            relativeCameraCenter.x = rightLimit - GetScreenWidth();
+        if (relativeCameraCenter.x + GetScreenWidth()/2 > rightLimit) {
+            relativeCameraCenter.x = rightLimit - GetScreenWidth()/2;
         }
         if (relativeCameraCenter.y + GetScreenHeight()/2 > downLimit) {
             relativeCameraCenter.y = downLimit - GetScreenHeight()/2;
@@ -1677,18 +1654,17 @@ int Play::mainLoop(Music LevelTheme) {
             relativePos.x = cameraCenter.x +Blocks[i].rect.x -relativeCameraCenter.x;
             relativePos.y = cameraCenter.y +Blocks[i].rect.y -relativeCameraCenter.y;
             
-            if (Blocks[i].name == "gate-hope") {
-                Rectangle cut, dest;
-                dest.x = relativePos.x;
-                dest.y = relativePos.y;
-                dest.width = 13*SCALE;
-                dest.height = 25*SCALE;
-
-                cut.x = 0;
-                cut.y = 0;
-                cut.width = 13;
-                cut.height = 25;
-                DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, GRAY);
+            
+            if (Blocks[i].direction != 0) {
+                if (Blocks[i].direction == 1) {
+                    relativePos.y += Blocks[i].rect.height;
+                } else if (Blocks[i].direction == 2) {
+                    relativePos.x += Blocks[i].rect.width;
+                    relativePos.y += Blocks[i].rect.height;
+                } else if (Blocks[i].direction == 3) {
+                    relativePos.x += Blocks[i].rect.width;
+                }
+                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, GRAY);
             } else {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
             }
@@ -1792,19 +1768,7 @@ int Play::mainLoop(Music LevelTheme) {
             }
             relativePos.x = cameraCenter.x +Blocks[i].rect.x -relativeCameraCenter.x;
             relativePos.y = cameraCenter.y +Blocks[i].rect.y -relativeCameraCenter.y;
-            if (Blocks[i].name == "gate-hope") {
-                Rectangle cut, dest;
-                dest.x = relativePos.x;
-                dest.y = relativePos.y;
-                dest.width = 13*SCALE;
-                dest.height = 25*SCALE;
-
-                cut.x = 0;
-                cut.y = 24;
-                cut.width = 13;
-                cut.height = 25;
-                DrawTexturePro(Blocks[i].image, cut, dest, {0, 0}, 0, WHITE);
-            } else if (Blocks[i].name == "spike") {
+           if (Blocks[i].direction != 0) {
                 if (Blocks[i].direction == 1) {
                     relativePos.y += Blocks[i].rect.height;
                 } else if (Blocks[i].direction == 2) {
@@ -1813,7 +1777,6 @@ int Play::mainLoop(Music LevelTheme) {
                 } else if (Blocks[i].direction == 3) {
                     relativePos.x += Blocks[i].rect.width;
                 }
-
                 DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
             } else {
                 DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
@@ -1996,7 +1959,10 @@ int Play::mainLoop(Music LevelTheme) {
         // DrawRectangle(cameraCenter.x, cameraCenter.y, relativeCameraCenter.width, relativeCameraCenter.height, {255, 255, 255, 127});
 
 
-        // DrawText(TextFormat("Limite do mapa: %02.02f", rightLimit), GetScreenWidth()/2, 220, 20, RED);
+        // DrawText(TextFormat("Limite do mapa X: %02.02f", rightLimit), GetScreenWidth()/2-100, 220, 20, RED);
+        // DrawText(TextFormat("Mouse X: %02.02f", -cameraCenter.x +mousePosition.x +relativeCameraCenter.x), GetScreenWidth()/2-100, 260, 20, RED);
+        // DrawText(TextFormat("Limite da camera esquerda: %02.02f", relativeCameraCenter.x - GetScreenWidth()/2), GetScreenWidth()/2-100, 290, 20, RED);
+        // DrawText(TextFormat("Limite da camera direita: %02.02f", relativeCameraCenter.x + GetScreenWidth()/2), GetScreenWidth()/2-100, 320, 20, RED);
         // DrawText(TextFormat("Limite do mapa: %d", widthLevel), GetScreenWidth()/2, 270, 20, RED);
         // DrawText(TextFormat("Camera position: %02.02f", relativeCameraCenter.x), GetScreenWidth()/2, 270, 20, RED);
 

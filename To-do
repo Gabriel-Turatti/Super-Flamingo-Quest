@@ -30,10 +30,10 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Animate spear
     ( ) [+] Party spell (???)
     ( ) [+] Makefile pro linux
-    ( ) [+] Gate Rotation
     ( ) [+] Idle animation beaking feathers
     ( ) [+] Auto Complete Music name editor
     ( ) [+] Not grab potion if full
+    ( ) [+] Mana regenerating differently
 
 ## Refatoração
     ## Quality of code
@@ -52,41 +52,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 
-( ) 0.8 - Level Editor Update
-    (X) [+] Add other gates
-    (X) [R] Break gates into different files.
-    (X) [+] Separate file class for map loading
-    (X) [R] Pretty Makefile
-    (X) [+] Song Selector
-    (X) [+] Levels connecting
-    (X) [+] Time limit
-    (X) [+] Hope and Wisdom Regeneration
-    (X) [+] Level's name.
-    (X) [+] Level's finish line.
-    (X) [+] Finish line's direction.
-    (X) [+] Grid for placing things.
-    (X) [+] Block selector
-    (X) [+] Item selector
-    (X) [+] Enemy selector
-    (X) [+] Complexity calculation
-    (X) [+] Flamingo Savefile
-    (X) [+] Map Loading Class
-    (X) [+] Game Class
-    (X) [+] Map testing
-    (X) [+] Map Loading
-    (X) [+] Map Saving
-    (X) [+] Secret blocks
-    ( ) [+] Rotating gates and exits
-    (X) [B] Time not resseting on playtests
-    (X) [B] Platform height click editor
-    (X) [B] Level save eating the borders
-    (X) [B] Coins not being collectable
-    (X) [R] Redo crab spawn entirely
-    (X) [R] Redo snail spawn entirely
-    (X) [B] Crashing when closing main game
-    (X) [B] Flamingo crouch being smushed
-    ( ) [B] Align Pears again
-    (X) [+] Camera fix in screen limits
+
 
 
 
@@ -95,6 +61,11 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) - Add more puzzle mechanics
 ( ) ??? - Save the world Update
     ( ) - Add save files for players, and for completed levels
+( ) ??? - Decorating the World Update
+    ( ) - Adding grass
+    ( ) - Adding bushes
+    ( ) - More variety of Dirt blocks
+    ( ) - More Blocks
 ( ) ??? - Inventory Update
     ( ) Slots
     ( ) Throw Away stuff
@@ -237,3 +208,43 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [R] Fazer o jerk de movimento quando levar dado igual HL? -> precisa de aceleração
     (X) [B] Dash doesn't work -> upped it's power.
     (X) [B] jumping on a blocks corner clips you (body touching but not head) -> removed some breaks that i don't know if it were useful
+
+(X) 0.8 - Level Editor Update
+    (X) [+] Add other gates
+    (X) [R] Break gates into different files.
+    (X) [+] Separate file class for map loading
+    (X) [R] Pretty Makefile
+    (X) [+] Song Selector
+    (X) [+] Levels connecting
+    (X) [+] Time limit
+    (X) [+] Hope and Wisdom Regeneration
+    (X) [+] Level's name.
+    (X) [+] Level's finish line.
+    (X) [+] Finish line's direction.
+    (X) [+] Grid for placing things.
+    (X) [+] Block selector
+    (X) [+] Item selector
+    (X) [+] Enemy selector
+    (X) [+] Complexity calculation
+    (X) [+] Flamingo Savefile
+    (X) [+] Map Loading Class
+    (X) [+] Game Class
+    (X) [+] Map testing
+    (X) [+] Map Loading
+    (X) [+] Map Saving
+    (X) [+] Secret blocks
+    (X) [+] Rotating gates
+    (X) [+] Rotating exits
+    (X) [B] Gates spending two keys
+    (X) [B] Bee Glitching
+    (X) [B] Time not resseting on playtests
+    (X) [B] Platform height click editor
+    (X) [B] Level save eating the borders
+    (X) [B] Coins not being collectable
+    (X) [R] Redo crab spawn entirely
+    (X) [R] Redo snail spawn entirely
+    (X) [B] Crashing when closing main game
+    (X) [B] Flamingo crouch being smushed
+    (X) [B] Crabs not being blocked right
+    (X) [B] Align Pears again
+    (X) [+] Camera fix in screen limits

@@ -79,9 +79,9 @@ void Flamingo::CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &
                 continue;
             }
             int dx = abs(Blocks[i].cx - cx);
-            if (dx < rect.width*2) {
+            if (dx < rect.width*3) {
                 int dy = abs(Blocks[i].cy - cy);
-                if (dy < rect.height*2) {
+                if (dy < rect.height*3) {
                     CBs.push_back(i);
                 }
             }
@@ -331,6 +331,9 @@ void Flamingo::TakeHit(Enemy enemy) {
 
 int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
     Vector2 Dspace;
+    if (temp.background) {
+        return 0;
+    }
     if (temp.name == "platform") {
         if (!(vert and vy > 0)) {
             return 0;

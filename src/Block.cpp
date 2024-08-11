@@ -58,20 +58,32 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     } else if (namer == "startLevel") {
         image = LoadTexture("images/block_StartLevel.png");
         friction = 1;
+    } else if (namer == "rotator") {
+        image = LoadTexture("images/block_rotator.png");
+        friction = 2;
     }
     // If you're adding a new block, make sure to also add it to:
     // editLevel
     // SaveFile
     // LoadFile
 
-
-    if (rotator != 0) {
+    if (rotator == 0) {
+    
+    } else if (rotator == 1) {
         float WBucket = rectImage.height;
         float HBucket = rectImage.width;
-        if (rotator == 1 or rotator == 3) {
-            rectImage.height = HBucket;
-            rectImage.width = WBucket;
-        }
+        rectImage.height = HBucket;
+        rectImage.width = WBucket;
+        rect.y += -rectImage.height*SCALE + 39;
+    } else if (rotator == 2) {
+        rect.x += -rectImage.width*SCALE + 39;
+        rect.y += -rectImage.height*SCALE + 39;
+    } else if (rotator == 3) {
+        float WBucket = rectImage.height;
+        float HBucket = rectImage.width;
+        rectImage.height = HBucket;
+        rectImage.width = WBucket;
+        rect.x += -rectImage.width*SCALE + 39;
     }
 
     background = backgrounder;
