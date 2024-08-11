@@ -644,7 +644,7 @@ Map MapLoader::LoadLevel(std::string name) {
         if (line == "endmap") {
             break;
         }
-        if (line[0] == 'P' and line[1] != 'p') {
+        if (line[0] == 'P' and line[1] != '-') {
             CHL = 0;
             if (line[1] == '2') {
                 RenderPhase = 2;
@@ -687,11 +687,10 @@ Map MapLoader::LoadLevel(std::string name) {
                         tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE, direction);
                     }
                 } else if (line[charPoint] == 'P') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "platform", SCALE, direction);
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, direction);
                 } else if (line[charPoint] == 'A') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE, direction);
                 } else if (line[charPoint] == 'S') {
-                    direction = line[charPoint+1] - '0';
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, direction);
                 } else if (line[charPoint] == '(') {
                     if (line[charPoint+1] == 'K') {

@@ -5,8 +5,15 @@
 Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale) {
     SetSoundVolume(sfxJump, 0.25);
     SetSoundVolume(sfxSecret, 0.4);
-    SCALE = imagescale;
+    SetTextureWrap(images[0], TEXTURE_WRAP_CLAMP);
+    SetTextureWrap(images[1], TEXTURE_WRAP_CLAMP);
+    SetTextureWrap(images[2], TEXTURE_WRAP_CLAMP);
+    SetTextureWrap(images[3], TEXTURE_WRAP_CLAMP);
+    SetTextureWrap(images[4], TEXTURE_WRAP_CLAMP);
+    SetTextureWrap(images[5], TEXTURE_WRAP_CLAMP);
 
+
+    SCALE = imagescale;
     rect.x = x;
     rect.y = y;
     rectImage.width = w;
@@ -235,7 +242,11 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
     bool toggleCrouch = crouch;
     crouch = false;
     if (W) {
-        jumpQueue = 3;
+        jumpQueue = 5;
+        strength += 1;
+        if (strength > 5) {
+            strength = 5;
+        }
     } else if (S) {
         if (ground) {
             if (not toggleCrouch) {
@@ -248,6 +259,13 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             updateHitbox();
             vx = vx/3;
         }
+    } else {
+        if (jumpQueue == 0) {
+            strength -= 1;
+            if (strength < 0) {
+                strength = 0;
+            }
+        }
     }
     if (toggleCrouch and not crouch) {
         imageCount = 0;
@@ -258,21 +276,31 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
         updateHitbox();
     }
 
+    jumpQueue -= 1;
     if (canJump and jumpQueue > 0) {
-        if (jumpQueue == 3) {
-            vy = -4.5f*SCALE;
-        } else if (jumpQueue == 2) {
-            vy -= 4.5f*SCALE;
+        if (ground) {
+            if (jumpQueue != 4 or strength == 5) {
+                if (jumpQueue == 2) {
+                    vy -= strength*0.9*SCALE;
+                } else {
+                    vy = -strength*0.9*SCALE;
+                }
+                strength = 0;
+                PlaySound(sfxJump);
+                canJump = false;
+                crouch = false;
+                imageCount = 4;
+                jumpQueue = 0;
+            }
         } else {
-            vy -= 2.0f*SCALE;
+            vy = -4.0f*SCALE;
+            strength = 0;
+            PlaySound(sfxJump);
+            canJump = false;
+            crouch = false;
+            imageCount = 4;
+            jumpQueue = 0;
         }
-        PlaySound(sfxJump);
-        canJump = false;
-        crouch = false;
-        imageCount = 4;
-        jumpQueue = 0;
-    } else {
-        jumpQueue -= 1;
     }
 
 }
@@ -285,6 +313,9 @@ void Flamingo::gravity() {
     if (rect.y > 3000) {
         Health(-7, 'C');
         rect.y = -1000;
+    }
+    if (vy > 15*SCALE) {
+        vy = 15*SCALE;
     }
 }
 
@@ -354,32 +385,42 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
             PlaySound(sfxSecret);
             temp.secret = false;
             temp.background = true;
-            return 1;
+            return 4;
         }
         if (temp.name == "gate-hope" and keyHope > 0) {
             keyHope -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
+            UnloadTexture(temp.image);
+            temp.image = LoadTexture("images/block_gate_hope_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-resilience" and keyResilience > 0) {
             keyResilience -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
+            UnloadTexture(temp.image);
+            temp.image = LoadTexture("images/block_gate_resilience_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-power" and keyPower > 0) {
             keyPower -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
+            UnloadTexture(temp.image);
+            temp.image = LoadTexture("images/block_gate_power_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-courage" and keyCourage > 0) {
             keyCourage -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
+            UnloadTexture(temp.image);
+            temp.image = LoadTexture("images/block_gate_courage_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-wisdom" and keyWisdom > 0) {
             keyWisdom -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
+            UnloadTexture(temp.image);
+            temp.image = LoadTexture("images/block_gate_wisdom_open.png");
             doReturn = 3;
         } else if (temp.name == "spike") {
             if (invincibility['R'] <= 0) {
@@ -463,6 +504,17 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
         } else if (doColide == 3) {
             Blocks[CBs[i]] = temp;
             break;
+        } else if (doColide == 4) {
+            Blocks[CBs[i]] = temp;
+            for (int j = 0; j < bsize; j++) {
+                Block temp2 = Blocks[CBs[j]];
+                if (temp2.secret) {
+                    temp2.secret = false;
+                    temp2.background = true;
+                    Blocks[CBs[j]] = temp2;
+                }
+            }
+            break;
         }
     }
 
@@ -504,6 +556,17 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
             // break;
         } else if (doColide == 3) {
             Blocks[CBs[i]] = temp;
+            break;
+        } else if (doColide == 4) {
+            Blocks[CBs[i]] = temp;
+            for (int j = 0; j < bsize; j++) {
+                Block temp2 = Blocks[CBs[j]];
+                if (temp2.secret) {
+                    temp2.secret = false;
+                    temp2.background = true;
+                    Blocks[CBs[j]] = temp2;
+                }
+            }
             break;
         }
     

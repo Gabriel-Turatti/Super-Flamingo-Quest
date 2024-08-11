@@ -1,22 +1,17 @@
 Se está dando bug, já tentou ver se você não confundiu as variáveis de Height e Width pela 105 vez?
 
 ## Correção de Bugs
-    ( ) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
     ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (Happened with: butterfly and bee; Did not happen with: Meldrop)
     ( ) [B] Why itens recently spawned aren't collectable
     ( ) [B] Spikes teleport from left to right
     ( ) [B] Not able to walk backwards, when turning around not possible
-    ( ) [B] Crabs spawning inside walls
     ( ) [B] Meldrop not animating correctly attacks
     ( ) [B] block clipping
     ( ) [B] Black Lines from sprites
     ( ) [B] The Misterious Forbidden Item
 
 ## Alterações gerais
-    ( ) [+] Different levels of jumping
     ( ) [+] Soaring
-    ( ) [+] Moedas e Itens terem animação de brilho e giro
-    ( ) [+] coletar itens dropar particulas
     ( ) [+] Moeda de Ouro Envenenada -> Dano Hope
     ( ) [+] Rotacionar plataforma, hitbox.
     ( ) [+] Nuvens
@@ -48,16 +43,36 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ## Quality of life
     ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
     ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
-    ( ) [R] Secrets reveal completely
-
+ 
 
 
 
 
 ( ) 0.9 - Planes of Paris Update
-    ( ) Planes of Paris I
-    ( ) Planes of Paris II
-    ( ) Song for playing the level's title
+    ( ) [+] Moedas e Itens terem animação de brilho e giro
+    ( ) [+] coletar itens dropar particulas
+    (X) [+] Different levels of jumping
+    ( ) [+] Save and Load Flamingo
+    (X) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
+    (X) [+] Planes of Paris I
+    (X) [+] Planes of Paris II
+    ( ) [+] Song for playing the level's title
+    ( ) [+] Bird Blocks
+    ( ) [+] Freeing Birds mechanic
+    (X) [R] Gate changing image
+    (X) [R] Centralizing block draw
+    (X) [R] Secrets reveal completely
+    (X) [B] Platform not platforming
+    (X) [B] Spike not glueing properly
+    (X) [B] Bees not respecting boundaries
+    (X) [B] Meldrop line glitching
+
+
+
+
+
+
+
 
 
 ( ) ??? - Search for Hope Mountain Update
@@ -75,6 +90,8 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) - Adding bushes
     ( ) - More variety of Dirt blocks
     ( ) - More Blocks
+    ( ) - Background
+    ( ) - Clouds
 
 ( ) ??? - Inventory Update
     ( ) Slots

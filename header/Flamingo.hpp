@@ -137,6 +137,7 @@ public:
 
     bool isBoost = false;
     char* nextLevel;
+    int strength = 0;
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 

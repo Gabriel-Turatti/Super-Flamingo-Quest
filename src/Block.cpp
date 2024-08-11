@@ -49,8 +49,9 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         } else if (rotator == 1) {
             rect.x += 5*SCALE;
         } else if (rotator == 2) {
-            rect.y += (8-rectImage.height)*SCALE;
+            rect.y += (3-rectImage.height)*SCALE;
         } else if (rotator == 3) {
+            rect.x += (3-rectImage.height)*SCALE;
         }
     } else if (namer == "nextLevel") {
         image = LoadTexture("images/block_nextLevel.png");
@@ -60,6 +61,26 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         friction = 1;
     } else if (namer == "rotator") {
         image = LoadTexture("images/block_rotator.png");
+        friction = 2;
+    } else if (namer == "cage") {
+        int type = (x+y) % 5;
+        switch (type) {
+            case 0:
+                image = LoadTexture("images/block_bird_yellow.png");
+                break;
+            case 1:
+                image = LoadTexture("images/block_bird_green.png");
+                break;
+            case 2:
+                image = LoadTexture("images/block_bird_blue.png");
+                break;
+            case 3:
+                image = LoadTexture("images/block_bird_red.png");
+                break;
+            case 4:
+                image = LoadTexture("images/block_bird_orange.png");
+                break;
+        }
         friction = 2;
     }
     // If you're adding a new block, make sure to also add it to:

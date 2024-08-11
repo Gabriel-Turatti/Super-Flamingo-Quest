@@ -195,6 +195,7 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
     // SaveFile (Twice)
     // LoadLevel
     // EditLevel
+    SetTextureWrap(image, TEXTURE_WRAP_CLAMP);
 
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;

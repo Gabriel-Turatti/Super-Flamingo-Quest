@@ -73,6 +73,9 @@ public:
     int sizeD;
     int sizeS;
 
+    float cx, cy;
+
+    Rectangle cameraCenter, relativeCameraCenter;
 
 
     MapLoader loader;
@@ -91,6 +94,7 @@ public:
     void EditLevel(std::string level);
     void DesenharHeart();
     void DesenharPearl();
+    void DesenharBlocos(bool Background, bool showSecret);
 };
 
 #endif

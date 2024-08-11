@@ -4,7 +4,7 @@ songs/MainTheme.wav
 0
 P1
 ---
--G-
+-G0-
 ---
 P2
 ---

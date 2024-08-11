@@ -231,8 +231,10 @@ void Play::EditLevel(std::string name) {
     }
 
 
-    float cx = WT/2;
-    float cy = HT/2;
+    cx = WT/2;
+    relativeCameraCenter.x = WT/2;
+    cy = HT/2;
+    relativeCameraCenter.y = HT/2;
     bool W, A, S, D, E, R, Q, F;
     Vector2 relativePos;
     Texture2D grid = LoadTexture("images/grid.png");
@@ -255,7 +257,8 @@ void Play::EditLevel(std::string name) {
     BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS, "platform", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "nextLevel", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "startLevel", SCALE));
-    BlockOptions.push_back(Block(0, 0, (BS-SCALE)*5+SCALE, BS*2-SCALE, "rotator", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "cage", SCALE));
+    // BlockOptions.push_back(Block(0, 0, (BS-SCALE)*5+SCALE, BS*2-SCALE, "rotator", SCALE));
     std::vector<Item> ItemOptions;
     ItemOptions.push_back(Item(0, 0, "coin-copper", SCALE, 'C'));
     ItemOptions.push_back(Item(0, 0, "coin-silver", SCALE, 'C'));
@@ -665,7 +668,7 @@ void Play::EditLevel(std::string name) {
                 FLFocus = 0;
                 SLFocus = 0;
             }
-        } else if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+        } else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
             Rectangle mouseRectTemp = mouseRect;
             mouseRectTemp.x = cx + mouseRect.x - WT/2;
             mouseRectTemp.y = cy + mouseRect.y - HT/2;
@@ -941,26 +944,54 @@ void Play::EditLevel(std::string name) {
                 }
             }
             
-            relativePos.x = WT/2 +Blocks[i].rect.x -cx;
-            relativePos.y = HT/2 +Blocks[i].rect.y -cy;
-            
+            Block temp = Blocks[i];
 
-            if (Blocks[i].direction != 0) {
-                if (Blocks[i].direction == 1) {
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 2) {
-                    relativePos.x += Blocks[i].rect.width;
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 3) {
-                    relativePos.x += Blocks[i].rect.width;
+            relativePos.x = WT/2 +temp.rect.x -cx;
+            relativePos.y = HT/2 +temp.rect.y -cy;
+
+            if (temp.direction != 0) {
+                if (temp.direction == 1) {
+                    relativePos.y += temp.rect.height;
+                } else if (temp.direction == 2) {
+                    relativePos.x += temp.rect.width;
+                    relativePos.y += temp.rect.height;
+                } else if (temp.direction == 3) {
+                    relativePos.x += temp.rect.width;
                 }
-                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
-            } else {
-                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
             }
-            if (Blocks[i].secret) {
-                relativePos.x = WT/2 +Blocks[i].rect.x -cx;
-                relativePos.y = HT/2 +Blocks[i].rect.y -cy;
+
+            Color transparency;
+            if (temp.background) {
+                transparency = GRAY;
+            } else {
+                transparency = WHITE;
+            }
+
+            if (temp.name == "cage") {
+                Rectangle source, dest;
+                if (tick % 20 < 10) {
+                    source.x = 12;
+                } else {
+                    source.x = 0;
+                }
+                source.y = 0;
+                source.width = temp.rectImage.width;
+                source.height = temp.rectImage.height;
+
+                dest.x = relativePos.x;
+                dest.y = relativePos.y;
+                dest.width = temp.rect.width;
+                dest.height = temp.rect.height;
+
+                DrawTexturePro(temp.image, source, dest, {0, 0}, temp.direction*-90, transparency);
+            } else {
+                DrawTextureEx(temp.image, relativePos, temp.direction*-90, SCALE, transparency);
+            }
+
+            
+            if (temp.secret) {
+                relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
+                relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
                 DrawText("S", relativePos.x, relativePos.y, BS, WHITE);
             }
         }
@@ -1077,7 +1108,26 @@ void Play::EditLevel(std::string name) {
         // Side-Bar Object Options
         if (Menu == 1) {
             for (Block blockOption : BlockOptions) {
-                DrawTextureEx(blockOption.image, {blockOption.rect.x, blockOption.rect.y}, 0, SCALE, WHITE);
+                if (blockOption.name == "cage") {
+                    Rectangle source, dest;
+                    if (tick % 20 < 10) {
+                        source.x = 12;
+                    } else {
+                        source.x = 0;
+                    }
+                    source.y = 0;
+                    source.width = blockOption.rectImage.width;
+                    source.height = blockOption.rectImage.height;
+
+                    dest.x = blockOption.rect.x;
+                    dest.y = blockOption.rect.y;
+                    dest.width = blockOption.rect.width;
+                    dest.height = blockOption.rect.height;
+
+                    DrawTexturePro(blockOption.image, source, dest, {0, 0}, 0, WHITE);
+                } else {
+                    DrawTextureEx(blockOption.image, {blockOption.rect.x, blockOption.rect.y}, 0, SCALE, WHITE);
+                }
             }
         } else if (Menu == 2) {
             for (Item itemOption : ItemOptions) {
@@ -1360,11 +1410,8 @@ void Play::EditLevel(std::string name) {
 
 
 
-
-
     UnloadMusicStream(LevelTheme);
 }
-
 
 
 void Play::HubLevelSelect() {
@@ -1394,7 +1441,6 @@ void Play::HubLevelSelect() {
                 if (GenericColision(mouseRect, levelRect)) {
                     std::string entrance = "";
                     while(level != "") {
-                        player.Health(7, 'H');
                         std::string nextLevel = PlayLevel(level, entrance);
                         entrance = level;
                         level = nextLevel;
@@ -1484,6 +1530,7 @@ int Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
     player.vx = 0;
     player.vy = 0;
+    player.Health(7, 'H');
 
     PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
@@ -1494,8 +1541,8 @@ int Play::mainLoop(Music LevelTheme) {
     int saida = -1;
 
     Vector2 relativePos;
-    Rectangle cameraCenter = {WT/2, HT/2, player.rect.width, player.rect.height};
-    Rectangle relativeCameraCenter = {player.rect.x, player.rect.y, player.rect.width/SCALE, player.rect.height/SCALE};
+    cameraCenter = {WT/2, HT/2, player.rect.width, player.rect.height};
+    relativeCameraCenter = {player.rect.x, player.rect.y, player.rect.width/SCALE, player.rect.height/SCALE};
     Rectangle playerDest = {0, 0, player.rect.width, player.rect.height};
 
     float leftLimit, rightLimit, upperLimit, downLimit;
@@ -1503,6 +1550,9 @@ int Play::mainLoop(Music LevelTheme) {
     upperLimit = 0;
     rightLimit = (widthLevel-1)*(BS-SCALE);
     downLimit = (heightLevel)*(BS-SCALE);
+    
+    
+    
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
             UpdateMusicStream(LevelTheme);
@@ -1638,6 +1688,12 @@ int Play::mainLoop(Music LevelTheme) {
             relativeCameraCenter.y = upperLimit + GetScreenHeight()/2;
         }
 
+        if (player.rect.x > rightLimit) {
+            player.rect.x = rightLimit;
+        }
+        if (player.rect.x < leftLimit) {
+            player.rect.x = leftLimit;
+        }
 
         // Desenhando coisas
         BeginDrawing();
@@ -1647,28 +1703,7 @@ int Play::mainLoop(Music LevelTheme) {
 
         
         // Desenhando blocos Background
-        for (int i = 0; i < sizeB; i++) {
-            if (!Blocks[i].background) {
-                continue;
-            }
-            relativePos.x = cameraCenter.x +Blocks[i].rect.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +Blocks[i].rect.y -relativeCameraCenter.y;
-            
-            
-            if (Blocks[i].direction != 0) {
-                if (Blocks[i].direction == 1) {
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 2) {
-                    relativePos.x += Blocks[i].rect.width;
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 3) {
-                    relativePos.x += Blocks[i].rect.width;
-                }
-                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, GRAY);
-            } else {
-                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
-            }
-        }
+        DesenharBlocos(true, false);
 
 
 
@@ -1739,7 +1774,7 @@ int Play::mainLoop(Music LevelTheme) {
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else if (enemies[i].name == "meldrop") {
                 if (enemies[i].behavior > 1) {
-                    source.x += enemies[i].rect.width+1;
+                    source.x += enemies[i].rectImage.width+1;
                 }
                 DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
             } else {
@@ -1755,33 +1790,7 @@ int Play::mainLoop(Music LevelTheme) {
         }
 
         // Desenhando blocos Ground
-        for (int i = 0; i < sizeB; i++) {
-            if (Blocks[i].background) {
-                continue;
-            }
-            if (Blocks[i].name == "nextLevel" and fadeout == 0) {
-                if (GenericColision(player.rect, Blocks[i].rect)) {
-                    fadeout = 1;
-                    saida = i;
-                    PlaySound(finish);
-                }
-            }
-            relativePos.x = cameraCenter.x +Blocks[i].rect.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +Blocks[i].rect.y -relativeCameraCenter.y;
-           if (Blocks[i].direction != 0) {
-                if (Blocks[i].direction == 1) {
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 2) {
-                    relativePos.x += Blocks[i].rect.width;
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 3) {
-                    relativePos.x += Blocks[i].rect.width;
-                }
-                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, WHITE);
-            } else {
-                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, WHITE);
-            }
-        }
+        DesenharBlocos(false, false);
 
         // Desenhando Efeitos
         for (int i = 0; i < sizeS; i++) {
@@ -1930,7 +1939,19 @@ int Play::mainLoop(Music LevelTheme) {
         if (player.keyHope > 0) {
             DrawText(TextFormat("Yellow Keys: %d", player.keyHope), GetScreenWidth() - 300, 50, 20, WHITE);
         }
-        DrawText(TextFormat("itens no mapa: %d", itens.size()), GetScreenWidth()-300, 220, 20, WHITE);
+        if (player.keyResilience > 0) {
+            DrawText(TextFormat("Green Keys: %d", player.keyResilience), GetScreenWidth() - 300, 70, 20, WHITE);
+        }
+        if (player.keyPower > 0) {
+            DrawText(TextFormat("Blue Keys: %d", player.keyPower), GetScreenWidth() - 300, 90, 20, WHITE);
+        }
+        if (player.keyCourage > 0) {
+            DrawText(TextFormat("Red Keys: %d", player.keyCourage), GetScreenWidth() - 300, 110, 20, WHITE);
+        }
+        if (player.keyWisdom > 0) {
+            DrawText(TextFormat("Orange Keys: %d", player.keyWisdom), GetScreenWidth() - 300, 130, 20, WHITE);
+        }
+        // DrawText(TextFormat("itens no mapa: %d", itens.size()), GetScreenWidth()-300, 220, 20, WHITE);
         if (player.powers[0]) {
             DrawTextureEx(player.P1image, {(float) GetScreenWidth()/2+20*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("1", (float) GetScreenWidth()/2+27*SCALE, 20+15*SCALE, 20, BLACK);
@@ -2128,6 +2149,9 @@ int Play::mainLoop(Music LevelTheme) {
         EndDrawing();
         tick++;
     }
+    
+    
+    
     tick -= 180;
     if (saida == -1) {
         return -1;
@@ -2416,3 +2440,66 @@ void Play::DesenharPearl() {
             DrawText(TextFormat("%d+", player.PEP), PHud.x, PHud.y, 35, {255, 150, 150, 255});
         }
     }
+
+void Play::DesenharBlocos(bool background, bool showSecret) {
+    int sizeB = Blocks.size();
+    Vector2 relativePos;
+    for (int i = 0; i < sizeB; i++) {
+        Block temp = Blocks[i];
+        if (temp.background != background) {
+            continue;
+        }
+        relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
+        relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
+        if (temp.direction != 0) {
+            if (temp.direction == 1) {
+                relativePos.y += temp.rect.height;
+            } else if (temp.direction == 2) {
+                relativePos.x += temp.rect.width;
+                relativePos.y += temp.rect.height;
+            } else if (temp.direction == 3) {
+                relativePos.x += temp.rect.width;
+            }
+        }
+
+        Color transparency;
+        if (temp.background) {
+            transparency = GRAY;
+        } else {
+            transparency = WHITE;
+        }
+
+        if (temp.name == "cage") {
+            Rectangle source, dest;
+            if (tick % 20 < 10) {
+                source.x = 12;
+            } else {
+                source.x = 0;
+            }
+            source.y = 0;
+            source.width = temp.rectImage.width;
+            source.height = temp.rectImage.height;
+
+            dest.x = relativePos.x;
+            dest.y = relativePos.y;
+            dest.width = temp.rect.width;
+            dest.height = temp.rect.height;
+
+            DrawTexturePro(temp.image, source, dest, {0, 0}, temp.direction*-90, transparency);
+        } else {
+            DrawTextureEx(temp.image, relativePos, temp.direction*-90, SCALE, transparency);
+        }
+
+        
+        if (showSecret and temp.secret) {
+            relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
+            relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
+            DrawText("S", relativePos.x, relativePos.y, BS, WHITE);
+        }
+    }
+}
+
+
+
+
+

@@ -46,8 +46,18 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             if (Blocks.count(i) > 0) {
                 for (int k = j; k > 0; k--) {
-                    if (Blocks[i].count(k) > 0 and !Blocks[i][j].background) {
+                    if (Blocks[i].count(k) > 0 and !Blocks[i][k].background and Blocks[i][k].rect.x+Blocks[i][k].rect.width > patrol1) {
                         border1 = Blocks[i][k];
+                        patrol1 = border1.rect.x+border1.rect.width;
+                        break;
+                    }
+                }
+            }
+            if (Blocks.count(i-1) > 0) {
+                for (int k = j; k > 0; k--) {
+                    if (Blocks[i-1].count(k) > 0 and !Blocks[i-1][k].background and Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width > patrol1) {
+                        border1 = Blocks[i-1][k];
+                        patrol1 = border1.rect.x+border1.rect.width;
                         break;
                     }
                 }
@@ -55,11 +65,24 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             if (Blocks.count(i) > 0) {
                 int sizeB = Blocks[i].size();
-                for (int k = j; k < sizeB; k++) {
-                    if (Blocks[i].count(k) > 0 and !Blocks[i][j].background) {
+                for (int k = j; sizeB > 0; k++) {
+                    if (Blocks[i].count(k) > 0 and !Blocks[i][j].background and Blocks[i][k].rect.x < patrol2) {
                         border2 = Blocks[i][k];
+                        patrol2 = border2.rect.x;
                         break;
                     }
+                    sizeB--;
+                }
+            }
+            if (Blocks.count(i-1) > 0) {
+                int sizeB = Blocks[i].size();
+                for (int k = j; sizeB > 0; k++) {
+                    if (Blocks[i-1].count(k) > 0 and !Blocks[i-1][k].background and Blocks[i-1][k].rect.x < patrol2) {
+                        border2 = Blocks[i-1][k];
+                        patrol2 = border2.rect.x;
+                        break;
+                    }
+                    sizeB--;
                 }
             }
         } else if (name == "snail") {
@@ -212,6 +235,8 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
         }
     }
     
+    SetTextureWrap(images[0], TEXTURE_WRAP_CLAMP);
+    
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;
     cx = rect.x + rect.width/2;
@@ -258,10 +283,6 @@ void Enemy::bee() {
     }
     rect.x += vx;
     cx += vx;
-
-    if ((border1.SCALE != 0 and GenericColision(border1.rect, rect)) or border2.SCALE != 0 and GenericColision(border2.rect, rect)) {
-        vx = -vx;
-    }
 }
 
 void Enemy::snail(std::vector<Block> Blocks) {
