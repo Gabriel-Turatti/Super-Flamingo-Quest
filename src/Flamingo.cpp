@@ -34,7 +34,7 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
     Hitbox1 = Rectangle {rect.x+7*SCALE, rect.y+15*SCALE, 6.0f*SCALE, 8.0f*SCALE};
     Hitbox2 = Rectangle {rect.x+3*SCALE, rect.y+7*SCALE, 11.0f*SCALE, 7.0f*SCALE};
     Hitbox3 = Rectangle {rect.x+9*SCALE, rect.y, 9.0f*SCALE, 8.0f*SCALE};
-    HitboxA = Rectangle {rect.x, rect.y, 18.0f*SCALE, 16.0f*SCALE};
+    HitboxA = Rectangle {rect.x, rect.y, 23.0f*SCALE, 11.0f*SCALE};
     
     HB1 = {Hitbox1.x-1*SCALE, Hitbox1.y+7*SCALE, 10.0f*SCALE, 2.0f*SCALE};
 }
@@ -58,11 +58,11 @@ void Flamingo::unload() {
 
 void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
     keyPress(Blocks, effects);
+    CheckCloseObjects(Blocks, itens, enemies);
     gravity();
     Physics(Blocks, effects);
     ItemColision(itens);
     EnemyColision(enemies);
-    CheckCloseObjects(Blocks, itens, enemies);
 
     for(char type : {'H', 'R', 'P', 'C', 'W'}) {
         if (invincibility[type] > 0) {
@@ -86,9 +86,9 @@ void Flamingo::CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &
                 continue;
             }
             int dx = abs(Blocks[i].cx - cx);
-            if (dx < rect.width*2) {
+            if (dx < rect.width*3) {
                 int dy = abs(Blocks[i].cy - cy);
-                if (dy < rect.height*2) {
+                if (dy < rect.height*3) {
                     CBs.push_back(i);
                 }
             }
@@ -191,9 +191,9 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed += 1;
         }
         if (lookingRight) {
-            if (CheckMirror(Blocks, effects)) {
+            // if (CheckMirror(Blocks, effects)) {
                 lookingRight = false;
-            }
+            // }
         }
         if (isBoost) {
             if (naturalSpeed > -12) {
@@ -214,9 +214,9 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed -= 1;
         }
         if (!lookingRight) {
-            if (CheckMirror(Blocks, effects)) {
+            // if (CheckMirror(Blocks, effects)) {
                 lookingRight = true;
-            }
+            // }
         }
         if (isBoost) {
             if (naturalSpeed < 12) {
@@ -250,10 +250,12 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
     } else if (S) {
         if (ground) {
             if (not toggleCrouch) {
-                rect.y += 7*SCALE;
-                cy += 7*SCALE;
+                rect.y += 11*SCALE;
+                cy += 11*SCALE;
                 rect.height = HitboxA.height;
-                rectImage.height = 16;
+                rect.width = HitboxA.width;
+                rectImage.height = 12;
+                rectImage.width = 23;
             }
             crouch = true;
             updateHitbox();
@@ -269,10 +271,12 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
     }
     if (toggleCrouch and not crouch) {
         imageCount = 0;
-        rect.y -= 7*SCALE;
-        cy -= 7*SCALE;
+        rect.y -= 11*SCALE;
+        cy -= 11*SCALE;
+        rect.width = 18*SCALE;
         rect.height = 23*SCALE;
         rectImage.height = 23;
+        rectImage.width = 18;
         updateHitbox();
     }
 
@@ -281,9 +285,9 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
         if (ground) {
             if (jumpQueue != 4 or strength == 5) {
                 if (jumpQueue == 2) {
-                    vy -= strength*0.9*SCALE;
+                    vy -= strength*0.95*SCALE;
                 } else {
-                    vy = -strength*0.9*SCALE;
+                    vy = -strength*0.95*SCALE;
                 }
                 strength = 0;
                 PlaySound(sfxJump);
@@ -441,6 +445,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                 temp.background = true;
                 birdsToSave[color] -= 1;
                 totalBirdsSaved[color] += 1;
+                vy = -vy/temp.friction;
                 return 5;
             }
         }
@@ -621,7 +626,7 @@ bool Flamingo::groundCheck(Block ground) {
     }
     if (crouch) {
         HB1.x = HitboxA.x+4*SCALE;
-        HB1.y = HitboxA.y+16*SCALE;
+        HB1.y = HitboxA.y+12*SCALE;
     } else {
         HB1.x = Hitbox1.x-2*SCALE;
         HB1.y = Hitbox1.y+7*SCALE;
@@ -655,44 +660,31 @@ void Flamingo::ItemColision(std::vector<Item> &itens) {
     for (int i = 0; i < isize; i++) {
         Item temp = itens[CIs[i]];
         Vector2 Dspace;
+        Vector2 DspaceNew;
         std::vector<Item>::iterator pos = itens.begin();
+        std::vector<int>::iterator posCI = CIs.begin();
         pos += CIs[i];
-        if (CIs[i]+1 == itens.size()) {
-            break;
-        }
+        posCI += i;
+        // if (CIs[i]+1 == itens.size()) {
+        //     break;
+        // }
 
         if (crouch) {
             Dspace = colision(HitboxA, temp.rect);
-            if ((Dspace.x+Dspace.y) != 0) {
-                collect(temp);
-                itens.erase(pos);
-                // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                break;
-            }
         } else {
             Dspace = colision(Hitbox1, temp.rect);
-            if ((Dspace.x+Dspace.y) != 0) {
-                collect(temp);
-                itens.erase(pos);
-                // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                break;
+            if ((Dspace.x+Dspace.y) == 0) {
+                Dspace = colision(Hitbox2, temp.rect);
+                if ((Dspace.x+Dspace.y) == 0) {
+                    Dspace = colision(Hitbox3, temp.rect);
+                }
             }
-
-            Dspace = colision(Hitbox2, temp.rect);
-            if ((Dspace.x+Dspace.y) != 0) {
-                collect(temp);
-                itens.erase(pos);
-                // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                break;
-            }
-
-            Dspace = colision(Hitbox3, temp.rect);
-            if ((Dspace.x+Dspace.y) != 0) {
-                collect(temp);
-                itens.erase(pos);
-                // DrawText(TextFormat("Removendo item: %d", CIs[i]), GetScreenWidth()-300, 350, 20, WHITE);
-                break;
-            }
+        }
+        if ((Dspace.x+Dspace.y) != 0) {
+            collect(temp);
+            itens.erase(pos);
+            CIs.erase(posCI);
+            break;
         }
     }
 }
@@ -1021,7 +1013,24 @@ bool Flamingo::CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effe
     return true;
 }
 
-
+bool Flamingo::CrouchCheck(std::vector<Block> &Blocks, std::vector<Effect> &effects) {
+    if (crouch) {
+        return true;
+    }
+    bool returned = true;
+    // HitboxA.x = rect.x;
+    // HitboxA.y = rect.y + 11*SCALE;
+    // int bsize = CBs.size();
+    // for (int i = 0; i < bsize; i++) {
+    //     Block temp = Blocks[CBs[i]];
+    //     if (GenericColision(HitboxA, temp.rect)) {
+    //         returned = false;
+    //         break;
+    //     }
+    // }
+    // HitboxA.y -= 11*SCALE;
+    return returned;
+}
 
 
 

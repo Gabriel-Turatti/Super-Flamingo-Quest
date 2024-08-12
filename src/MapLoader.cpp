@@ -71,6 +71,11 @@ void MapLoader::SaveLevel(Map level) {
     for (Block temp : level.Blocks) { // May cause bugs if position is negative
         int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
         int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
+        
+        if (temp.rect.width > BS and temp.direction == 3) { // Gambiarra
+            ColumnPos += 1;
+        }
+
         if (temp.background) {
             NewBlocksBackground[LinePos][ColumnPos] = temp;
         } else {

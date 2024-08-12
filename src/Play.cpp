@@ -1092,8 +1092,8 @@ void Play::EditLevel(std::string name) {
                     }
                     if (!sucess) {
                         StartLines.insert(StartLines.begin() + i, placeBlock);
-                        StartLinesDestination.insert(StartLinesDestination.begin() + i, "Goes to\0");
-                        SLDsize.insert(SLDsize.begin() + i, 7);
+                        StartLinesDestination.insert(StartLinesDestination.begin() + i, "Arrives From\0");
+                        SLDsize.insert(SLDsize.begin() + i, 12);
                     }
                 }
             } else if (Menu == 2) {
@@ -1412,8 +1412,6 @@ void Play::EditLevel(std::string name) {
             DrawTexturePro(mouseEnemy.images[0], source, dest, {0, 0}, 0, WHITE);
         }
 
-
-        // DrawText(TextFormat("Crab POSITION X: %02.02f", enemies[0].rect.x), 50, 50, 50, RED);
         // DrawText(TextFormat("Crab POSITION Y: %02.02f", enemies[0].rect.y), 50, 100, 50, RED);
         EndDrawing();
     }
@@ -1809,9 +1807,35 @@ int Play::mainLoop(Music LevelTheme) {
 
         // Desenhando itens
         for (int i = 0; i < sizeI; i++) {
-            relativePos.x = cameraCenter.x +itens[i].rect.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +itens[i].rect.y -relativeCameraCenter.y;
-            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
+            Item temp = itens[i];
+            relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+
+            // if (temp.name == "coin-copper") {
+            //     Rectangle source, dest;
+
+            //     source.x = 0 + temp.imageCount*(temp.rectImage.width);
+            //     source.y = 0;
+            //     source.width = temp.rectImage.width;
+            //     source.height = temp.rectImage.height;
+
+            //     dest.x = relativePos.x;
+            //     dest.y = relativePos.y;
+            //     dest.width = temp.rect.width;
+            //     dest.height = temp.rect.height;
+
+            //     DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
+            //     temp.tickImage += 1;
+            //     if (temp.tickImage == 10) {
+            //         temp.tickImage = 0;
+            //         temp.imageCount += 1;
+            //         if (temp.imageCount >= temp.imageSize) {
+            //             temp.imageCount = 0;
+            //         }
+            //     }
+            // } else {
+                DrawTextureEx(temp.image, relativePos, 0, SCALE, WHITE);
+            // }
         }
 
         // Desenhando blocos Ground

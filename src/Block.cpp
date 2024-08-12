@@ -87,6 +87,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     // editLevel
     // SaveFile
     // LoadFile
+    SetTextureWrap(image, TEXTURE_WRAP_CLAMP);
 
     if (rotator == 0) {
     

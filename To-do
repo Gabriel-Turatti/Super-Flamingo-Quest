@@ -2,12 +2,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 ## Correção de Bugs
     ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (Happened with: butterfly and bee; Did not happen with: Meldrop)
-    ( ) [B] Why itens recently spawned aren't collectable
-    ( ) [B] Spikes teleport from left to right
     ( ) [B] Not able to walk backwards, when turning around not possible
-    ( ) [B] Meldrop not animating correctly attacks
-    ( ) [B] Black Lines from sprites
-    ( ) [B] The Misterious Forbidden Item
 
 ## Alterações gerais
     ( ) [+] Sound Effects:
@@ -19,14 +14,12 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
         ( ) Walking
     ( ) [+] Soaring
     ( ) [+] Moeda de Ouro Envenenada -> Dano Hope
-    ( ) [+] Rotacionar plataforma, hitbox.
+    ( ) [+] Rotacionar plataforma.
     ( ) [+] Nuvens
     ( ) [+] Decorações de fundo
     ( ) [+] Plataformas de grama
     ( ) [+] Soul Health bar (if you lose all 5 Healths)
     ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
-    ( ) [+] Crouch check pra não clipar igual fiz com mirroring
-    ( ) [+] Crouch ser mais baixo
     ( ) [+] Animate spear
     ( ) [+] Party spell (???)
     ( ) [+] Makefile pro linux
@@ -58,9 +51,15 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 ( ) 0.9 - Planes of Paris Update
-    ( ) [B] The most infamous bug, BLOCK CLIPPING
-    ( ) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
     ( ) [+] Moedas e Itens terem animação de brilho e giro
+    (X) [B] The Misterious Forbidden last Item
+    (X) [B] Spikes teleport from left to right
+    (X) [B] Black Lines from sprites
+    (X) [B] Meldrop not animating correctly attacks
+    ( ) [+] Crouch e mirror check para não clipar
+    ( ) [B] The most infamous bug, BLOCK CLIPPING -> Refactor all colision maybe?
+    (X) [+] Crouch ser mais baixo
+    ( ) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
     ( ) [+] coletar itens dropar particulas
     (X) [+] Different levels of jumping
     ( ) [+] Save and Load Flamingo
@@ -78,7 +77,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [R] Secrets reveal completely
     (X) [B] Platform not platforming
     (X) [B] Spike not glueing properly
-    (X) [B] Bees not respecting boundaries
+    ( ) [B] Bees not respecting boundaries
     (X) [B] Meldrop line glitching
 
 
