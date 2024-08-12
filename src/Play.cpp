@@ -8,6 +8,15 @@ Play::Play() {
     RNGe3 = std::uniform_int_distribution<std::mt19937::result_type>(0, 1000);
 }
 
+Play::~Play() {
+    UnloadTexture(iconEditor);
+    UnloadTexture(iconGame);
+    UnloadSound(finish);
+    player.unload();
+}
+
+
+
 void Play::loadFlamingo() {
     player = Flamingo(400, 400, FW, FH, WT, HT, SCALE);
 }
@@ -557,6 +566,7 @@ void Play::EditLevel(std::string name) {
             }
         }
 
+        // Choose Object
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             if (mouseRect.x > WT*2/3) {
                 if (Menu == 1) {
@@ -743,6 +753,8 @@ void Play::EditLevel(std::string name) {
                 }
             }
         }
+        // Remove object
+
 
 
         if (GenericColision(mouseRect, PlayTest)) {
@@ -767,12 +779,12 @@ void Play::EditLevel(std::string name) {
         ClearBackground(BLUE);
 
 
-        Vector2 posGrid = {0, 0}; // Draw Grid
+        Vector2 posGrid = {0, 0}; // Draw Grid and start placing objects
         for (int i = 0; i < BHT+3; i++) {
             for (int j = 0; j < BWT+3; j++) {
                 DrawTextureEx(grid, posGrid, 0, SCALE, WHITE);
                 if (mouseRect.x <= WT*2/3 and (mouseBlock.SCALE != 0 or mouseItem.SCALE != 0 or mouseEnemy.SCALE != 0)) {
-                    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
                         Rectangle gridrect = {posGrid.x, posGrid.y, BS, BS};
                         if (GenericColision(gridrect, mouseRect)) {
                             float Bx = cx -WT/2 +posGrid.x;
@@ -990,8 +1002,6 @@ void Play::EditLevel(std::string name) {
 
             
             if (temp.secret) {
-                relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
-                relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
                 DrawText("S", relativePos.x, relativePos.y, BS, WHITE);
             }
         }
@@ -1414,6 +1424,7 @@ void Play::EditLevel(std::string name) {
 }
 
 
+
 void Play::HubLevelSelect() {
     Vector2 mousePosition;
     Rectangle mouseRect = {0, 0, 2, 2};
@@ -1484,6 +1495,7 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     itens = Level.itens;
     enemies = Level.enemies;
     seconds = Level.time;
+    
     int trueEntrance = 0;
     if (entrance != "") {
         for (std::string option : Level.entrances) {
@@ -1496,13 +1508,16 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     for (Block temp : Blocks) {
         if (temp.name == "startLevel") {
             if (trueEntrance == 0) {
-                player.rect.x = temp.rect.x;
+                player.rect.x = temp.rect.x+SCALE;
                 player.rect.y = temp.rect.y-SCALE;
-                break;
             } else {
                 trueEntrance--;
             }
+        } else if (temp.name == "cage") {
+            int color = ((int)temp.rect.x+(int)temp.rect.y) % 5;
+            player.birdsToSave[color] += 1;
         }
+
     }
 
 
@@ -1516,6 +1531,13 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     Music LevelTheme = LoadMusicStream(Level.levelTheme);
     int saida = mainLoop(LevelTheme);
     UnloadMusicStream(LevelTheme);
+
+    
+    player.birdsToSave[0] = 0;
+    player.birdsToSave[1] = 0;
+    player.birdsToSave[2] = 0;
+    player.birdsToSave[3] = 0;
+    player.birdsToSave[4] = 0;
 
     if (saida == -1) {
         return "";
@@ -1534,11 +1556,8 @@ int Play::mainLoop(Music LevelTheme) {
 
     PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
-    Sound finish = LoadSound("sfx/finishLine.wav");
     tick = 1;
-    
-    int fadeout = 0;
-    int saida = -1;
+    saida = -1;
 
     Vector2 relativePos;
     cameraCenter = {WT/2, HT/2, player.rect.width, player.rect.height};
@@ -1550,9 +1569,15 @@ int Play::mainLoop(Music LevelTheme) {
     upperLimit = 0;
     rightLimit = (widthLevel-1)*(BS-SCALE);
     downLimit = (heightLevel)*(BS-SCALE);
-    
-    
-    
+
+
+    Texture2D birdY = LoadTexture("images/bird-flying-yellow.png");
+    Texture2D birdG = LoadTexture("images/bird-flying-green.png");
+    Texture2D birdB = LoadTexture("images/bird-flying-blue.png");
+    Texture2D birdR = LoadTexture("images/bird-flying-red.png");
+    Texture2D birdO = LoadTexture("images/bird-flying-orange.png");
+
+
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
             UpdateMusicStream(LevelTheme);
@@ -1662,16 +1687,16 @@ int Play::mainLoop(Music LevelTheme) {
         
         // relative Camera movement
         if (relativeCameraCenter.x > player.rect.x+BS) {
-            relativeCameraCenter.x -= (relativeCameraCenter.x - player.rect.x)/BS;
+            relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player.rect.x)/BS;
         }
         if (relativeCameraCenter.x < player.rect.x-BS) {
-            relativeCameraCenter.x -= (relativeCameraCenter.x - player.rect.x)/BS;
+            relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player.rect.x)/BS;
         }
         if (relativeCameraCenter.y > player.rect.y+BS) {
-            relativeCameraCenter.y -= (relativeCameraCenter.y - player.rect.y)/BS;
+            relativeCameraCenter.y -= 2*(relativeCameraCenter.y - player.rect.y)/BS;
         }
         if (relativeCameraCenter.y < player.rect.y-BS) {
-            relativeCameraCenter.y -= (relativeCameraCenter.y - player.rect.y)/BS;
+            relativeCameraCenter.y -= 2*(relativeCameraCenter.y - player.rect.y)/BS;
         }
 
 
@@ -1688,8 +1713,8 @@ int Play::mainLoop(Music LevelTheme) {
             relativeCameraCenter.y = upperLimit + GetScreenHeight()/2;
         }
 
-        if (player.rect.x > rightLimit) {
-            player.rect.x = rightLimit;
+        if (player.rect.x+player.rect.width > rightLimit) {
+            player.rect.x = rightLimit-player.rect.width;
         }
         if (player.rect.x < leftLimit) {
             player.rect.x = leftLimit;
@@ -1972,6 +1997,41 @@ int Play::mainLoop(Music LevelTheme) {
             DrawTextureEx(player.P5image, {(float) GetScreenWidth()/2+100*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("5", (float) GetScreenWidth()/2+107*SCALE, 20+15*SCALE, 20, BLACK);
         }
+        // Birds
+        int birds1 = player.birdsToSave[0];
+        int birds2 = player.birdsToSave[1];
+        int birds3 = player.birdsToSave[2];
+        int birds4 = player.birdsToSave[3];
+        int birds5 = player.birdsToSave[4];
+        Rectangle origin = {0, 0, 13, 13};
+        Rectangle dest = {10, (float)GetScreenHeight()-36, 26, 26};
+        while (birds1+birds2+birds3+birds4+birds5 > 0) {
+            if (birds1 > 0) {
+                DrawTexturePro(birdY, origin, dest, {0, 0}, 0, WHITE);
+                dest.x += 28;
+                birds1--;
+            }
+            if (birds2 > 0) {
+                DrawTexturePro(birdG, origin, dest, {0, 0}, 0, WHITE);
+                dest.x += 28;
+                birds2--;
+            }
+            if (birds3 > 0) {
+                DrawTexturePro(birdB, origin, dest, {0, 0}, 0, WHITE);
+                dest.x += 28;
+                birds3--;
+            }
+            if (birds4 > 0) {
+                DrawTexturePro(birdR, origin, dest, {0, 0}, 0, WHITE);
+                dest.x += 28;
+                birds4--;
+            }
+            if (birds5 > 0) {
+                DrawTexturePro(birdO, origin, dest, {0, 0}, 0, WHITE);
+                dest.x += 28;
+                birds5--;
+            }
+        }
 
 
 
@@ -2149,7 +2209,13 @@ int Play::mainLoop(Music LevelTheme) {
         EndDrawing();
         tick++;
     }
+    fadeout = 0;
     
+    UnloadTexture(birdY);
+    UnloadTexture(birdG);
+    UnloadTexture(birdB);
+    UnloadTexture(birdR);
+    UnloadTexture(birdO);
     
     
     tick -= 180;
@@ -2171,7 +2237,6 @@ int Play::mainLoop(Music LevelTheme) {
         }
     }
 
-    UnloadSound(finish);
     return trueSaida;
 }
 
@@ -2449,6 +2514,14 @@ void Play::DesenharBlocos(bool background, bool showSecret) {
         if (temp.background != background) {
             continue;
         }
+        if (Blocks[i].name == "nextLevel" and fadeout == 0) {
+            if (GenericColision(player.rect, Blocks[i].rect)) {
+                fadeout = 1;
+                saida = i;
+                PlaySound(finish);
+            }
+        }
+
         relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
         relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
         if (temp.direction != 0) {
@@ -2471,7 +2544,7 @@ void Play::DesenharBlocos(bool background, bool showSecret) {
 
         if (temp.name == "cage") {
             Rectangle source, dest;
-            if (tick % 20 < 10) {
+            if ((tick+(int)temp.rect.x+(int)temp.rect.y) % 20 < 10) {
                 source.x = 12;
             } else {
                 source.x = 0;
@@ -2488,13 +2561,6 @@ void Play::DesenharBlocos(bool background, bool showSecret) {
             DrawTexturePro(temp.image, source, dest, {0, 0}, temp.direction*-90, transparency);
         } else {
             DrawTextureEx(temp.image, relativePos, temp.direction*-90, SCALE, transparency);
-        }
-
-        
-        if (showSecret and temp.secret) {
-            relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
-            relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
-            DrawText("S", relativePos.x, relativePos.y, BS, WHITE);
         }
     }
 }

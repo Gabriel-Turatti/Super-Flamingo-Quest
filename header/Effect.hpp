@@ -35,6 +35,7 @@ public:
     bool meldropShot(std::vector<Block> Blocks, Flamingo &player);
     bool transmutation(std::vector<Item> &itens);
     bool spear(std::vector<Enemy> &enemies, std::vector<Item> &itens);
+    bool bird();
 };
 
 #endif

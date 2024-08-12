@@ -236,6 +236,8 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << 'N';
                     } else if (temp.name == "startLevel") {
                         LevelSave << 'F';
+                    } else if (temp.name == "cage") {
+                        LevelSave << 'C';
                     }
                     LevelSave << std::to_string(temp.direction);
                     if (temp.secret) {
@@ -290,6 +292,8 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << "N";
                     } else if (temp.name == "startLevel") {
                         LevelSave << "F";
+                    } else if (temp.name == "cage") {
+                        LevelSave << 'C';
                     }
                     LevelSave << std::to_string(temp.direction);
                     if (temp.secret) {
@@ -692,6 +696,8 @@ Map MapLoader::LoadLevel(std::string name) {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE, direction);
                 } else if (line[charPoint] == 'S') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, direction);
+                } else if (line[charPoint] == 'C') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "cage", SCALE, direction);
                 } else if (line[charPoint] == '(') {
                     if (line[charPoint+1] == 'K') {
                         direction = line[charPoint+4] - '0';
@@ -882,6 +888,10 @@ Map MapLoader::LoadLevel(std::string name) {
         }
     }
     
+    if (BlocksMap.count(heightLevel-1) == 0) {
+        heightLevel -= 1;
+    }
+
     level.close();
 
     Map Level;

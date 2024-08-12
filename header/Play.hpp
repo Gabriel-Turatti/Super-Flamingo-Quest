@@ -43,6 +43,7 @@ public:
 
     Texture2D iconEditor = LoadTexture("images/mapEditor.png");
     Texture2D iconGame = LoadTexture("images/mainGame.png");
+    Sound finish = LoadSound("sfx/finishLine.wav");
 
 
     struct Dust {
@@ -73,6 +74,9 @@ public:
     int sizeD;
     int sizeS;
 
+    int fadeout = 0;
+    int saida = -1;
+
     float cx, cy;
 
     Rectangle cameraCenter, relativeCameraCenter;
@@ -81,6 +85,7 @@ public:
     MapLoader loader;
 
     Play();
+    ~Play();
     void loadFlamingo();
     void Hub();
     void HubLevelSelect();

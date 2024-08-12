@@ -6,11 +6,17 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [B] Spikes teleport from left to right
     ( ) [B] Not able to walk backwards, when turning around not possible
     ( ) [B] Meldrop not animating correctly attacks
-    ( ) [B] block clipping
     ( ) [B] Black Lines from sprites
     ( ) [B] The Misterious Forbidden Item
 
 ## Alterações gerais
+    ( ) [+] Sound Effects:
+        ( ) Poção
+        ( ) altar
+        ( ) inimigos (cuidar com a distância deles)
+        ( ) poderes
+        ( ) Birds
+        ( ) Walking
     ( ) [+] Soaring
     ( ) [+] Moeda de Ouro Envenenada -> Dano Hope
     ( ) [+] Rotacionar plataforma, hitbox.
@@ -19,7 +25,6 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Plataformas de grama
     ( ) [+] Soul Health bar (if you lose all 5 Healths)
     ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
-    ( ) [+] Mais efeitos sonoros: Poção, altar, inimigos (cuidar com a distância deles), poderes.
     ( ) [+] Crouch check pra não clipar igual fiz com mirroring
     ( ) [+] Crouch ser mais baixo
     ( ) [+] Animate spear
@@ -29,6 +34,8 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Auto Complete Music name editor
     ( ) [+] Not grab potion if full
     ( ) [+] Mana regenerating differently
+    ( ) [+] Transmute birds
+    ( ) [+] Break cages with spear
 
 ## Refatoração
     ## Quality of code
@@ -40,6 +47,8 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
     ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
     ( ) [R] change FPS handling to VSYNC
+    ( ) [R] Unite Ground and Background save/load file
+    ( ) [R] Create temporary textures of hud with all details that can be printed without calculations, and updated when change happens
     ## Quality of life
     ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
     ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
@@ -49,6 +58,8 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 ( ) 0.9 - Planes of Paris Update
+    ( ) [B] The most infamous bug, BLOCK CLIPPING
+    ( ) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
     ( ) [+] Moedas e Itens terem animação de brilho e giro
     ( ) [+] coletar itens dropar particulas
     (X) [+] Different levels of jumping
@@ -57,8 +68,11 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [+] Planes of Paris I
     (X) [+] Planes of Paris II
     ( ) [+] Song for playing the level's title
-    ( ) [+] Bird Blocks
-    ( ) [+] Freeing Birds mechanic
+    ( ) [+] Bird's "thank you's"
+    (X) [B] Passing rightLimit
+    (X) [B] Unecessary line of map load below
+    (X) [+] Bird Blocks
+    (X) [+] Freeing Birds mechanic
     (X) [R] Gate changing image
     (X) [R] Centralizing block draw
     (X) [R] Secrets reveal completely

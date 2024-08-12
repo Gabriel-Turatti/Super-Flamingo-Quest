@@ -25,17 +25,38 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
         rectImage.width = 6;
         rectImage.height = 6;
     } else if (id == 2) {
-        // PlaySound(LoadSound("sfx/meldrop-shot.wav"));
         image = LoadTexture("images/effect-transmutation.png");
         imageSize = 1;
         rectImage.width = 15;
         rectImage.height = 15;
     } else if (id == 3) {
-        // PlaySound(LoadSound("sfx/meldrop-shot.wav"));
         image = LoadTexture("images/effect-spear.png");
         imageSize = 1;
         rectImage.width = 15;
         rectImage.height = 15;
+    } else if (id == 4) {
+        switch(damager[0]) {
+            case 0:
+                image = LoadTexture("images/bird-flying-yellow.png");
+                break;
+            case 1:
+                image = LoadTexture("images/bird-flying-green.png");
+                break;
+            case 2:
+                image = LoadTexture("images/bird-flying-blue.png");
+                break;
+            case 3:
+                image = LoadTexture("images/bird-flying-red.png");
+                break;
+            case 4:
+                image = LoadTexture("images/bird-flying-orange.png");
+                break;
+
+        }
+        
+        imageSize = 2;
+        rectImage.width = 13;
+        rectImage.height = 13;
     }
     
     
@@ -56,6 +77,9 @@ bool Effect::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Ite
             break;
         case(3):
             value = spear(enemies, itens);
+            break;
+        case(4):
+            value = bird();
             break;
     }
     
@@ -206,3 +230,26 @@ bool Effect::spear(std::vector<Enemy> &enemies, std::vector<Item> &itens) {
     }
     return false;
 }
+
+bool Effect::bird() {
+    if (tick < 60) {
+        return false;
+    } else {
+        vx -= 0.1;
+        vy -= 0.1;
+        rect.x += vx;
+        rect.y += vy;
+    }
+    if (rect.x < -300 and rect.y < -300) {
+        return true;
+    }
+    return false;
+}
+
+
+
+
+
+
+
+

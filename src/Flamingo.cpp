@@ -59,7 +59,7 @@ void Flamingo::unload() {
 void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
     keyPress(Blocks, effects);
     gravity();
-    Physics(Blocks);
+    Physics(Blocks, effects);
     ItemColision(itens);
     EnemyColision(enemies);
     CheckCloseObjects(Blocks, itens, enemies);
@@ -86,9 +86,9 @@ void Flamingo::CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &
                 continue;
             }
             int dx = abs(Blocks[i].cx - cx);
-            if (dx < rect.width*3) {
+            if (dx < rect.width*2) {
                 int dy = abs(Blocks[i].cy - cy);
-                if (dy < rect.height*3) {
+                if (dy < rect.height*2) {
                     CBs.push_back(i);
                 }
             }
@@ -99,9 +99,9 @@ void Flamingo::CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &
         int sizeI = itens.size();
         for (int i = 0; i < sizeI; i++) {
             int dx = abs(itens[i].cx - cx);
-            if (dx < rect.width*3) {
+            if (dx < rect.width*2) {
                 int dy = abs(itens[i].cy - cy);
-                if (dy < rect.height*3) {
+                if (dy < rect.height*2) {
                     CIs.push_back(i);
                 }
             }
@@ -191,7 +191,7 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed += 1;
         }
         if (lookingRight) {
-            if (CheckMirror(Blocks)) {
+            if (CheckMirror(Blocks, effects)) {
                 lookingRight = false;
             }
         }
@@ -214,7 +214,7 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed -= 1;
         }
         if (!lookingRight) {
-            if (CheckMirror(Blocks)) {
+            if (CheckMirror(Blocks, effects)) {
                 lookingRight = true;
             }
         }
@@ -360,7 +360,7 @@ void Flamingo::TakeHit(Enemy enemy) {
     }
 }
 
-int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
+int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<Effect> &effects) {
     Vector2 Dspace;
     if (temp.background) {
         return 0;
@@ -433,6 +433,16 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
                     Health(-7, 'R');
                 }
             }
+        } else if (temp.name == "cage") {
+            if (abs(vx) + abs(vy) > 9*SCALE) {
+                int color = ((int)temp.rect.x+(int)temp.rect.y) % 5;
+                int colorArray[5] = {color, 0, 0, 0, 0};
+                effects.push_back(Effect({temp.cx-5*SCALE, temp.cy-5*SCALE}, {0, 0}, 5000, 4, colorArray, SCALE));
+                temp.background = true;
+                birdsToSave[color] -= 1;
+                totalBirdsSaved[color] += 1;
+                return 5;
+            }
         }
         
         if (vert) {
@@ -473,7 +483,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert) {
     return 0;
 }
 
-void Flamingo::Physics(std::vector<Block> &Blocks) {
+void Flamingo::Physics(std::vector<Block> &Blocks, std::vector<Effect> &effects) {
     // Vertical Axis checking
     rect.y += vy;
     updateHitbox();
@@ -484,14 +494,14 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
         int doColide = 0, returned = 0;
 
         if (crouch) {
-            doColide = blockColision(HitboxA, temp, true);
+            doColide = blockColision(HitboxA, temp, true, effects);
         } else {
-            doColide = blockColision(Hitbox1, temp, true);
-            returned = blockColision(Hitbox2, temp, true);
+            doColide = blockColision(Hitbox1, temp, true, effects);
+            returned = blockColision(Hitbox2, temp, true, effects);
             if (returned > doColide) {
                 doColide = returned;
             }
-            returned = blockColision(Hitbox3, temp, true);
+            returned = blockColision(Hitbox3, temp, true, effects);
             if (returned > doColide) {
                 doColide = returned;
             }
@@ -514,6 +524,10 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
                     Blocks[CBs[j]] = temp2;
                 }
             }
+            break;
+        } else if (doColide == 5) {
+            auto it = std::next(Blocks.begin(), CBs[i]);
+            Blocks.erase(it);
             break;
         }
     }
@@ -537,14 +551,14 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
         int doColide = 0, returned = 0;
 
         if (crouch) {
-            doColide = blockColision(HitboxA, temp, false);
+            doColide = blockColision(HitboxA, temp, false, effects);
         } else {
-            doColide = blockColision(Hitbox1, temp, false);
-            returned = blockColision(Hitbox2, temp, false);
+            doColide = blockColision(Hitbox1, temp, false, effects);
+            returned = blockColision(Hitbox2, temp, false, effects);
             if (returned > doColide) {
                 doColide = returned;
             }
-            returned = blockColision(Hitbox3, temp, false);
+            returned = blockColision(Hitbox3, temp, false, effects);
             if (returned > doColide) {
                 doColide = returned;
             }
@@ -567,6 +581,10 @@ void Flamingo::Physics(std::vector<Block> &Blocks) {
                     Blocks[CBs[j]] = temp2;
                 }
             }
+            break;
+        } else if (doColide == 5) {
+            auto it = std::next(Blocks.begin(), CBs[i]);
+            Blocks.erase(it);
             break;
         }
     
@@ -948,7 +966,7 @@ void Flamingo::Health(int qtd, char type) {
 *   If player is currently looking right, and looking left will trigger its hitbox into a wall, this function stops player from looking left.
 *   Might cause bug: If blockColision does alterations to player that shouldn't be done out of the Physics check 
 */
-bool Flamingo::CheckMirror(std::vector<Block> &Blocks) {
+bool Flamingo::CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effects) {
     Hitbox1.y = rect.y+15*SCALE;
     Hitbox2.y = rect.y+7*SCALE;
     Hitbox3.y = rect.y+1*SCALE;
@@ -965,13 +983,13 @@ bool Flamingo::CheckMirror(std::vector<Block> &Blocks) {
             for (int i = 0; i < bsize; i++) {
                 Block temp = Blocks[CBs[i]];
 
-                if (blockColision(Hitbox1, temp, false) != 0) {
+                if (blockColision(Hitbox1, temp, false, effects) != 0) {
                     return false;
                 }
-                if (blockColision(Hitbox2, temp, false) != 0) {
+                if (blockColision(Hitbox2, temp, false, effects) != 0) {
                     return false;
                 }
-                if (blockColision(Hitbox3, temp, false) != 0) {
+                if (blockColision(Hitbox3, temp, false, effects) != 0) {
                     return false;
                 }
             }
@@ -985,13 +1003,13 @@ bool Flamingo::CheckMirror(std::vector<Block> &Blocks) {
             for (int i = 0; i < bsize; i++) {
                 Block temp = Blocks[CBs[i]];
 
-                if (blockColision(Hitbox1, temp, false) != 0) {
+                if (blockColision(Hitbox1, temp, false, effects) != 0) {
                     return false;
                 }
-                if (blockColision(Hitbox2, temp, false) != 0) {
+                if (blockColision(Hitbox2, temp, false, effects) != 0) {
                     return false;
                 }
-                if (blockColision(Hitbox3, temp, false) != 0) {
+                if (blockColision(Hitbox3, temp, false, effects) != 0) {
                     return false;
                 }
             }

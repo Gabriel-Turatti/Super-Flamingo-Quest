@@ -8,13 +8,13 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     rectImage.height = h/SCALE;
     if (namer == "grass") {
         image = LoadTexture("images/block_grass.png");
-        friction = 2.5;
+        friction = 2;
     } else if (namer == "dirt2") {
         image = LoadTexture("images/block_dirt2x2.png");
-        friction = 4;
+        friction = 2.1;
     } else if (namer == "dirt") {
         image = LoadTexture("images/block_dirt.png");
-        friction = 4;
+        friction = 2.1;
     } else if (namer == "brick") {
         image = LoadTexture("images/block_brick.png");
         friction = 1.8;

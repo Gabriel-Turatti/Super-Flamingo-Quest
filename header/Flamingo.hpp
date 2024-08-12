@@ -139,6 +139,11 @@ public:
     char* nextLevel;
     int strength = 0;
 
+    int birdsToSave[5] = {0, 0, 0, 0, 0};
+    int totalBirdsSaved[5] = {0, 0, 0, 0, 0};
+
+
+
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
     Flamingo();
@@ -150,11 +155,11 @@ public:
     void update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects);
     void CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies);
 
-    int blockColision(Rectangle HBox, Block &temp, bool vert);
+    int blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<Effect> &effects);
 
     void keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects);
     void gravity();
-    void Physics(std::vector<Block> &Blocks);
+    void Physics(std::vector<Block> &Blocks, std::vector<Effect> &effects);
     void ItemColision (std::vector<Item> &itens);
 
     void EnemyColision(std::vector<Enemy> enemies);
@@ -167,7 +172,7 @@ public:
     void updateHitbox();
     Vector2 colision(Rectangle hitbox, Rectangle B);
 
-    bool CheckMirror(std::vector<Block> &Blocks);
+    bool CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effects);
 };
 
 #endif

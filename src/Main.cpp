@@ -14,7 +14,6 @@ int main(void) {
     Play game;
     game.loadFlamingo();
     game.Hub();
-    game.player.unload();
 
     CloseAudioDevice();
 
