@@ -51,12 +51,16 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 ( ) 0.9 - Planes of Paris Update
-    ( ) [+] Moedas e Itens terem animação de brilho e giro
+    (X) [R] Item Handling Class
+    ( ) [R] Block Handling Class
+    ( ) [+] Adding More Blocks: Poison Ivy, Honey block, Green Switch
+    (X) [B] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    (X) [+] Moedas e Itens terem animação de brilho e giro
     (X) [B] The Misterious Forbidden last Item
     (X) [B] Spikes teleport from left to right
     (X) [B] Black Lines from sprites
     (X) [B] Meldrop not animating correctly attacks
-    ( ) [+] Crouch e mirror check para não clipar
+    (X) [+] Crouch e mirror check para não clipar
     ( ) [B] The most infamous bug, BLOCK CLIPPING -> Refactor all colision maybe?
     (X) [+] Crouch ser mais baixo
     ( ) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
@@ -101,6 +105,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 ( ) ??? - Decorating the World Update
     ( ) - Adding grass
     ( ) - Adding bushes
+    ( ) - Adding Vine
     ( ) - More variety of Dirt blocks
     ( ) - More Blocks
     ( ) - Background

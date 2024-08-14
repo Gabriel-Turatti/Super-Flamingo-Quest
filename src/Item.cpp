@@ -7,187 +7,236 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
     rect.y = y;
     SCALE = SCALER;
     category = categorizer;
-    // imageSize = 0;
-    // imageCount = 0;
+    imageSize = 0;
+    imageCount = ((int) rect.x + (int) rect.y) % 30;
     // Padrão é 13x13, se for 2 pixels menores que isso de alguma forma, é necessário colocar a posição 1*SCALE pra frente para ficar centralizado
     if (name == "coin-copper") {
-        image = LoadTexture("images/coin-copper.png");
-        // imageSize = 4;
-        // imageCount = 0;
+        imageSize = 9;
+        imageCount = ((int)rect.x + (int)rect.y) % 10;
+        animation[0] = 0;
+        animation[1] = 0;
+        animation[2] = 0;
+        animation[3] = 0;
+        animation[4] = 1;
+        animation[5] = 2;
+        animation[6] = 3;
+        animation[7] = 2;
+        animation[8] = 1;
+        id = 1;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "coin-silver") {
-        image = LoadTexture("images/coin-silver.png");
+        id = 2;
+        imageSize = 9;
+        imageCount = ((int)rect.x + (int)rect.y) % 10;
+        animation[0] = 0;
+        animation[1] = 0;
+        animation[2] = 0;
+        animation[3] = 0;
+        animation[4] = 1;
+        animation[5] = 2;
+        animation[6] = 3;
+        animation[7] = 2;
+        animation[8] = 1;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "coin-gold") {
-        image = LoadTexture("images/coin-gold.png");
+        id = 3;
+        imageSize = 9;
+        imageCount = ((int)rect.x + (int)rect.y) % 10;
+        animation[0] = 0;
+        animation[1] = 0;
+        animation[2] = 0;
+        animation[3] = 0;
+        animation[4] = 1;
+        animation[5] = 2;
+        animation[6] = 3;
+        animation[7] = 2;
+        animation[8] = 1;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "coin-death") {
-        image = LoadTexture("images/coin-death.png");
+        id = 4;
+        imageSize = 10;
+        imageCount = ((int)rect.x + (int)rect.y) % 10;
+        animation[0] = 0;
+        animation[1] = 0;
+        animation[2] = 1;
+        animation[3] = 2;
+        animation[4] = 3;
+        animation[5] = 4;
+        animation[6] = 3;
+        animation[7] = 2;
+        animation[8] = 1;
+        animation[9] = 0;
         rectImage.width = 13;
         rectImage.height = 13;
         rect.x += 0*SCALE;
         rect.y += 0*SCALE;
     } else if (name == "food-banana") {
-        image = LoadTexture("images/food-banana.png");
+        id = 5;
         rectImage.width = 11;
         rectImage.height = 11;
         rect.x += 1*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "food-pear") {
-        image = LoadTexture("images/food-pear.png");
+        id = 6;
         rectImage.width = 13;
         rectImage.height = 13;
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
     } else if (name == "food-blueberry") {
-        image = LoadTexture("images/food-blueberry.png");
+        id = 7;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "food-pepper") {
-        image = LoadTexture("images/food-pepper.png");
+        id = 8;
         rectImage.width = 11;
         rectImage.height = 11;
         rect.x += 1*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "food-orange") {
-        image = LoadTexture("images/food-orange.png");
+        id = 9;
         rectImage.width = 11;
         rectImage.height = 12;
         rect.x += 1*SCALE;
         rect.y += 0*SCALE;
     } else if (name == "Hshard-hope") {
-        image = LoadTexture("images/Hshard-hope.png");
+        id = 10;
         rectImage.width = 7;
         rectImage.height = 9;
         rect.x += 3*SCALE;
         rect.y += 2*SCALE;
     } else if (name == "Hshard-resilience") {
-        image = LoadTexture("images/Hshard-resilience.png");
+        id = 11;
         rectImage.width = 7;
         rectImage.height = 9;
         rect.x += 3*SCALE;
         rect.y += 2*SCALE;
     } else if (name == "Hshard-power") {
-        image = LoadTexture("images/Hshard-power.png");
+        id = 12;
         rectImage.width = 7;
         rectImage.height = 9;
         rect.x += 3*SCALE;
         rect.y += 2*SCALE;
     } else if (name == "Hshard-courage") {
-        image = LoadTexture("images/Hshard-courage.png");
+        id = 13;
         rectImage.width = 7;
         rectImage.height = 9;
         rect.x += 3*SCALE;
         rect.y += 2*SCALE;
     } else if (name == "Hshard-wisdom") {
-        image = LoadTexture("images/Hshard-wisdom.png");
+        id = 14;
         rectImage.width = 7;
         rectImage.height = 9;
         rect.x += 3*SCALE;
         rect.y += 2*SCALE;
     } else if (name == "Pshard-wind") {
-        image = LoadTexture("images/Pshard-wind.png");
+        id = 15;
         rectImage.width = 8;
         rectImage.height = 8;
         rect.x += 2.5*SCALE;
         rect.y += 2.5*SCALE;
     } else if (name == "Pshard-party") {
-        image = LoadTexture("images/Pshard-party.png");
+        id = 16;
         rectImage.width = 8;
         rectImage.height = 8;
         rect.x += 2.5*SCALE;
         rect.y += 2.5*SCALE;
     } else if (name == "Pshard-fun") {
-        image = LoadTexture("images/Pshard-fun.png");
+        id = 17;
         rectImage.width = 8;
         rectImage.height = 8;
         rect.x += 2.5*SCALE;
         rect.y += 2.5*SCALE;
     } else if (name == "Pshard-hard") {
-        image = LoadTexture("images/Pshard-hard.png");
+        id = 18;
         rectImage.width = 8;
         rectImage.height = 8;
         rect.x += 2.5*SCALE;
         rect.y += 2.5*SCALE;
     } else if (name == "Pshard-eloise") {
-        image = LoadTexture("images/Pshard-eloise.png");
+        id = 19;
         rectImage.width = 8;
         rectImage.height = 8;
         rect.x += 2.5*SCALE;
         rect.y += 2.5*SCALE;
     } else if (name == "key-hope") {
-        image = LoadTexture("images/key-hope.png");
+        id = 20;
         rectImage.width = 7;
         rectImage.height = 11;
         rect.x += 3*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "key-resilience") {
-        image = LoadTexture("images/key-resilience.png");
+        id = 21;
         rectImage.width = 7;
         rectImage.height = 11;
         rect.x += 3*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "key-power") {
-        image = LoadTexture("images/key-power.png");
+        id = 22;
         rectImage.width = 7;
         rectImage.height = 12;
         rect.x += 3*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "key-courage") {
-        image = LoadTexture("images/key-courage.png");
+        id = 23;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "key-wisdom") {
-        image = LoadTexture("images/key-wisdom.png");
+        id = 24;
         rectImage.width = 7;
         rectImage.height = 11;
         rect.x += 3*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "courage-potion") {
-        image = LoadTexture("images/courage-potion.png");
+        id = 25;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "party-potion") {
-        image = LoadTexture("images/party-potion.png");
+        id = 26;
         rectImage.width = 9;
         rectImage.height = 11;
         rect.x += 2*SCALE;
         rect.y += 1*SCALE;
     } else if (name == "power-dash") {
-        image = LoadTexture("images/power-dash.png");
+        id = 27;
         rectImage.width = 15;
         rectImage.height = 15;
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
-    } else if (name == "power-transmutation") {
-        image = LoadTexture("images/power-transmutation.png");
+    } else if (name == "power-???") {
+        id = 28;
         rectImage.width = 15;
         rectImage.height = 15;
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
     } else if (name == "power-boost") {
-        image = LoadTexture("images/power-boost.png");
+        id = 29;
         rectImage.width = 15;
         rectImage.height = 15;
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
     } else if (name == "power-spear") {
-        image = LoadTexture("images/power-spear.png");
+        id = 30;
+        rectImage.width = 15;
+        rectImage.height = 15;
+        rect.x -= 1*SCALE;
+        rect.y -= 1*SCALE;
+    } else if (name == "power-transmutation") {
+        id = 31;
         rectImage.width = 15;
         rectImage.height = 15;
         rect.x -= 1*SCALE;
@@ -198,7 +247,7 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
     // SaveFile (Twice)
     // LoadLevel
     // EditLevel
-    SetTextureWrap(image, TEXTURE_WRAP_CLAMP);
+    // ItemHandler
 
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;
@@ -207,4 +256,3 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
 }
 
 Item::Item() {SCALE = 0;}
-// Item::~Item() {UnloadTexture(image);}

@@ -28,9 +28,9 @@ INCLUDES = -I/include/raylib.h
 # Library path for raylib
 LDFLAGS = -L/lib/libraylib.a -lraylib -lgdi32 -lwinmm -lstdc++ -mwindows
 
-FLAGS = -std=c++11 -D_GLIBCXX_USE_CXX11_ABI=1
+FLAGS = -std=c++17 -D_GLIBCXX_USE_CXX11_ABI=1
 
-OBJS = $(OB)/Block.o $(OB)/Flamingo.o $(OB)/Functions.o $(OB)/Effect.o $(OB)/Item.o $(OB)/Enemy.o $(OB)/MapLoader.o $(OB)/Play.o $(OB)/Main.o
+OBJS = $(OB)/Block.o $(OB)/Flamingo.o $(OB)/Functions.o $(OB)/Effect.o $(OB)/Item.o $(OB)/Enemy.o $(OB)/MapLoader.o $(OB)/Play.o $(OB)/Main.o $(OB)/ItemHandler.o
 
 # Ensure the object directory exists
 $(OBJS): | $(OB)
@@ -65,11 +65,14 @@ $(OB)/Functions.o: $(S)/Functions.cpp
 $(OB)/MapLoader.o: $(S)/MapLoader.cpp $(HD)/MapLoader.hpp $(HD)/Item.hpp $(HD)/Enemy.hpp
 	$(CPP) $(FLAGS) $(INCLUDES) -c $(S)/MapLoader.cpp -o $@
 
-$(OB)/Play.o: $(S)/Play.cpp $(HD)/Play.hpp $(HD)/Flamingo.hpp $(HD)/MapLoader.hpp $(HD)/Enemy.hpp $(HD)/Effect.hpp
+$(OB)/Play.o: $(S)/Play.cpp $(HD)/Play.hpp $(HD)/Flamingo.hpp $(HD)/MapLoader.hpp $(HD)/Enemy.hpp $(HD)/Effect.hpp $(HD)/ItemHandler.hpp
 	$(CPP) $(FLAGS) $(INCLUDES) -c $(S)/Play.cpp -o $@
 
 $(OB)/Main.o: $(S)/Main.cpp $(HD)/Play.hpp
 	$(CPP) $(FLAGS) $(INCLUDES) -c $(S)/Main.cpp -o $@
+
+$(OB)/ItemHandler.o: $(S)/ItemHandler.cpp $(HD)/ItemHandler.hpp
+	$(CPP) $(FLAGS) $(INCLUDES) -c $(S)/ItemHandler.cpp -o $@
 
 # Clean up
 .PHONY: clean

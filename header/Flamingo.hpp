@@ -172,8 +172,8 @@ public:
     void updateHitbox();
     Vector2 colision(Rectangle hitbox, Rectangle B);
 
-    bool CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effects);
-    bool CrouchCheck(std::vector<Block> &Blocks, std::vector<Effect> &effects);
+    bool CheckMirror(std::vector<Block> &Blocks);
+    bool CrouchCheck(std::vector<Block> &Blocks);
 };
 
 #endif

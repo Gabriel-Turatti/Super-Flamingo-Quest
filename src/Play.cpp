@@ -307,6 +307,8 @@ void Play::EditLevel(std::string name) {
     EnemyOptions.push_back(Enemy(0, 0, "crab", SCALE, templates, 0));
     EnemyOptions.push_back(Enemy(0, 0, "meldrop", SCALE, templates, 0));
 
+    ItemHandler itensLevelTaker(itens), itensOptionsTaker(ItemOptions);
+
 
     float Px = WT*2/3 + 30;
     float Py = 50;
@@ -586,6 +588,7 @@ void Play::EditLevel(std::string name) {
                     for (Item itemOption : ItemOptions) {
                         if (GenericColision(mouseRect, itemOption.rect)) {
                             mouseItem = Item(mouseRect.x, mouseRect.y, itemOption.name, SCALE, itemOption.category);
+                            itensLevelTaker.addItem(mouseItem);
                         }
                     }
                 } else if (Menu == 3) {
@@ -1027,12 +1030,9 @@ void Play::EditLevel(std::string name) {
                     }
                 }
             }
-
-
-            relativePos.x = WT/2 +itens[i].rect.x -cx;
-            relativePos.y = HT/2 +itens[i].rect.y -cy;
-            DrawTextureEx(itens[i].image, relativePos, 0, SCALE, WHITE);
         }
+        itensLevelTaker.DrawItens(itens, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE);
+
 
 
 
@@ -1140,9 +1140,7 @@ void Play::EditLevel(std::string name) {
                 }
             }
         } else if (Menu == 2) {
-            for (Item itemOption : ItemOptions) {
-                DrawTextureEx(itemOption.image, {itemOption.rect.x, itemOption.rect.y}, 0, SCALE, WHITE);
-            }
+            itensOptionsTaker.DrawItemHud(ItemOptions, SCALE);
         } else if (Menu == 3) {
             for (Enemy enemyOption : EnemyOptions) {
                 Rectangle source, dest;
@@ -1397,7 +1395,7 @@ void Play::EditLevel(std::string name) {
                 DrawText("S", tcx, tcy, BS, WHITE);
             }
         } else if (Menu == 2 and mouseItem.SCALE != 0) {
-            DrawTextureEx(mouseItem.image, {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
+            DrawTextureEx(itensLevelTaker.images[mouseItem.id], {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
         } else if (Menu == 3 and mouseEnemy.SCALE != 0) {
             Rectangle source, dest;
             source.x = 0;
@@ -1575,6 +1573,7 @@ int Play::mainLoop(Music LevelTheme) {
     Texture2D birdR = LoadTexture("images/bird-flying-red.png");
     Texture2D birdO = LoadTexture("images/bird-flying-orange.png");
 
+    ItemHandler itemTaker = ItemHandler(itens);
 
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
@@ -1806,37 +1805,7 @@ int Play::mainLoop(Music LevelTheme) {
         }
 
         // Desenhando itens
-        for (int i = 0; i < sizeI; i++) {
-            Item temp = itens[i];
-            relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
-
-            // if (temp.name == "coin-copper") {
-            //     Rectangle source, dest;
-
-            //     source.x = 0 + temp.imageCount*(temp.rectImage.width);
-            //     source.y = 0;
-            //     source.width = temp.rectImage.width;
-            //     source.height = temp.rectImage.height;
-
-            //     dest.x = relativePos.x;
-            //     dest.y = relativePos.y;
-            //     dest.width = temp.rect.width;
-            //     dest.height = temp.rect.height;
-
-            //     DrawTexturePro(temp.image, source, dest, {0, 0}, 0, WHITE);
-            //     temp.tickImage += 1;
-            //     if (temp.tickImage == 10) {
-            //         temp.tickImage = 0;
-            //         temp.imageCount += 1;
-            //         if (temp.imageCount >= temp.imageSize) {
-            //             temp.imageCount = 0;
-            //         }
-            //     }
-            // } else {
-                DrawTextureEx(temp.image, relativePos, 0, SCALE, WHITE);
-            // }
-        }
+        itemTaker.DrawItens(itens, cameraCenter, relativeCameraCenter, SCALE);
 
         // Desenhando blocos Ground
         DesenharBlocos(false, false);

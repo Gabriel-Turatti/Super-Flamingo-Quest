@@ -435,6 +435,7 @@ void MapLoader::SaveFlamingo(Flamingo player) {
     FlamFile << player.WP << '-' << player.PP << '-' << player.FP << '-' << player.HP << '-' << player.EP << '\n';
     FlamFile << player.powers[0] << player.powers[1] << player.powers[2] << player.powers[3] << player.powers[4] << '\n';
 
+    FlamFile.close();
 }
 
 Flamingo MapLoader::LoadFlamingo() {
@@ -836,6 +837,7 @@ Map MapLoader::LoadLevel(std::string name) {
                 }
                 itens.push_back(temp);
             }
+            
             CHL++;
         } else if (RenderPhase == 4) {
             int i = 0;

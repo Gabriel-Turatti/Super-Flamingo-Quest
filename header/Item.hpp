@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 #include <fstream>
+#include <vector>
 
 class Item {
 public:
@@ -11,15 +12,15 @@ public:
     float cx, cy;
     std::string name;
     char category;
-    Texture2D image;
     int SCALE;
-    // int imageSize;
-    // int imageCount;
-    // int tickImage = 0;
+    int id;
+    int imageSize;
+    int imageCount;
+    int tickImage = 0;
+    int animation[10];
 
     Item(int x, int y, std::string namer, int SCALER, char categorizer);
     Item();
-    // ~Item();
 };
 
 #endif

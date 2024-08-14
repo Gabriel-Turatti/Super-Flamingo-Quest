@@ -191,9 +191,9 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed += 1;
         }
         if (lookingRight) {
-            // if (CheckMirror(Blocks, effects)) {
+            if (CheckMirror(Blocks)) {
                 lookingRight = false;
-            // }
+            }
         }
         if (isBoost) {
             if (naturalSpeed > -12) {
@@ -214,9 +214,9 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed -= 1;
         }
         if (!lookingRight) {
-            // if (CheckMirror(Blocks, effects)) {
+            if (CheckMirror(Blocks)) {
                 lookingRight = true;
-            // }
+            }
         }
         if (isBoost) {
             if (naturalSpeed < 12) {
@@ -240,7 +240,10 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
     }
 
     bool toggleCrouch = crouch;
+    bool canCrouch = CrouchCheck(Blocks);
     crouch = false;
+    
+    
     if (W) {
         jumpQueue = 5;
         strength += 1;
@@ -248,7 +251,7 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             strength = 5;
         }
     } else if (S) {
-        if (ground) {
+        if (ground and (canCrouch or toggleCrouch)) {
             if (not toggleCrouch) {
                 rect.y += 11*SCALE;
                 cy += 11*SCALE;
@@ -259,7 +262,6 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             }
             crouch = true;
             updateHitbox();
-            vx = vx/3;
         }
     } else {
         if (jumpQueue == 0) {
@@ -269,7 +271,9 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             }
         }
     }
-    if (toggleCrouch and not crouch) {
+
+
+    if (toggleCrouch and not crouch and canCrouch) {
         imageCount = 0;
         rect.y -= 11*SCALE;
         cy -= 11*SCALE;
@@ -278,6 +282,12 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
         rectImage.height = 23;
         rectImage.width = 18;
         updateHitbox();
+    } else if (toggleCrouch) {
+        crouch = true;
+    }
+    
+    if (crouch) {
+        vx = vx/3;
     }
 
     jumpQueue -= 1;
@@ -958,7 +968,7 @@ void Flamingo::Health(int qtd, char type) {
 *   If player is currently looking right, and looking left will trigger its hitbox into a wall, this function stops player from looking left.
 *   Might cause bug: If blockColision does alterations to player that shouldn't be done out of the Physics check 
 */
-bool Flamingo::CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effects) {
+bool Flamingo::CheckMirror(std::vector<Block> &Blocks) {
     Hitbox1.y = rect.y+15*SCALE;
     Hitbox2.y = rect.y+7*SCALE;
     Hitbox3.y = rect.y+1*SCALE;
@@ -975,16 +985,17 @@ bool Flamingo::CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effe
             for (int i = 0; i < bsize; i++) {
                 Block temp = Blocks[CBs[i]];
 
-                if (blockColision(Hitbox1, temp, false, effects) != 0) {
+                if (GenericColision(Hitbox1, temp.rect)) {
                     return false;
                 }
-                if (blockColision(Hitbox2, temp, false, effects) != 0) {
+                if (GenericColision(Hitbox2, temp.rect)) {
                     return false;
                 }
-                if (blockColision(Hitbox3, temp, false, effects) != 0) {
+                if (GenericColision(Hitbox3, temp.rect)) {
                     return false;
                 }
             }
+            
             Hitbox1.x = rect.x+6*SCALE;
             Hitbox2.x = rect.x+3*SCALE;
             Hitbox3.x = rect.x+9*SCALE;
@@ -992,19 +1003,21 @@ bool Flamingo::CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effe
             Hitbox1.x = rect.x+6*SCALE;
             Hitbox2.x = rect.x+3*SCALE;
             Hitbox3.x = rect.x+9*SCALE;
+            
             for (int i = 0; i < bsize; i++) {
                 Block temp = Blocks[CBs[i]];
 
-                if (blockColision(Hitbox1, temp, false, effects) != 0) {
+                if (GenericColision(Hitbox1, temp.rect)) {
                     return false;
                 }
-                if (blockColision(Hitbox2, temp, false, effects) != 0) {
+                if (GenericColision(Hitbox2, temp.rect)) {
                     return false;
                 }
-                if (blockColision(Hitbox3, temp, false, effects) != 0) {
+                if (GenericColision(Hitbox3, temp.rect)) {
                     return false;
                 }
             }
+            
             Hitbox1.x = rect.x+7*SCALE;
             Hitbox2.x = rect.x+4*SCALE;
             Hitbox3.x = rect.x;
@@ -1013,22 +1026,42 @@ bool Flamingo::CheckMirror(std::vector<Block> &Blocks, std::vector<Effect> &effe
     return true;
 }
 
-bool Flamingo::CrouchCheck(std::vector<Block> &Blocks, std::vector<Effect> &effects) {
-    if (crouch) {
-        return true;
-    }
+bool Flamingo::CrouchCheck(std::vector<Block> &Blocks) {
     bool returned = true;
-    // HitboxA.x = rect.x;
-    // HitboxA.y = rect.y + 11*SCALE;
-    // int bsize = CBs.size();
-    // for (int i = 0; i < bsize; i++) {
-    //     Block temp = Blocks[CBs[i]];
-    //     if (GenericColision(HitboxA, temp.rect)) {
-    //         returned = false;
-    //         break;
-    //     }
-    // }
-    // HitboxA.y -= 11*SCALE;
+    if (crouch) {
+        rect.y -= 13*SCALE;
+        updateHitbox();
+        int bsize = CBs.size();
+        for (int i = 0; i < bsize; i++) {
+            Block temp = Blocks[CBs[i]];
+
+            if (GenericColision(Hitbox1, temp.rect)) {
+                returned = false;
+                break;
+            }
+            if (GenericColision(Hitbox2, temp.rect)) {
+                returned = false;
+                break;
+            }
+            if (GenericColision(Hitbox3, temp.rect)) {
+                returned = false;
+                break;
+            }
+        }
+        rect.y += 13*SCALE;
+    } else {
+        HitboxA.x = rect.x;
+        HitboxA.y = rect.y + 11*SCALE;
+        int bsize = CBs.size();
+        for (int i = 0; i < bsize; i++) {
+            Block temp = Blocks[CBs[i]];
+            if (GenericColision(HitboxA, temp.rect)) {
+                returned = false;
+                break;
+            }
+        }
+        HitboxA.y = rect.y;
+    }
     return returned;
 }
 

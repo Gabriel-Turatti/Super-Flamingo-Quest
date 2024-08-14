@@ -19,6 +19,7 @@
 #include "Enemy.hpp"
 #include "Functions.hpp"
 #include "MapLoader.hpp"
+#include "ItemHandler.hpp"
 
 /*
 *   Class dedicated to running the game.
