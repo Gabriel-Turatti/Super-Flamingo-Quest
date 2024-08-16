@@ -419,19 +419,13 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
     }
     Dspace = colision(HBox, temp.rect);
     if (vert) {
-        if (Dspace.y > 0) {
-            Dspace.y += 1;
-        }
-        if (Dspace.y < 0) {
-            Dspace.y -= 1;
-        }
         rect.y += Dspace.y;
     } else {
         if (Dspace.x > 0) {
-            Dspace.x += 1;
+            Dspace.x += SCALE;
         }
         if (Dspace.x < 0) {
-            Dspace.x -= 1;
+            Dspace.x -= SCALE;
         }
         rect.x += Dspace.x;
     }
@@ -780,6 +774,9 @@ void Flamingo::collect(Item item) {
         score += 75;
     } else if (item.name == "coin-death") {
         score += 150;
+    } else if (item.name == "coin-poison") {
+        Health(-4, 'H');
+        score += 25;
     } else if (item.name == "food-banana") { // Fun-mode
         score += 2;
         pWP += 2;
@@ -924,12 +921,13 @@ void Flamingo::collect(Item item) {
         powers[4] = true;
     }
 
-
-    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
-    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
-    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
-    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
-    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+    if (item.category != 'C') {
+        game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+        game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+        game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+        game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+        game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+    }
 }
 
 Vector2 Flamingo::colision(Rectangle hitbox, Rectangle B) {

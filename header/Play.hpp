@@ -47,6 +47,7 @@ public:
         Vector2 dt;
         Color cor;
         int timer;
+        std::string dialog;
     };
 
     Music theme;
@@ -88,7 +89,7 @@ public:
     void HubMapEditor();
     void search_universe(std::vector<std::string> &Universe);
 
-    void DustBringer(float x, float y, Color cor, int timer, bool random);
+    void DustBringer(float x, float y, Color cor, int timer, bool random, std::string dialog = "");
 
     int complexityCalc(Item temp);
     int complexityCalc(Enemy temp);

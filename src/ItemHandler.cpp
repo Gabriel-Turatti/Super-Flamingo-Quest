@@ -113,6 +113,9 @@ void ItemHandler::addItem(Item temp) {
         case 31:
             images[temp.id] = LoadTexture("images/power-transmutation.png");
             break;            
+        case 32:
+            images[temp.id] = LoadTexture("images/coin-poison.png");
+            break;            
     }
 }
 

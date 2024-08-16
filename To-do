@@ -13,9 +13,8 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
         ( ) Birds
         ( ) Walking
     ( ) [+] Soaring
-    ( ) [+] Moeda de Ouro Envenenada -> Dano Hope
     ( ) [+] Rotacionar plataforma.
-    ( ) [+] Plataformas de grama
+    ( ) [+] Plataformas de grama.
     ( ) [+] Soul Health bar (if you lose all 5 Healths)
     ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
     ( ) [+] Animate spear
@@ -45,6 +44,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 ( ) 0.9 - Planes of Paris Update
     (X) [R] Item Handling Class
     ( ) [R] Block Handling Class
+    (X) [+] Moeda de Ouro Envenenada -> Dano Hope
     (X) [+] Toast spell
     (X) [+] Mana regenerating differently
     (X) [+] Adding More Blocks: Vines, Poison Ivy, Honey block, Green Switch, Green Block
@@ -63,9 +63,10 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
     (X) [+] coletar itens dropar particulas
     (X) [+] Different levels of jumping
-    ( ) [+] Bird's "thank you's"
+    (X) [+] Bird's "thank you's"
     ( ) [+] Save and Load Flamingo
-    ( ) [+] Effects for regenerating Hope and Wisdom
+    ( ) [+] Effects for regenerating Hope
+    ( ) [+] Effects for regenerating Wisdom
     (X) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
     (X) [+] Planes of Paris I
     (X) [+] Planes of Paris II

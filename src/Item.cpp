@@ -241,13 +241,31 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rectImage.height = 15;
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
+    } else if (name == "coin-poison") {
+        id = 32;
+        imageSize = 9;
+        imageCount = ((int)rect.x + (int)rect.y) % 10;
+        animation[0] = 0;
+        animation[1] = 0;
+        animation[2] = 0;
+        animation[3] = 0;
+        animation[4] = 1;
+        animation[5] = 2;
+        animation[6] = 3;
+        animation[7] = 2;
+        animation[8] = 1;
+        rectImage.width = 9;
+        rectImage.height = 11;
+        rect.x += 2*SCALE;
+        rect.y += 1*SCALE;
     }
 
     // if you're adding an item here, don't forget to also add it to:
-    // SaveFile (Twice)
+    // SaveLevel (Twice)
     // LoadLevel
     // EditLevel
     // ItemHandler
+    // Flamingo's Collect
 
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;

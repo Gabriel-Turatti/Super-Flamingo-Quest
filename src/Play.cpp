@@ -98,8 +98,9 @@ void Play::Hub() {
 }
 
 
-void Play::DustBringer(float x, float y, Color cor, int timer, bool random) {
+void Play::DustBringer(float x, float y, Color cor, int timer, bool random, std::string dialog) {
     Dust D;
+    D.dialog = dialog;
     D.pos.x = x;
     D.pos.y = y;
     int speed = RNG100(rng);
@@ -330,6 +331,7 @@ void Play::EditLevel(std::string name) {
     ItemOptions.push_back(Item(0, 0, "power-toast", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-boost", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-spear", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "coin-poison", SCALE, 'C'));
     ItemOptions.push_back(Item(0, 0, "power-transmutation", SCALE, 'S'));
     std::vector<Enemy> EnemyOptions;
     std::map<int, std::map<int, Block>> templates;
@@ -1580,6 +1582,7 @@ int Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
     player->vx = 0;
     player->vy = 0;
+    // Effect(player->cx, player->cy, 150, 5, {7, 0, 0, 0, 0}, SCALE);
     player->Health(7, 'H');
 
     
@@ -1656,6 +1659,9 @@ int Play::mainLoop(Music LevelTheme) {
 
             // Effects
             for (int i = 0; i < sizeS; i++) {
+                if (effects[i].id == 4 and effects[i].tick % 60 == 0) {
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true, "Thank you!");
+                }
                 if (effects[i].update(Blocks, player.get(), itens, enemies)) {
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
@@ -1682,7 +1688,7 @@ int Play::mainLoop(Music LevelTheme) {
             }
         }
 
-        
+
         // relative Camera movement
         if (relativeCameraCenter.x > player->rect.x+BS) {
             relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player->rect.x)/BS;
@@ -1745,25 +1751,25 @@ int Play::mainLoop(Music LevelTheme) {
                 }
             }
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+
         // Desenhando coisas
         BeginDrawing();
         ClearBackground(BLUE);
 
 
 
-        
+
         // Desenhando blocos Background
         DesenharBlocos(true, false);
 
@@ -1886,8 +1892,12 @@ int Play::mainLoop(Music LevelTheme) {
 
             relativePos.x = cameraCenter.x +D.pos.x -relativeCameraCenter.x;
             relativePos.y = cameraCenter.y +D.pos.y -relativeCameraCenter.y;
-            DrawCircle(relativePos.x, relativePos.y, (D.timer/20)+SCALE, {0, 0, 0, 127});
-            DrawCircle(relativePos.x, relativePos.y, (D.timer/20), D.cor);
+            if (D.dialog == "") {
+                DrawCircle(relativePos.x, relativePos.y, (D.timer/20)+SCALE, {0, 0, 0, 127});
+                DrawCircle(relativePos.x, relativePos.y, (D.timer/20), D.cor);
+            } else {
+                DrawText(D.dialog.c_str(), relativePos.x, relativePos.y, D.timer/3, D.cor);
+            }
         }
 
 
@@ -2243,14 +2253,14 @@ int Play::mainLoop(Music LevelTheme) {
         tick++;
     }
     fadeout = 0;
-    
+
     UnloadTexture(birdY);
     UnloadTexture(birdG);
     UnloadTexture(birdB);
     UnloadTexture(birdR);
     UnloadTexture(birdO);
-    
-    
+
+
     tick -= 180;
     if (saida == -1) {
         return -1;

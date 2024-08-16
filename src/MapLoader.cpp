@@ -95,6 +95,9 @@ void MapLoader::SaveLevel(Map level) {
         } else if (name == "coin-gold") {
             temp.rect.x -= 2*SCALE;
             temp.rect.y -= 1*SCALE;
+        } else if (name == "coin-poison") {
+            temp.rect.x -= 2*SCALE;
+            temp.rect.y -= 1*SCALE;
         } else if (name == "coin-death") {
             temp.rect.x -= 0*SCALE;
             temp.rect.y -= 0*SCALE;
@@ -353,8 +356,6 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << "(Cg)";
                     } else if (NewItens[i][j].name == "coin-death") {
                         LevelSave << "(Cd)";
-
-
                     } else if (NewItens[i][j].name == "food-banana") {
                         LevelSave << "(Fh)";
                     } else if (NewItens[i][j].name == "food-pear") {
@@ -419,6 +420,8 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << 'C';
                     } else if (NewItens[i][j].name == "party-potion") {
                         LevelSave << 'P';
+                    } else if (NewItens[i][j].name == "coin-poison") {
+                        LevelSave << "(Cv)";
                     }
                 } else {
                     LevelSave << '-';
@@ -829,6 +832,8 @@ Map MapLoader::LoadLevel(std::string name) {
                             addon = "gold";
                         } else if (line[charPoint+2] == 'd') {
                             addon = "death";
+                        } else if (line[charPoint+2] == 'v') {
+                            addon = "poison";
                         }
                         temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "coin-"+addon, SCALE, 'C');
                     } else if (line[charPoint+1] == 'F') {
