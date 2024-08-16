@@ -2,7 +2,7 @@
 
 
 Play::Play() {
-    loader = MapLoader(SCALE, BS, WT, HT);
+    loader.reset(new MapLoader(SCALE, BS, WT, HT));
     rng = std::mt19937(dev());
     RNG100 = std::uniform_int_distribution<std::mt19937::result_type>(1, 100);
     RNGe3 = std::uniform_int_distribution<std::mt19937::result_type>(0, 1000);
@@ -12,13 +12,14 @@ Play::~Play() {
     UnloadTexture(iconEditor);
     UnloadTexture(iconGame);
     UnloadSound(finish);
-    player.unload();
+    player->unload();
 }
 
 
 
 void Play::loadFlamingo() {
-    player = Flamingo(400, 400, FW, FH, WT, HT, SCALE);
+    player.reset(new Flamingo(400, 400, FW, FH, WT, HT, SCALE));
+    player->game = this;
 }
 
 void Play::search_universe(std::vector<std::string> &Universe) {
@@ -96,6 +97,29 @@ void Play::Hub() {
     UnloadMusicStream(theme);
 }
 
+
+void Play::DustBringer(float x, float y, Color cor, int timer, bool random) {
+    Dust D;
+    D.pos.x = x;
+    D.pos.y = y;
+    int speed = RNG100(rng);
+    if (speed % 2 == 0) {
+        D.dt.x = -speed/25;
+    } else {
+        D.dt.x = speed/25;
+    }
+    D.dt.y = 0;
+    if (random) {
+        unsigned char color1 = RNG100(rng)*255/100;
+        unsigned char color2 = RNG100(rng)*255/100;
+        unsigned char color3 = RNG100(rng)*255/100;
+        cor = {color1, color2, color3, 127};
+    }
+    D.cor = cor;
+    D.timer = timer;
+
+    dusts.push_back(D);
+}
 
 
 void Play::HubMapEditor() {
@@ -198,10 +222,12 @@ int Play::complexityCalc(Item temp) {
         return 80;
     } else if (temp.name == "power-dash") {
         return 60;
-    } else if (temp.name == "power-boost") {
+    } else if (temp.name == "power-toast") {
         return 70;
-    } else if (temp.name == "power-spear") {
+    } else if (temp.name == "power-boost") {
         return 80;
+    } else if (temp.name == "power-spear") {
+        return 90;
     } else if (temp.name == "power-transmutation") {
         return 100;
     }
@@ -224,7 +250,7 @@ int Play::complexityCalc(Enemy temp) {
 }
 
 void Play::EditLevel(std::string name) {
-    Map LevelMap = loader.LoadLevel(name);
+    Map LevelMap = loader->LoadLevel(name);
     Blocks = LevelMap.Blocks;
     itens = LevelMap.itens;
     enemies = LevelMap.enemies;
@@ -234,8 +260,8 @@ void Play::EditLevel(std::string name) {
 
     for (Block temp : Blocks) {
         if (temp.name == "startLevel") {
-            player.rect.x = temp.rect.x + 1;
-            player.rect.y = temp.rect.y-SCALE;
+            player->rect.x = temp.rect.x + 1;
+            player->rect.y = temp.rect.y-SCALE;
         }
     }
 
@@ -267,6 +293,11 @@ void Play::EditLevel(std::string name) {
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "nextLevel", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS*2-SCALE, "startLevel", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS, "cage", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "honey", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "vines", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "ivy", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "switch_green", SCALE));
+    BlockOptions.push_back(Block(0, 0, BS, BS, "green", SCALE));
     // BlockOptions.push_back(Block(0, 0, (BS-SCALE)*5+SCALE, BS*2-SCALE, "rotator", SCALE));
     std::vector<Item> ItemOptions;
     ItemOptions.push_back(Item(0, 0, "coin-copper", SCALE, 'C'));
@@ -296,6 +327,7 @@ void Play::EditLevel(std::string name) {
     ItemOptions.push_back(Item(0, 0, "key-courage", SCALE, 'K'));
     ItemOptions.push_back(Item(0, 0, "key-wisdom", SCALE, 'K'));
     ItemOptions.push_back(Item(0, 0, "power-dash", SCALE, 'S'));
+    ItemOptions.push_back(Item(0, 0, "power-toast", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-boost", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-spear", SCALE, 'S'));
     ItemOptions.push_back(Item(0, 0, "power-transmutation", SCALE, 'S'));
@@ -623,8 +655,8 @@ void Play::EditLevel(std::string name) {
 
                         
                         Music Musica = LoadMusicStream(SongNameFinal);
-                        player.rect.x = StartLines[0].rect.x;
-                        player.rect.y = StartLines[0].rect.y-SCALE; // test
+                        player->rect.x = StartLines[0].rect.x;
+                        player->rect.y = StartLines[0].rect.y-SCALE; // test
                         tick = 1;
                         seconds = finalTime;
                         mainLoop(Musica);
@@ -648,7 +680,7 @@ void Play::EditLevel(std::string name) {
                         finalLevel.levelTheme = SongNameFinal;
                         finalLevel.entrances = StartLinesDestination;
                         finalLevel.exits = FinishLinesDestination;
-                        loader.SaveLevel(finalLevel);
+                        loader->SaveLevel(finalLevel);
                         break;
                     }
 
@@ -1069,8 +1101,8 @@ void Play::EditLevel(std::string name) {
                 } else if (placeBlock.name == "startLevel") {
                     int i = 0;
                     bool sucess = false;
-                    player.rect.x = placeBlock.rect.x;
-                    player.rect.y = placeBlock.rect.y;
+                    player->rect.x = placeBlock.rect.x;
+                    player->rect.y = placeBlock.rect.y;
                     for (Block temp : StartLines) {
                         if (placeBlock.rect.y < temp.rect.y) {
                             StartLines.insert(StartLines.begin() + i, placeBlock);
@@ -1483,7 +1515,7 @@ void Play::HubLevelSelect() {
 }
 
 std::string Play::PlayLevel(std::string levelname, std::string entrance) {
-    Map Level = loader.LoadLevel(levelname);
+    Map Level = loader->LoadLevel(levelname);
     if (Level.time == -1) {
         return "";
     }
@@ -1504,14 +1536,14 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     for (Block temp : Blocks) {
         if (temp.name == "startLevel") {
             if (trueEntrance == 0) {
-                player.rect.x = temp.rect.x+SCALE;
-                player.rect.y = temp.rect.y-SCALE;
+                player->rect.x = temp.rect.x+SCALE;
+                player->rect.y = temp.rect.y-SCALE;
             } else {
                 trueEntrance--;
             }
         } else if (temp.name == "cage") {
             int color = ((int)temp.rect.x+(int)temp.rect.y) % 5;
-            player.birdsToSave[color] += 1;
+            player->birdsToSave[color] += 1;
         }
 
     }
@@ -1529,11 +1561,11 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     UnloadMusicStream(LevelTheme);
 
     
-    player.birdsToSave[0] = 0;
-    player.birdsToSave[1] = 0;
-    player.birdsToSave[2] = 0;
-    player.birdsToSave[3] = 0;
-    player.birdsToSave[4] = 0;
+    player->birdsToSave[0] = 0;
+    player->birdsToSave[1] = 0;
+    player->birdsToSave[2] = 0;
+    player->birdsToSave[3] = 0;
+    player->birdsToSave[4] = 0;
 
     if (saida == -1) {
         return "";
@@ -1546,9 +1578,11 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
 
 int Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
-    player.vx = 0;
-    player.vy = 0;
-    player.Health(7, 'H');
+    player->vx = 0;
+    player->vy = 0;
+    player->Health(7, 'H');
+
+    
 
     PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
@@ -1556,9 +1590,9 @@ int Play::mainLoop(Music LevelTheme) {
     saida = -1;
 
     Vector2 relativePos;
-    cameraCenter = {WT/2, HT/2, player.rect.width, player.rect.height};
-    relativeCameraCenter = {player.rect.x, player.rect.y, player.rect.width/SCALE, player.rect.height/SCALE};
-    Rectangle playerDest = {0, 0, player.rect.width, player.rect.height};
+    cameraCenter = {WT/2, HT/2, player->rect.width, player->rect.height};
+    relativeCameraCenter = {player->rect.x, player->rect.y, player->rect.width/SCALE, player->rect.height/SCALE};
+    Rectangle playerDest = {0, 0, player->rect.width, player->rect.height};
 
     float leftLimit, rightLimit, upperLimit, downLimit;
     leftLimit = 1*BS;
@@ -1589,23 +1623,17 @@ int Play::mainLoop(Music LevelTheme) {
 
             // Entities Updates
             for (int i = 0; i < sizeE; i++) {
-                enemies[i].update(Blocks, player, effects);
-            }
-            player.update(Blocks, itens, enemies, effects);
-            if (player.isBoost) {
-                float posY = player.rect.y + RNG100(rng)*player.rect.height/100;
-                Dust D1;
-                D1.pos.x = player.cx;
-                D1.pos.y = posY;
-                D1.dt.x = 0;
-                D1.dt.y = 0;
-                D1.cor = {0, 255, 255, 127};
-                D1.timer = RNG100(rng);
-
-                dusts.push_back(D1);
+                enemies[i].update(Blocks, player.get(), effects);
             }
 
-            if (abs(player.vy) > 8 or abs(player.vx) > 8) {
+            player->update(Blocks, itens, enemies, effects);
+            
+            if (player->isBoost) {
+                float posY = player->rect.y + RNG100(rng)*player->rect.height/100;
+                DustBringer(player->cx, posY, {0, 255, 255, 127}, RNG100(rng), false);
+            }
+
+            if (abs(player->vy) > 8 or abs(player->vx) > 8) {
                 tickBlockUpdate = 1;
             } else {
                 tickBlockUpdate = 5;
@@ -1628,37 +1656,10 @@ int Play::mainLoop(Music LevelTheme) {
 
             // Effects
             for (int i = 0; i < sizeS; i++) {
-                if (effects[i].update(Blocks, player, itens, enemies)) {
-                    Dust D1, D2, D3;
-                    D1.pos.x = effects[i].cx;
-                    D1.pos.y = effects[i].cy;
-                    D2.pos.x = effects[i].cx;
-                    D2.pos.y = effects[i].cy;
-                    D3.pos.x = effects[i].cx;
-                    D3.pos.y = effects[i].cy;
-
-                    D1.dt.x = RNG100(rng)*5/100;
-                    D1.dt.y = RNG100(rng)*5/100;
-                    D2.dt.x = RNG100(rng)*5/100;
-                    D2.dt.y = RNG100(rng)*5/100;
-                    D3.dt.x = RNG100(rng)*5/100;
-                    D3.dt.y = RNG100(rng)*5/100;
-
-                    unsigned char color1 = RNG100(rng)*255/100;
-                    unsigned char color2 = RNG100(rng)*255/100;
-                    unsigned char color3 = RNG100(rng)*255/100;
-                    D1.cor = {color1, color2, color3, 127};
-                    D1.timer = RNG100(rng);
-
-                    D2.cor = {color1, color2, color3, 127};
-                    D2.timer = RNG100(rng);
-
-                    D3.cor = {color1, color2, color3, 127};
-                    D3.timer = RNG100(rng);
-
-                    dusts.push_back(D1);
-                    dusts.push_back(D2);
-                    dusts.push_back(D3);
+                if (effects[i].update(Blocks, player.get(), itens, enemies)) {
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
 
                     auto it = std::next(effects.begin(), i);
                     effects.erase(it);
@@ -1669,31 +1670,31 @@ int Play::mainLoop(Music LevelTheme) {
             mousePosition = GetMousePosition();
             // Fun-mode
             // if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            //     player.rect.x = mousePosition.x +player.rect.x - cameraCenter.x;
-            //     player.rect.y = mousePosition.y +player.rect.y - cameraCenter.y;
+            //     player->rect.x = mousePosition.x +player->rect.x - cameraCenter.x;
+            //     player->rect.y = mousePosition.y +player->rect.y - cameraCenter.y;
             // }
 
             if (tick % 30 == 0) {
                 seconds -= 1;
             }
             if (seconds < 0 and tick % 60 == 0) {
-                player.Health(-1, 'H');
+                player->Health(-1, 'H');
             }
         }
 
         
         // relative Camera movement
-        if (relativeCameraCenter.x > player.rect.x+BS) {
-            relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player.rect.x)/BS;
+        if (relativeCameraCenter.x > player->rect.x+BS) {
+            relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player->rect.x)/BS;
         }
-        if (relativeCameraCenter.x < player.rect.x-BS) {
-            relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player.rect.x)/BS;
+        if (relativeCameraCenter.x < player->rect.x-BS) {
+            relativeCameraCenter.x -= 2*(relativeCameraCenter.x - player->rect.x)/BS;
         }
-        if (relativeCameraCenter.y > player.rect.y+BS) {
-            relativeCameraCenter.y -= 2*(relativeCameraCenter.y - player.rect.y)/BS;
+        if (relativeCameraCenter.y > player->rect.y+BS) {
+            relativeCameraCenter.y -= 2*(relativeCameraCenter.y - player->rect.y)/BS;
         }
-        if (relativeCameraCenter.y < player.rect.y-BS) {
-            relativeCameraCenter.y -= 2*(relativeCameraCenter.y - player.rect.y)/BS;
+        if (relativeCameraCenter.y < player->rect.y-BS) {
+            relativeCameraCenter.y -= 2*(relativeCameraCenter.y - player->rect.y)/BS;
         }
 
 
@@ -1710,13 +1711,52 @@ int Play::mainLoop(Music LevelTheme) {
             relativeCameraCenter.y = upperLimit + GetScreenHeight()/2;
         }
 
-        if (player.rect.x+player.rect.width > rightLimit) {
-            player.rect.x = rightLimit-player.rect.width;
+        if (player->rect.x+player->rect.width > rightLimit) {
+            player->rect.x = rightLimit-player->rect.width;
         }
-        if (player.rect.x < leftLimit) {
-            player.rect.x = leftLimit;
+        if (player->rect.x < leftLimit) {
+            player->rect.x = leftLimit;
         }
 
+        
+        bool SwitchGreen = false;
+        int cont = 0;
+        for (Block& temp : Blocks) {
+            if (temp.name == "switch_green") {
+                if (temp.parameter > 0) {
+                    SwitchGreen = true;
+                    temp.parameter = 0;
+                    break;
+                }
+            } else if (temp.name == "energy") {
+                temp.parameter -= 1;
+                if (temp.parameter <= 0) {
+                    auto it = std::next(Blocks.begin(), cont);
+                    Blocks.erase(it);
+                    sizeB--;
+                }
+            }
+            cont++;
+        }
+        if (SwitchGreen) {
+            for (Block& temp : Blocks) {
+                if (temp.name == "green") {
+                    temp.background = !temp.background;
+                }
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         // Desenhando coisas
         BeginDrawing();
         ClearBackground(BLUE);
@@ -1731,31 +1771,31 @@ int Play::mainLoop(Music LevelTheme) {
 
         // Desenhando Player
         Color playerColor = WHITE;
-        if (player.gameover) {
+        if (player->gameover) {
             playerColor = {0, 255, 255, 127};
         }
         // invincibility for damage
-        if (player.invincibility['H'] > 0 and player.tick % 10 <= 1) {
+        if (player->invincibility['H'] > 0 and player->tick % 10 <= 1) {
             playerColor = {255, 255, 0, 255};
-        } else if (player.invincibility['R'] > 0 and player.tick % 10 <= 3) {
+        } else if (player->invincibility['R'] > 0 and player->tick % 10 <= 3) {
             playerColor = GREEN;
-        } else if (player.invincibility['P'] > 0 and player.tick % 10 <= 5) {
+        } else if (player->invincibility['P'] > 0 and player->tick % 10 <= 5) {
             playerColor = BLUE;
-        } else if (player.invincibility['C'] > 0 and player.tick % 10 <= 7) {
+        } else if (player->invincibility['C'] > 0 and player->tick % 10 <= 7) {
             playerColor = RED;
-        } else if (player.invincibility['W'] > 0 and player.tick % 10 <= 9) {
+        } else if (player->invincibility['W'] > 0 and player->tick % 10 <= 9) {
             playerColor = {255, 255, 0, 255};
         }
 
 
-        playerDest.x = cameraCenter.x +player.rect.x -relativeCameraCenter.x;
-        playerDest.y = cameraCenter.y +player.rect.y -relativeCameraCenter.y;
-        playerDest.width = player.rect.width;
-        playerDest.height = player.rect.height;
-        if (player.lookingRight) {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, player.rectImage.width, player.rectImage.height}, playerDest, {0, 0}, 0, playerColor);
+        playerDest.x = cameraCenter.x +player->rect.x -relativeCameraCenter.x;
+        playerDest.y = cameraCenter.y +player->rect.y -relativeCameraCenter.y;
+        playerDest.width = player->rect.width;
+        playerDest.height = player->rect.height;
+        if (player->lookingRight) {
+            DrawTexturePro(player->images[player->imageCount], {0.0f, 0.0f, player->rectImage.width, player->rectImage.height}, playerDest, {0, 0}, 0, playerColor);
         } else {
-            DrawTexturePro(player.images[player.imageCount], {0.0f, 0.0f, -player.rectImage.width, player.rectImage.height}, playerDest, {0, 0}, 0, playerColor);
+            DrawTexturePro(player->images[player->imageCount], {0.0f, 0.0f, -player->rectImage.width, player->rectImage.height}, playerDest, {0, 0}, 0, playerColor);
         }
 
 
@@ -1952,50 +1992,50 @@ int Play::mainLoop(Music LevelTheme) {
         // Desenhando HUD
         DesenharHeart();
         DesenharPearl();
-        DrawText(TextFormat("Score: %d", player.score), GetScreenWidth()/2-100, 30, 20, WHITE);
+        DrawText(TextFormat("Score: %d", player->score), GetScreenWidth()/2-100, 30, 20, WHITE);
         DrawText(TextFormat("Time: %d", seconds), GetScreenWidth()/2-100, 0, 20, WHITE);
-        if (player.keyHope > 0) {
-            DrawText(TextFormat("Yellow Keys: %d", player.keyHope), GetScreenWidth() - 300, 50, 20, WHITE);
+        if (player->keyHope > 0) {
+            DrawText(TextFormat("Yellow Keys: %d", player->keyHope), GetScreenWidth() - 300, 50, 20, WHITE);
         }
-        if (player.keyResilience > 0) {
-            DrawText(TextFormat("Green Keys: %d", player.keyResilience), GetScreenWidth() - 300, 70, 20, WHITE);
+        if (player->keyResilience > 0) {
+            DrawText(TextFormat("Green Keys: %d", player->keyResilience), GetScreenWidth() - 300, 70, 20, WHITE);
         }
-        if (player.keyPower > 0) {
-            DrawText(TextFormat("Blue Keys: %d", player.keyPower), GetScreenWidth() - 300, 90, 20, WHITE);
+        if (player->keyPower > 0) {
+            DrawText(TextFormat("Blue Keys: %d", player->keyPower), GetScreenWidth() - 300, 90, 20, WHITE);
         }
-        if (player.keyCourage > 0) {
-            DrawText(TextFormat("Red Keys: %d", player.keyCourage), GetScreenWidth() - 300, 110, 20, WHITE);
+        if (player->keyCourage > 0) {
+            DrawText(TextFormat("Red Keys: %d", player->keyCourage), GetScreenWidth() - 300, 110, 20, WHITE);
         }
-        if (player.keyWisdom > 0) {
-            DrawText(TextFormat("Orange Keys: %d", player.keyWisdom), GetScreenWidth() - 300, 130, 20, WHITE);
+        if (player->keyWisdom > 0) {
+            DrawText(TextFormat("Orange Keys: %d", player->keyWisdom), GetScreenWidth() - 300, 130, 20, WHITE);
         }
         // DrawText(TextFormat("itens no mapa: %d", itens.size()), GetScreenWidth()-300, 220, 20, WHITE);
-        if (player.powers[0]) {
-            DrawTextureEx(player.P1image, {(float) GetScreenWidth()/2+20*SCALE, 20}, 0, SCALE, WHITE);
+        if (player->powers[0]) {
+            DrawTextureEx(player->P1image, {(float) GetScreenWidth()/2+20*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("1", (float) GetScreenWidth()/2+27*SCALE, 20+15*SCALE, 20, BLACK);
         }
-        if (player.powers[1]) {
-            // DrawTextureEx(player.P2image, {(float) GetScreenWidth()/2+40*SCALE, 20}, 0, SCALE, WHITE);
+        if (player->powers[1]) {
+            DrawTextureEx(player->P2image, {(float) GetScreenWidth()/2+40*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("2", (float) GetScreenWidth()/2+47*SCALE, 20+15*SCALE, 20, BLACK);
         }
-        if (player.powers[2]) {
-            DrawTextureEx(player.P3image, {(float) GetScreenWidth()/2+60*SCALE, 20}, 0, SCALE, WHITE);
+        if (player->powers[2]) {
+            DrawTextureEx(player->P3image, {(float) GetScreenWidth()/2+60*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("3", (float) GetScreenWidth()/2+67*SCALE, 20+15*SCALE, 20, BLACK);
         }
-        if (player.powers[3]) {
-            DrawTextureEx(player.P4image, {(float) GetScreenWidth()/2+80*SCALE, 20}, 0, SCALE, WHITE);
+        if (player->powers[3]) {
+            DrawTextureEx(player->P4image, {(float) GetScreenWidth()/2+80*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("4", (float) GetScreenWidth()/2+87*SCALE, 20+15*SCALE, 20, BLACK);
         }
-        if (player.powers[4]) {
-            DrawTextureEx(player.P5image, {(float) GetScreenWidth()/2+100*SCALE, 20}, 0, SCALE, WHITE);
+        if (player->powers[4]) {
+            DrawTextureEx(player->P5image, {(float) GetScreenWidth()/2+100*SCALE, 20}, 0, SCALE, WHITE);
             DrawText("5", (float) GetScreenWidth()/2+107*SCALE, 20+15*SCALE, 20, BLACK);
         }
         // Birds
-        int birds1 = player.birdsToSave[0];
-        int birds2 = player.birdsToSave[1];
-        int birds3 = player.birdsToSave[2];
-        int birds4 = player.birdsToSave[3];
-        int birds5 = player.birdsToSave[4];
+        int birds1 = player->birdsToSave[0];
+        int birds2 = player->birdsToSave[1];
+        int birds3 = player->birdsToSave[2];
+        int birds4 = player->birdsToSave[3];
+        int birds5 = player->birdsToSave[4];
         Rectangle origin = {0, 0, 13, 13};
         Rectangle dest = {10, (float)GetScreenHeight()-36, 26, 26};
         while (birds1+birds2+birds3+birds4+birds5 > 0) {
@@ -2095,39 +2135,39 @@ int Play::mainLoop(Music LevelTheme) {
 
 
         if (DEBUG) {
-            relativePos.x = WT/2 +player.groundBlock.rect.x -relativeCameraCenter.x;
-            relativePos.y = HT/2 +player.groundBlock.rect.y -relativeCameraCenter.y;
-            DrawRectangle(relativePos.x, relativePos.y, player.groundBlock.rect.width, player.groundBlock.rect.height, YELLOW);
+            relativePos.x = WT/2 +player->groundBlock.rect.x -relativeCameraCenter.x;
+            relativePos.y = HT/2 +player->groundBlock.rect.y -relativeCameraCenter.y;
+            DrawRectangle(relativePos.x, relativePos.y, player->groundBlock.rect.width, player->groundBlock.rect.height, YELLOW);
 
             
-            DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player.groundBlock.rect.x, player.groundBlock.rect.y, player.groundBlock.rect.width, player.groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
-            if (player.crouch) {
-                relativePos.x = cameraCenter.x +player.HitboxA.x -relativeCameraCenter.x;
-                relativePos.y = cameraCenter.y +player.HitboxA.y -relativeCameraCenter.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.HitboxA.width, player.HitboxA.height, RED);
+            DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player->groundBlock.rect.x, player->groundBlock.rect.y, player->groundBlock.rect.width, player->groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
+            if (player->crouch) {
+                relativePos.x = cameraCenter.x +player->HitboxA.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player->HitboxA.y -relativeCameraCenter.y;
+                DrawRectangle(relativePos.x, relativePos.y, player->HitboxA.width, player->HitboxA.height, RED);
             } else {
-                relativePos.x = cameraCenter.x +player.Hitbox1.x -relativeCameraCenter.x;
-                relativePos.y = cameraCenter.y +player.Hitbox1.y -relativeCameraCenter.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox1.width, player.Hitbox1.height, RED);
-                relativePos.x = cameraCenter.x +player.Hitbox2.x -relativeCameraCenter.x;
-                relativePos.y = cameraCenter.y +player.Hitbox2.y -relativeCameraCenter.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox2.width, player.Hitbox2.height, RED);
-                relativePos.x = cameraCenter.x +player.Hitbox3.x -relativeCameraCenter.x;
-                relativePos.y = cameraCenter.y +player.Hitbox3.y -relativeCameraCenter.y;
-                DrawRectangle(relativePos.x, relativePos.y, player.Hitbox3.width, player.Hitbox3.height, RED);
+                relativePos.x = cameraCenter.x +player->Hitbox1.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player->Hitbox1.y -relativeCameraCenter.y;
+                DrawRectangle(relativePos.x, relativePos.y, player->Hitbox1.width, player->Hitbox1.height, RED);
+                relativePos.x = cameraCenter.x +player->Hitbox2.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player->Hitbox2.y -relativeCameraCenter.y;
+                DrawRectangle(relativePos.x, relativePos.y, player->Hitbox2.width, player->Hitbox2.height, RED);
+                relativePos.x = cameraCenter.x +player->Hitbox3.x -relativeCameraCenter.x;
+                relativePos.y = cameraCenter.y +player->Hitbox3.y -relativeCameraCenter.y;
+                DrawRectangle(relativePos.x, relativePos.y, player->Hitbox3.width, player->Hitbox3.height, RED);
             }
-            relativePos.x = cameraCenter.x +player.HB1.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +player.HB1.y -relativeCameraCenter.y;
-            DrawRectangle(relativePos.x, relativePos.y, player.HB1.width, player.HB1.height, DARKBLUE);
+            relativePos.x = cameraCenter.x +player->HB1.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player->HB1.y -relativeCameraCenter.y;
+            DrawRectangle(relativePos.x, relativePos.y, player->HB1.width, player->HB1.height, DARKBLUE);
 
-            relativePos.x = cameraCenter.x +player.cx -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +player.cy -relativeCameraCenter.y;
+            relativePos.x = cameraCenter.x +player->cx -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player->cy -relativeCameraCenter.y;
             DrawCircle(relativePos.x, relativePos.y, 5, PURPLE);
 
 
-            int sizeCB = player.CBs.size();
+            int sizeCB = player->CBs.size();
             for (int i = 0; i < sizeCB; i++) {
-                Block temp = Blocks[player.CBs[i]];
+                Block temp = Blocks[player->CBs[i]];
                 relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
                 relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, temp.rect.width, temp.rect.height, GRAY);
@@ -2187,12 +2227,12 @@ int Play::mainLoop(Music LevelTheme) {
                 relativePos.y = cameraCenter.y +itens[i].rect.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, itens[i].rect.width, itens[i].rect.height, YELLOW);
                 
-                int sizeCI = player.CIs.size();
+                int sizeCI = player->CIs.size();
                 relativePos.x = cameraCenter.x +itens[i].cx -relativeCameraCenter.x;
                 relativePos.y = cameraCenter.y +itens[i].cy -relativeCameraCenter.y;
                 DrawCircle(relativePos.x, relativePos.y, 5, GREEN);
                 for (int j = 0; j < sizeCI; j++) {
-                    if (player.CIs[j] == i) {
+                    if (player->CIs[j] == i) {
                         DrawCircle(relativePos.x, relativePos.y, 5, GRAY);
                     }
                 }
@@ -2217,7 +2257,7 @@ int Play::mainLoop(Music LevelTheme) {
     }
 
     if (seconds > 0) {
-        player.Health(seconds/10, 'W');
+        player->Health(seconds/10, 'W');
     }
 
     int trueSaida = 0;
@@ -2236,25 +2276,25 @@ int Play::mainLoop(Music LevelTheme) {
 void Play::DesenharHeart() {
     Rectangle PHud = {10.0f, 10.0f, 11.0f*SCALE, 11.0f*SCALE};
     // Hope
-    int HHTemp = player.HH/7;
-    int HHPart = player.HH % 7;
-    int HHEmptyTemp = (player.MHH - player.HH)/7;
+    int HHTemp = player->HH/7;
+    int HHPart = player->HH % 7;
+    int HHEmptyTemp = (player->MHH - player->HH)/7;
     while (HHTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {0.0f, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {0.0f, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         HHTemp--;
     }
     if (HHPart > 0) {
-        DrawTexturePro(player.HeartGrid, {(12.0f*(7-HHPart)), 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {(12.0f*(7-HHPart)), 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
     }
     while (HHEmptyTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {12.0f*7, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {12.0f*7, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         HHEmptyTemp--;
     }
-    if (player.PHH > 0) {
-        DrawText(TextFormat("+%d", player.PHH), PHud.x, PHud.y, 35, YELLOW);
+    if (player->PHH > 0) {
+        DrawText(TextFormat("+%d", player->PHH), PHud.x, PHud.y, 35, YELLOW);
     }
 
     PHud.x = 10.0f;
@@ -2263,25 +2303,25 @@ void Play::DesenharHeart() {
 
 
     // Resilience
-    int RHTemp = player.RH/7;
-    int RHPart = player.RH % 7;
-    int RHEmptyTemp = (player.MRH - player.RH)/7;
+    int RHTemp = player->RH/7;
+    int RHPart = player->RH % 7;
+    int RHEmptyTemp = (player->MRH - player->RH)/7;
     while (RHTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {0.0f, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {0.0f, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         RHTemp--;
     }
     if (RHPart > 0) {
-        DrawTexturePro(player.HeartGrid, {(12.0f*(7-RHPart)), 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {(12.0f*(7-RHPart)), 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
     }
     while (RHEmptyTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {12.0f*7, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {12.0f*7, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         RHEmptyTemp--;
     }
-    if (player.PRH > 0) {
-        DrawText(TextFormat("+%d", player.PRH), PHud.x, PHud.y, 35, GREEN);
+    if (player->PRH > 0) {
+        DrawText(TextFormat("+%d", player->PRH), PHud.x, PHud.y, 35, GREEN);
     }
 
     PHud.x = 10.0f;
@@ -2290,25 +2330,25 @@ void Play::DesenharHeart() {
 
 
     // Power
-    int PHTemp = player.PH/7;
-    int PHPart = player.PH % 7;
-    int PHEmptyTemp = (player.MPH - player.PH)/7;
+    int PHTemp = player->PH/7;
+    int PHPart = player->PH % 7;
+    int PHEmptyTemp = (player->MPH - player->PH)/7;
     while (PHTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {0.0f, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {0.0f, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         PHTemp--;
     }
     if (PHPart > 0) {
-        DrawTexturePro(player.HeartGrid, {(12.0f*(7-PHPart)), 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {(12.0f*(7-PHPart)), 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
     }
     while (PHEmptyTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {12.0f*7, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {12.0f*7, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         PHEmptyTemp--;
     }
-    if (player.PPH > 0) {
-        DrawText(TextFormat("+%d", player.PPH), PHud.x, PHud.y, 35, DARKBLUE);
+    if (player->PPH > 0) {
+        DrawText(TextFormat("+%d", player->PPH), PHud.x, PHud.y, 35, DARKBLUE);
     }
 
     PHud.x = 10.0f;
@@ -2317,25 +2357,25 @@ void Play::DesenharHeart() {
 
 
     // Courage
-    int CHTemp = player.CH/7;
-    int CHPart = player.CH % 7;
-    int CHEmptyTemp = (player.MCH - player.CH)/7;
+    int CHTemp = player->CH/7;
+    int CHPart = player->CH % 7;
+    int CHEmptyTemp = (player->MCH - player->CH)/7;
     while (CHTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {0.0f, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {0.0f, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         CHTemp--;
     }
     if (CHPart > 0) {
-        DrawTexturePro(player.HeartGrid, {(12.0f*(7-CHPart)), 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {(12.0f*(7-CHPart)), 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
     }
     while (CHEmptyTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {12.0f*7, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {12.0f*7, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         CHEmptyTemp--;
     }
-    if (player.PCH > 0) {
-        DrawText(TextFormat("+%d", player.PCH), PHud.x, PHud.y, 35, RED);
+    if (player->PCH > 0) {
+        DrawText(TextFormat("+%d", player->PCH), PHud.x, PHud.y, 35, RED);
     }
 
     PHud.x = 10.0f;
@@ -2344,50 +2384,50 @@ void Play::DesenharHeart() {
 
 
     // Wisdom
-    int WHTemp = player.WH/7;
-    int WHPart = player.WH % 7;
-    int WHEmptyTemp = (player.MWH - player.WH)/7;
+    int WHTemp = player->WH/7;
+    int WHPart = player->WH % 7;
+    int WHEmptyTemp = (player->MWH - player->WH)/7;
     while (WHTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {0.0f, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {0.0f, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         WHTemp--;
     }
     if (WHPart > 0) {
-        DrawTexturePro(player.HeartGrid, {(12.0f*(7-WHPart)), 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {(12.0f*(7-WHPart)), 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
     }
     while (WHEmptyTemp > 0) {
-        DrawTexturePro(player.HeartGrid, {12.0f*7, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+        DrawTexturePro(player->HeartGrid, {12.0f*7, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
         PHud.x += 12*SCALE;
         WHEmptyTemp--;
     }
-    if (player.PWH > 0) {
-        DrawText(TextFormat("+%d", player.PWH), PHud.x, PHud.y, 35, ORANGE);
+    if (player->PWH > 0) {
+        DrawText(TextFormat("+%d", player->PWH), PHud.x, PHud.y, 35, ORANGE);
     }
 }
 
 void Play::DesenharPearl() {
         Rectangle PHud = {GetScreenWidth() - 20.0f*SCALE, 10.0f, 11.0f*SCALE, 11.0f*SCALE};
         // Wind
-        int WPTemp = player.WP/7;
-        int WPPart = player.WP % 7;
-        int WPEmptyTemp = (player.MWP - player.WP)/7;
+        int WPTemp = player->WP/7;
+        int WPPart = player->WP % 7;
+        int WPEmptyTemp = (player->MWP - player->WP)/7;
         while (WPTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {0.0f, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {0.0f, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             WPTemp--;
         }
         if (WPPart > 0) {
-            DrawTexturePro(player.PearlGrid, {(12.0f*(7-WPPart)), 0.0f, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {(12.0f*(7-WPPart)), 0.0f, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
         }
         while (WPEmptyTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {12.0f*7, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {12.0f*7, 0.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             WPEmptyTemp--;
         }
-        if (player.PWP > 0) {
-            DrawText(TextFormat("%d+", player.PWP), PHud.x, PHud.y, 35, {223, 245, 0, 255});
+        if (player->PWP > 0) {
+            DrawText(TextFormat("%d+", player->PWP), PHud.x, PHud.y, 35, {223, 245, 0, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2396,25 +2436,25 @@ void Play::DesenharPearl() {
 
 
         // Party
-        int PPTemp = player.PP/7;
-        int PPPart = player.PP % 7;
-        int PPEmptyTemp = (player.MPP - player.PP)/7;
+        int PPTemp = player->PP/7;
+        int PPPart = player->PP % 7;
+        int PPEmptyTemp = (player->MPP - player->PP)/7;
         while (PPTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {0.0f, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {0.0f, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             PPTemp--;
         }
         if (PPPart > 0) {
-            DrawTexturePro(player.PearlGrid, {(12.0f*(7-PPPart)), 12.0f, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {(12.0f*(7-PPPart)), 12.0f, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
         }
         while (PPEmptyTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {12.0f*7, 12.0f, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             PPEmptyTemp--;
         }
-        if (player.PPP > 0) {
-            DrawText(TextFormat("%d+", player.PPP), PHud.x, PHud.y, 35, {133, 255, 0, 255});
+        if (player->PPP > 0) {
+            DrawText(TextFormat("%d+", player->PPP), PHud.x, PHud.y, 35, {133, 255, 0, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2423,25 +2463,25 @@ void Play::DesenharPearl() {
 
 
         // Fun
-        int FPTemp = player.FP/7;
-        int FPPart = player.FP % 7;
-        int FPEmptyTemp = (player.MFP - player.FP)/7;
+        int FPTemp = player->FP/7;
+        int FPPart = player->FP % 7;
+        int FPEmptyTemp = (player->MFP - player->FP)/7;
         while (FPTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {0.0f, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {0.0f, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             FPTemp--;
         }
         if (FPPart > 0) {
-            DrawTexturePro(player.PearlGrid, {(12.0f*(7-FPPart)), 12.0f*2, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {(12.0f*(7-FPPart)), 12.0f*2, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
         }
         while (FPEmptyTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {12.0f*7, 12.0f*2, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             FPEmptyTemp--;
         }
-        if (player.PFP > 0) {
-            DrawText(TextFormat("%d+", player.PFP), PHud.x, PHud.y, 35, {30, 235, 210, 255});
+        if (player->PFP > 0) {
+            DrawText(TextFormat("%d+", player->PFP), PHud.x, PHud.y, 35, {30, 235, 210, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2450,25 +2490,25 @@ void Play::DesenharPearl() {
 
 
         // Hard
-        int HPTemp = player.HP/7;
-        int HPPart = player.HP % 7;
-        int HPEmptyTemp = (player.MHP - player.HP)/7;
+        int HPTemp = player->HP/7;
+        int HPPart = player->HP % 7;
+        int HPEmptyTemp = (player->MHP - player->HP)/7;
         while (HPTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {0.0f, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {0.0f, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             HPTemp--;
         }
         if (HPPart > 0) {
-            DrawTexturePro(player.PearlGrid, {(12.0f*(7-HPPart)), 12.0f*3, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {(12.0f*(7-HPPart)), 12.0f*3, -11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
         }
         while (HPEmptyTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {12.0f*7, 12.0f*3, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             HPEmptyTemp--;
         }
-        if (player.PHP > 0) {
-            DrawText(TextFormat("%d+", player.PHP), PHud.x, PHud.y, 35, {253, 105, 150, 255});
+        if (player->PHP > 0) {
+            DrawText(TextFormat("%d+", player->PHP), PHud.x, PHud.y, 35, {253, 105, 150, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2477,25 +2517,25 @@ void Play::DesenharPearl() {
 
 
         // Eloise
-        int EPTemp = player.EP/7;
-        int EPPart = player.EP % 7;
-        int EPEmptyTemp = (player.MEP - player.EP)/7;
+        int EPTemp = player->EP/7;
+        int EPPart = player->EP % 7;
+        int EPEmptyTemp = (player->MEP - player->EP)/7;
         while (EPTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {0.0f, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {0.0f, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             EPTemp--;
         }
         if (EPPart > 0) {
-            DrawTexturePro(player.PearlGrid, {(12.0f*(7-EPPart)), 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {(12.0f*(7-EPPart)), 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
         }
         while (EPEmptyTemp > 0) {
-            DrawTexturePro(player.PearlGrid, {12.0f*7, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
+            DrawTexturePro(player->PearlGrid, {12.0f*7, 12.0f*4, 11.0f, 11.0f}, PHud, {0, 0}, 0, WHITE);
             PHud.x -= 12*SCALE;
             EPEmptyTemp--;
         }
-        if (player.PEP > 0) {
-            DrawText(TextFormat("%d+", player.PEP), PHud.x, PHud.y, 35, {255, 150, 150, 255});
+        if (player->PEP > 0) {
+            DrawText(TextFormat("%d+", player->PEP), PHud.x, PHud.y, 35, {255, 150, 150, 255});
         }
     }
 
@@ -2508,7 +2548,7 @@ void Play::DesenharBlocos(bool background, bool showSecret) {
             continue;
         }
         if (Blocks[i].name == "nextLevel" and fadeout == 0) {
-            if (GenericColision(player.rect, Blocks[i].rect)) {
+            if (GenericColision(player->rect, Blocks[i].rect)) {
                 fadeout = 1;
                 saida = i;
                 PlaySound(finish);

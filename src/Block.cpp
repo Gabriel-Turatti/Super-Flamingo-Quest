@@ -82,6 +82,25 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
                 break;
         }
         friction = 2;
+    } else if (namer == "honey") {
+        image = LoadTexture("images/block_honey.png");
+        friction = 5.5;
+    } else if (namer == "vines") {
+        image = LoadTexture("images/block_vines.png");
+        friction = 2.5;
+    } else if (namer == "ivy") {
+        image = LoadTexture("images/block_ivy.png");
+        friction = 3;
+    } else if (namer == "switch_green") {
+        image = LoadTexture("images/block_green_control.png");
+        friction = 1.8;
+    } else if (namer == "green") {
+        image = LoadTexture("images/block_green.png");
+        friction = 2;
+    } else if (namer == "energy") {
+        image = LoadTexture("images/block_energy.png");
+        friction = 3;
+        parameter = 450;
     }
     // If you're adding a new block, make sure to also add it to:
     // editLevel

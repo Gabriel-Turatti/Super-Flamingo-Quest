@@ -102,7 +102,7 @@ void ItemHandler::addItem(Item temp) {
             images[temp.id] = LoadTexture("images/power-dash.png");
             break;
         case 28:
-            images[temp.id] = LoadTexture("images/power-???.png");
+            images[temp.id] = LoadTexture("images/power-toast.png");
             break;
         case 29:
             images[temp.id] = LoadTexture("images/power-boost.png");
@@ -163,7 +163,23 @@ void ItemHandler::DrawItens(std::vector<Item> &itensLevel, Rectangle cameraCente
 
 void ItemHandler::DrawItemHud(const std::vector<Item> &itensOption, int SCALE) {
     for (Item temp : itensOption) {
-        DrawTextureEx(images[temp.id], {temp.rect.x, temp.rect.y}, 0, SCALE, WHITE);
+        if (temp.category == 'C') {
+            Rectangle source, dest;
+
+            source.x = 0;
+            source.y = 0;
+            source.width = temp.rectImage.width;
+            source.height = temp.rectImage.height;
+
+            dest.x = temp.rect.x;
+            dest.y = temp.rect.y;
+            dest.width = temp.rect.width;
+            dest.height = temp.rect.height;
+
+            DrawTexturePro(images[temp.id], source, dest, {0, 0}, 0, WHITE);
+        } else {
+            DrawTextureEx(images[temp.id], {temp.rect.x, temp.rect.y}, 0, SCALE, WHITE);
+        }
     }
 }
 

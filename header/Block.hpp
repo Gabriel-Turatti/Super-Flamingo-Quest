@@ -16,6 +16,7 @@ public:
     bool background = false, secret = false;
     std::string name;
     int direction;
+    int parameter;
 
     Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator = 0, bool backgrounder = false, bool secreter = false);
     Block();

@@ -2,13 +2,12 @@
 #define ENEMY_H
 
 #include "raylib.h"
+#include "predefinitions.hpp"
 #include "Block.hpp"
 #include "Effect.hpp"
 #include "Functions.hpp"
 #include <fstream>
-#include <vector>
 #include <cmath>
-#include "predefinitions.hpp"
 
 
 
@@ -56,17 +55,17 @@ public:
 
     Enemy();
 
-    void update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects);
+    void update(std::vector<Block> Blocks, Flamingo* player, std::vector<Effect> &effects);
 
     void bee();
 
     void snail(std::vector<Block> Blocks);
 
-    void butterfly(std::vector<Block> Blocks, Flamingo &player);
+    void butterfly(std::vector<Block> Blocks, Flamingo* player);
 
-    void crab(Flamingo &player);
+    void crab(Flamingo* player);
     
-    void meldrop(Flamingo &player, std::vector<Effect> &effects);
+    void meldrop(Flamingo* player, std::vector<Effect> &effects);
 
     void getCloseBlocks(std::vector<Block> Blocks);
 };

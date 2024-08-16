@@ -42,6 +42,13 @@ Flamingo::Flamingo(float x, float y, float w, float h, int worldWidth, int world
 Flamingo::Flamingo() {}
 
 void Flamingo::unload() {
+    UnloadTexture(images[5]);
+    UnloadTexture(images[4]);
+    UnloadTexture(images[3]);
+    UnloadTexture(images[2]);
+    UnloadTexture(images[1]);
+    UnloadTexture(images[0]);
+
     UnloadSound(sfxCoin);
     UnloadSound(sfxFood);
     UnloadSound(sfxJump);
@@ -54,6 +61,14 @@ void Flamingo::unload() {
     UnloadSound(sfxFall);
     UnloadSound(sfxPearlPiece);
     UnloadSound(sfxSpecial);
+
+    UnloadTexture(P1image);
+    UnloadTexture(P2image);
+    UnloadTexture(P3image);
+    UnloadTexture(P4image);
+    UnloadTexture(P5image);
+
+
 }
 
 void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
@@ -72,6 +87,9 @@ void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std:
     if (tick % 300 == 0) {
         if (RH < MRH) {
             RH += 1;
+        }
+        if (WP < MWP) {
+            WP += 1;
         }
     }
     tick += 1;
@@ -137,6 +155,18 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             naturalSpeed -= 14;
         }
         invincibility['H'] += 10;
+    }
+    if (powers[1] and IsKeyDown(KEY_TWO) and PP >= 7 and invincibility['R'] == 0) {
+        PP -= 7;
+        float x, y;
+        y = rect.y+5*SCALE;
+        if (lookingRight) {
+            x = rect.x+15*SCALE;
+        } else {
+            x = rect.x - game->BS - SCALE;
+        }
+        game->Blocks.push_back(Block(x, y, game->BS, game->BS, "energy", SCALE));
+        invincibility['R'] += 10;
     }
     if (powers[2] and IsKeyDown(KEY_THREE) and FP >= 3 and invincibility['P'] == 0) {
         if (isBoost) {
@@ -242,8 +272,8 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
     bool toggleCrouch = crouch;
     bool canCrouch = CrouchCheck(Blocks);
     crouch = false;
-    
-    
+
+
     if (W) {
         jumpQueue = 5;
         strength += 1;
@@ -389,8 +419,20 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
     }
     Dspace = colision(HBox, temp.rect);
     if (vert) {
+        if (Dspace.y > 0) {
+            Dspace.y += 1;
+        }
+        if (Dspace.y < 0) {
+            Dspace.y -= 1;
+        }
         rect.y += Dspace.y;
     } else {
+        if (Dspace.x > 0) {
+            Dspace.x += 1;
+        }
+        if (Dspace.x < 0) {
+            Dspace.x -= 1;
+        }
         rect.x += Dspace.x;
     }
     if ((!vert and Dspace.x != 0) or (vert and Dspace.y != 0)) {
@@ -443,7 +485,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                 (temp.direction == 1 and !vert and vx > 0) or
                 (temp.direction == 2 and vert and vy < 0) or
                 (temp.direction == 3 and !vert and vx < 0)
-                ){
+                ) {
                     Health(-7, 'R');
                 }
             }
@@ -455,8 +497,16 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                 temp.background = true;
                 birdsToSave[color] -= 1;
                 totalBirdsSaved[color] += 1;
-                vy = -vy/temp.friction;
-                return 5;
+                doReturn = 5;
+            }
+        } else if (temp.name == "switch_green") {
+            if (abs(vy) > 3*SCALE) {
+                temp.parameter += 1;
+                doReturn = 1;
+            }
+        } else if (temp.name == "ivy") {
+            if (invincibility['P'] == 0) {
+                Health(-2, 'P');
             }
         }
         
@@ -732,28 +782,48 @@ void Flamingo::collect(Item item) {
         score += 150;
     } else if (item.name == "food-banana") { // Fun-mode
         score += 2;
-        if (WP < MWP) {
-            WP += 1;
+        pWP += 2;
+        if (pWP > 5) {
+            if (WP < MWP) {
+                WP += 1;
+            }
+            pWP -= 5;
         }
     } else if (item.name == "food-pear") { 
         score += 3;
-        if (PP < MPP) {
-            PP += 1;
+        pPP += 2;
+        if (pPP > 5) {
+            if (PP < MPP) {
+                PP += 1;
+            }
+            pPP -= 5;
         }
     } else if (item.name == "food-blueberry") {
         score += 4;
-        if (FP < MFP) {
-            FP += 1;
+        pFP += 1;
+        if (pFP > 5) {
+            if (FP < MFP) {
+                FP += 1;
+            }
+            pFP -= 5;
         }
     } else if (item.name == "food-pepper") {
         score += 6;
-        if (HP < MHP) {
-            HP += 1;
+        pHP += 2;
+        if (pHP > 5) {
+            if (HP < MHP) {
+                HP += 1;
+            }
+            pHP -= 5;
         }
     } else if (item.name == "food-orange") {
         score += 8;
-        if (EP < MEP) {
-            EP += 1;
+        pEP += 3;
+        if (pEP > 5) {
+            if (EP < MEP) {
+                EP += 1;
+            }
+            pEP -= 5;
         }
     } else if (item.name == "Hshard-hope") {
         PHH += 1;
@@ -837,15 +907,29 @@ void Flamingo::collect(Item item) {
         keyWisdom += 1;
     } else if (item.name == "courage-potion") {
         Health(7, 'C');
+    } else if (item.name == "party-potion") {
+        PP += 7;
+        if (PP > MPP) {
+            PP = MPP;
+        }
     } else if (item.name == "power-dash") {
         powers[0] = true;
-    } else if (item.name == "power-transmutation") {
-        powers[4] = true;
+    } else if (item.name == "power-toast") {
+        powers[1] = true;
     } else if (item.name == "power-boost") {
         powers[2] = true;
     } else if (item.name == "power-spear") {
         powers[3] = true;
+    } else if (item.name == "power-transmutation") {
+        powers[4] = true;
     }
+
+
+    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
+    game->DustBringer(item.cx, item.cy, BLACK, game->RNG100(game->rng), true);
 }
 
 Vector2 Flamingo::colision(Rectangle hitbox, Rectangle B) {
@@ -873,6 +957,13 @@ Vector2 Flamingo::colision(Rectangle hitbox, Rectangle B) {
 void Flamingo::Health(int qtd, char type) {
     if (qtd < 0) {
         invincibility[type] += 60;
+        pHP += qtd;
+        if (pHP > 5) {
+            if (HP < MHP) {
+                HP += 1;
+            }
+            pHP -= 5;
+        }
         PlaySound(sfxHurt);
         if (lookingRight) {
             naturalSpeed += 4;

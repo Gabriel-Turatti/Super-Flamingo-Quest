@@ -47,7 +47,7 @@ all: $(OBJS)
 $(OB)/Block.o: $(S)/Block.cpp $(HD)/Block.hpp
 	$(CPP) $(FLAGS) $(INCLUDES) -c $(S)/Block.cpp -o $@
 
-$(OB)/Flamingo.o: $(S)/Flamingo.cpp $(HD)/Flamingo.hpp $(HD)/Block.hpp $(HD)/Effect.hpp
+$(OB)/Flamingo.o: $(S)/Flamingo.cpp $(HD)/Flamingo.hpp $(HD)/Block.hpp $(HD)/Effect.hpp $(HD)/Play.hpp
 	$(CPP) $(FLAGS) $(INCLUDES) -c $(S)/Flamingo.cpp -o $@
 
 $(OB)/Effect.o: $(S)/Effect.cpp $(HD)/Effect.hpp

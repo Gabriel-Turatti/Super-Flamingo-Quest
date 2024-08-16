@@ -217,7 +217,7 @@ Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {
         rectImage.height = 15;
         rect.x -= 1*SCALE;
         rect.y -= 1*SCALE;
-    } else if (name == "power-???") {
+    } else if (name == "power-toast") {
         id = 28;
         rectImage.width = 15;
         rectImage.height = 15;

@@ -15,30 +15,22 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Soaring
     ( ) [+] Moeda de Ouro Envenenada -> Dano Hope
     ( ) [+] Rotacionar plataforma.
-    ( ) [+] Nuvens
-    ( ) [+] Decorações de fundo
     ( ) [+] Plataformas de grama
     ( ) [+] Soul Health bar (if you lose all 5 Healths)
     ( ) [+] Cuidar casos para quando o chão do inimigo desaparescer (ex: Caracol e Caranguejo)
     ( ) [+] Animate spear
-    ( ) [+] Party spell (???)
     ( ) [+] Makefile pro linux
     ( ) [+] Idle animation beaking feathers
     ( ) [+] Auto Complete Music name editor
     ( ) [+] Not grab potion if full
-    ( ) [+] Mana regenerating differently
     ( ) [+] Transmute birds
     ( ) [+] Break cages with spear
 
 ## Refatoração
     ## Quality of code
     ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
-    ( ) [R] Criar função externa criadora de particulas
-    ( ) [R] Usar ponteiros pra facilitar a vida
     ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
     ( ) [R] Usar objetos externos para controle de schedule ao invés de divisão
-    ( ) [R] Usar uma única instância de som/imagem para blocos e itens.
-    ( ) [R] Fazer o print dos objetos dentro da classe deles? ((block|item|enemy)-handling classes?)
     ( ) [R] change FPS handling to VSYNC
     ( ) [R] Unite Ground and Background save/load file
     ( ) [R] Create temporary textures of hud with all details that can be printed without calculations, and updated when change happens
@@ -53,25 +45,30 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 ( ) 0.9 - Planes of Paris Update
     (X) [R] Item Handling Class
     ( ) [R] Block Handling Class
-    ( ) [+] Adding More Blocks: Poison Ivy, Honey block, Green Switch
+    (X) [+] Toast spell
+    (X) [+] Mana regenerating differently
+    (X) [+] Adding More Blocks: Vines, Poison Ivy, Honey block, Green Switch, Green Block
     (X) [B] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     (X) [+] Moedas e Itens terem animação de brilho e giro
+    ( ) [B] The most infamous bug, BLOCK CLIPPING -> Refactor all colision maybe?
+    ( ) [ ] This bug is simply impossible to solve, i'm crying
     (X) [B] The Misterious Forbidden last Item
     (X) [B] Spikes teleport from left to right
     (X) [B] Black Lines from sprites
     (X) [B] Meldrop not animating correctly attacks
+    (X) [R] Usar ponteiros pra facilitar a vida
     (X) [+] Crouch e mirror check para não clipar
-    ( ) [B] The most infamous bug, BLOCK CLIPPING -> Refactor all colision maybe?
+    (X) [R] Criar função externa criadora de particulas
     (X) [+] Crouch ser mais baixo
-    ( ) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
-    ( ) [+] coletar itens dropar particulas
+    (X) [R] The entire game is too dificult, make better tutorials for: Bounce jumping
+    (X) [+] coletar itens dropar particulas
     (X) [+] Different levels of jumping
+    ( ) [+] Bird's "thank you's"
     ( ) [+] Save and Load Flamingo
+    ( ) [+] Effects for regenerating Hope and Wisdom
     (X) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
     (X) [+] Planes of Paris I
     (X) [+] Planes of Paris II
-    ( ) [+] Song for playing the level's title
-    ( ) [+] Bird's "thank you's"
     (X) [B] Passing rightLimit
     (X) [B] Unecessary line of map load below
     (X) [+] Bird Blocks
@@ -81,8 +78,9 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [R] Secrets reveal completely
     (X) [B] Platform not platforming
     (X) [B] Spike not glueing properly
-    ( ) [B] Bees not respecting boundaries
+    (X) [B] Bees not respecting boundaries
     (X) [B] Meldrop line glitching
+    ( ) [+] Song for playing the level's title
 
 
 

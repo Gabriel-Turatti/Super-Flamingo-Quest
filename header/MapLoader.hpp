@@ -2,6 +2,7 @@
 #define MAPLOADER_H
 
 #include "raylib.h"
+#include "predefinitions.hpp"
 #include <string>
 #include <vector>
 #include <fstream>
@@ -39,8 +40,8 @@ public:
     MapLoader();
 
     void SaveLevel(Map level);
-    void SaveFlamingo(Flamingo player);
-    Flamingo LoadFlamingo();
+    void SaveFlamingo(Flamingo* player);
+    std::unique_ptr<Flamingo> LoadFlamingo();
     Map LoadLevel(std::string name);
 };
 

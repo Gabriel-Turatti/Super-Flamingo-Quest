@@ -2,11 +2,6 @@
 #define PLAY_H
 
 #include "raylib.h"
-#include <string>
-#include <vector>
-#include <fstream>
-#include <random>
-#include <string.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -38,7 +33,7 @@ public:
     int tickBlockUpdate = 5;
     int tick = 1;
     int seconds = 0;
-    Flamingo player;
+    std::unique_ptr<Flamingo> player;
     int widthLevel;
     int heightLevel;
 
@@ -83,7 +78,7 @@ public:
     Rectangle cameraCenter, relativeCameraCenter;
 
 
-    MapLoader loader;
+    std::unique_ptr<MapLoader> loader;
 
     Play();
     ~Play();
@@ -92,6 +87,8 @@ public:
     void HubLevelSelect();
     void HubMapEditor();
     void search_universe(std::vector<std::string> &Universe);
+
+    void DustBringer(float x, float y, Color cor, int timer, bool random);
 
     int complexityCalc(Item temp);
     int complexityCalc(Enemy temp);

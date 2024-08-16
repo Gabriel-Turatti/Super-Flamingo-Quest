@@ -30,9 +30,9 @@ public:
 
     Effect(Vector2 position, Vector2 direction, int lifespan, int identificator, int damager[5], int SCALER);
 
-    bool update(std::vector<Block> Blocks, Flamingo &player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
+    bool update(std::vector<Block> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
 
-    bool meldropShot(std::vector<Block> Blocks, Flamingo &player);
+    bool meldropShot(std::vector<Block> Blocks, Flamingo* player);
     bool transmutation(std::vector<Item> &itens);
     bool spear(std::vector<Enemy> &enemies, std::vector<Item> &itens);
     bool bird();

@@ -2,6 +2,7 @@
 #define FLAMINGO_H
 
 #include "raylib.h"
+#include "predefinitions.hpp"
 #include <fstream>
 #include <vector>
 #include <map>
@@ -9,6 +10,7 @@
 #include "Item.hpp"
 #include "Enemy.hpp"
 #include "Effect.hpp"
+#include "Play.hpp"
 
 
 class Flamingo {
@@ -77,6 +79,13 @@ public:
     int PHP = 0;
     int PEP = 0;
 
+    // Partial Current
+    int pWP = 0;
+    int pPP = 0;
+    int pFP = 0;
+    int pHP = 0;
+    int pEP = 0;
+
     Rectangle HB1;
     Sound sfxCoin = LoadSound("sfx/coin.wav"); 
     Sound sfxFood = LoadSound("sfx/eat.wav"); 
@@ -121,7 +130,7 @@ public:
     };
 
     Texture2D P1image = LoadTexture("images/power-dash.png");
-    // Texture2D P2image = LoadTexture("images/power-???.png");
+    Texture2D P2image = LoadTexture("images/power-toast.png");
     Texture2D P3image = LoadTexture("images/power-boost.png");
     Texture2D P4image = LoadTexture("images/power-spear.png");
     Texture2D P5image = LoadTexture("images/power-transmutation.png");
@@ -141,6 +150,8 @@ public:
 
     int birdsToSave[5] = {0, 0, 0, 0, 0};
     int totalBirdsSaved[5] = {0, 0, 0, 0, 0};
+
+    Play* game;
 
 
 

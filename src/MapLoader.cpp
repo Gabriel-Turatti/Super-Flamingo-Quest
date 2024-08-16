@@ -167,13 +167,16 @@ void MapLoader::SaveLevel(Map level) {
         } else if (name == "power-dash") {
             temp.rect.x += 1*SCALE;
             temp.rect.y += 1*SCALE;
-        } else if (name == "power-transmutation") {
+        } else if (name == "power-toast") {
             temp.rect.x += 1*SCALE;
             temp.rect.y += 1*SCALE;
         } else if (name == "power-boost") {
             temp.rect.x += 1*SCALE;
             temp.rect.y += 1*SCALE;
         } else if (name == "power-spear") {
+            temp.rect.x += 1*SCALE;
+            temp.rect.y += 1*SCALE;
+        } else if (name == "power-transmutation") {
             temp.rect.x += 1*SCALE;
             temp.rect.y += 1*SCALE;
         }
@@ -243,6 +246,16 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << 'F';
                     } else if (temp.name == "cage") {
                         LevelSave << 'C';
+                    } else if (temp.name == "honey") {
+                        LevelSave << 'H';
+                    } else if (temp.name == "vines") {
+                        LevelSave << 'V';
+                    } else if (temp.name == "ivy") {
+                        LevelSave << 'I';
+                    } else if (temp.name == "switch_green") {
+                        LevelSave << "(Sg)";
+                    } else if (temp.name == "green") {
+                        LevelSave << "(Bg)";
                     }
                     LevelSave << std::to_string(temp.direction);
                     if (temp.secret) {
@@ -299,6 +312,16 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << "F";
                     } else if (temp.name == "cage") {
                         LevelSave << 'C';
+                    } else if (temp.name == "honey") {
+                        LevelSave << 'H';
+                    } else if (temp.name == "vines") {
+                        LevelSave << 'V';
+                    } else if (temp.name == "ivy") {
+                        LevelSave << 'I';
+                    } else if (temp.name == "switch_green") {
+                        LevelSave << "(Sg)";
+                    } else if (temp.name == "green") {
+                        LevelSave << "(Bg)";
                     }
                     LevelSave << std::to_string(temp.direction);
                     if (temp.secret) {
@@ -382,7 +405,7 @@ void MapLoader::SaveLevel(Map level) {
 
                     } else if (NewItens[i][j].name == "power-dash") {
                         LevelSave << "(Sw)";
-                    } else if (NewItens[i][j].name == "power-???") {
+                    } else if (NewItens[i][j].name == "power-toast") {
                         LevelSave << "(Sp)";
                     } else if (NewItens[i][j].name == "power-boost") {
                         LevelSave << "(Sf)";
@@ -426,23 +449,23 @@ void MapLoader::SaveLevel(Map level) {
     LevelSave.close();
 }
 
-void MapLoader::SaveFlamingo(Flamingo player) {
+void MapLoader::SaveFlamingo(Flamingo* player) {
     std::ofstream FlamFile("saves/Flamingo1/player.txt");
 
-    FlamFile << player.MHH << '-' << player.MRH << '-' << player.MPH << '-' << player.MCH << '-' << player.MWH << '\n';
-    FlamFile << player.HH << '-' << player.RH << '-' << player.PH << '-' << player.CH << '-' << player.WH << '\n';
-    FlamFile << player.MWP << '-' << player.MPP << '-' << player.MFP << '-' << player.MHP << '-' << player.MEP << '\n';
-    FlamFile << player.WP << '-' << player.PP << '-' << player.FP << '-' << player.HP << '-' << player.EP << '\n';
-    FlamFile << player.powers[0] << player.powers[1] << player.powers[2] << player.powers[3] << player.powers[4] << '\n';
+    FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH << '\n';
+    FlamFile << player->HH << '-' << player->RH << '-' << player->PH << '-' << player->CH << '-' << player->WH << '\n';
+    FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP << '\n';
+    FlamFile << player->WP << '-' << player->PP << '-' << player->FP << '-' << player->HP << '-' << player->EP << '\n';
+    FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4] << '\n';
 
     FlamFile.close();
 }
 
-Flamingo MapLoader::LoadFlamingo() {
+std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     std::ifstream FlamFile("saves/Flamingo1/player.txt");
     std::string line;
 
-    Flamingo player;
+    std::unique_ptr<Flamingo> player(new Flamingo());
 
     std::getline(FlamFile, line);
     int i = 0;
@@ -454,19 +477,19 @@ Flamingo MapLoader::LoadFlamingo() {
         } else {
             switch(questCount) {
                 case 0:
-                    player.MHH = std::stoi(value);
+                    player->MHH = std::stoi(value);
                     break;
                 case 1:
-                    player.MRH = std::stoi(value);
+                    player->MRH = std::stoi(value);
                     break;
                 case 2:
-                    player.MPH = std::stoi(value);
+                    player->MPH = std::stoi(value);
                     break;
                 case 3:
-                    player.MCH = std::stoi(value);
+                    player->MCH = std::stoi(value);
                     break;
                 case 4:
-                    player.MWH = std::stoi(value);
+                    player->MWH = std::stoi(value);
                     break;
             }
             value = "";
@@ -485,19 +508,19 @@ Flamingo MapLoader::LoadFlamingo() {
         } else {
             switch(questCount) {
                 case 0:
-                    player.HH = std::stoi(value);
+                    player->HH = std::stoi(value);
                     break;
                 case 1:
-                    player.RH = std::stoi(value);
+                    player->RH = std::stoi(value);
                     break;
                 case 2:
-                    player.PH = std::stoi(value);
+                    player->PH = std::stoi(value);
                     break;
                 case 3:
-                    player.CH = std::stoi(value);
+                    player->CH = std::stoi(value);
                     break;
                 case 4:
-                    player.WH = std::stoi(value);
+                    player->WH = std::stoi(value);
                     break;
             }
             value = "";
@@ -516,19 +539,19 @@ Flamingo MapLoader::LoadFlamingo() {
         } else {
             switch(questCount) {
                 case 0:
-                    player.MWP = std::stoi(value);
+                    player->MWP = std::stoi(value);
                     break;
                 case 1:
-                    player.MPP = std::stoi(value);
+                    player->MPP = std::stoi(value);
                     break;
                 case 2:
-                    player.MFP = std::stoi(value);
+                    player->MFP = std::stoi(value);
                     break;
                 case 3:
-                    player.MHP = std::stoi(value);
+                    player->MHP = std::stoi(value);
                     break;
                 case 4:
-                    player.MEP = std::stoi(value);
+                    player->MEP = std::stoi(value);
                     break;
             }
             value = "";
@@ -547,19 +570,19 @@ Flamingo MapLoader::LoadFlamingo() {
         } else {
             switch(questCount) {
                 case 0:
-                    player.WP = std::stoi(value);
+                    player->WP = std::stoi(value);
                     break;
                 case 1:
-                    player.PP = std::stoi(value);
+                    player->PP = std::stoi(value);
                     break;
                 case 2:
-                    player.FP = std::stoi(value);
+                    player->FP = std::stoi(value);
                     break;
                 case 3:
-                    player.HP = std::stoi(value);
+                    player->HP = std::stoi(value);
                     break;
                 case 4:
-                    player.EP = std::stoi(value);
+                    player->EP = std::stoi(value);
                     break;
             }
             value = "";
@@ -574,14 +597,14 @@ Flamingo MapLoader::LoadFlamingo() {
     i = 0;
     while (i !='\n') {
         if (line[i] == '0') {
-            player.powers[i] = false;
+            player->powers[i] = false;
         } else {
-            player.powers[i] = true;
+            player->powers[i] = true;
         }
     }
 
 
-    return player;
+    return std::move(player);
 }
 
 Map MapLoader::LoadLevel(std::string name) {
@@ -704,6 +727,12 @@ Map MapLoader::LoadLevel(std::string name) {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, direction);
                 } else if (line[charPoint] == 'C') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "cage", SCALE, direction);
+                } else if (line[charPoint] == 'H') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "honey", SCALE, direction);
+                } else if (line[charPoint] == 'V') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "vines", SCALE, direction);
+                } else if (line[charPoint] == 'I') {
+                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "ivy", SCALE, direction);
                 } else if (line[charPoint] == '(') {
                     if (line[charPoint+1] == 'K') {
                         direction = line[charPoint+4] - '0';
@@ -724,12 +753,42 @@ Map MapLoader::LoadLevel(std::string name) {
                             type = "wisdom";
                         }
                         tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, direction);
-                        if (line[charPoint+4] == 's') {
-                            tile.secret = true;
-                            charPoint++;
+                    } else if (line[charPoint+1] == 'S') {
+                        direction = line[charPoint+4] - '0';
+                        std::string type;
+                        if (line[charPoint+2] == 'y') {
+                            type = "yellow";
+                        } else if (line[charPoint+2] == 'g') {
+                            type = "green";
+                        } else if (line[charPoint+2] == 'b') {
+                            type = "blue";
+                        } else if (line[charPoint+2] == 'r') {
+                            type = "red";
+                        } else if (line[charPoint+2] == 'o') {
+                            type = "orange";
                         }
-                        charPoint += 3;
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "switch_" + type, SCALE, direction);
+                    } else if (line[charPoint+1] == 'B') {
+                        direction = line[charPoint+4] - '0';
+                        std::string type;
+                        if (line[charPoint+2] == 'y') {
+                            type = "yellow";
+                        } else if (line[charPoint+2] == 'g') {
+                            type = "green";
+                        } else if (line[charPoint+2] == 'b') {
+                            type = "blue";
+                        } else if (line[charPoint+2] == 'r') {
+                            type = "red";
+                        } else if (line[charPoint+2] == 'o') {
+                            type = "orange";
+                        }
+                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, type, SCALE, direction);
                     }
+                    if (line[charPoint+4] == 's') {
+                        tile.secret = true;
+                        charPoint++;
+                    }
+                    charPoint += 3;
                 } else {
                     continue;
                 }
@@ -823,7 +882,7 @@ Map MapLoader::LoadLevel(std::string name) {
                     } else if (line[charPoint+1] == 'S') {
                         std::string addon = "dash";
                         if (line[charPoint+2] == 'p') {
-                            addon = "party";
+                            addon = "toast";
                         } else if (line[charPoint+2] == 'f') {
                             addon = "boost";
                         } else if (line[charPoint+2] == 'h') {

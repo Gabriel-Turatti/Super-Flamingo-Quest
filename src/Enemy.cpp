@@ -48,7 +48,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
                 for (int k = j; k > 0; k--) {
                     if (Blocks[i].count(k) > 0 and !Blocks[i][k].background and Blocks[i][k].rect.x+Blocks[i][k].rect.width > patrol1) {
                         border1 = Blocks[i][k];
-                        patrol1 = border1.rect.x+border1.rect.width;
+                        patrol1 = border1.rect.x+border1.rect.width-SCALE;
                         break;
                     }
                 }
@@ -65,8 +65,8 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             if (Blocks.count(i) > 0) {
                 int sizeB = Blocks[i].size();
-                for (int k = j; sizeB > 0; k++) {
-                    if (Blocks[i].count(k) > 0 and !Blocks[i][j].background and Blocks[i][k].rect.x < patrol2) {
+                for (int k = j+1; sizeB > 0; k++) {
+                    if (Blocks[i].count(k) > 0 and !Blocks[i][k].background and Blocks[i][k].rect.x < patrol2) {
                         border2 = Blocks[i][k];
                         patrol2 = border2.rect.x;
                         break;
@@ -75,8 +75,8 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
                 }
             }
             if (Blocks.count(i-1) > 0) {
-                int sizeB = Blocks[i].size();
-                for (int k = j; sizeB > 0; k++) {
+                int sizeB = Blocks[i-1].size();
+                for (int k = j+1; sizeB > 0; k++) {
                     if (Blocks[i-1].count(k) > 0 and !Blocks[i-1][k].background and Blocks[i-1][k].rect.x < patrol2) {
                         border2 = Blocks[i-1][k];
                         patrol2 = border2.rect.x;
@@ -245,7 +245,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
 Enemy::Enemy() {SCALE = 0;}
 
-void Enemy::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Effect> &effects) {
+void Enemy::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Effect> &effects) {
     if (tick == 0) {
         return;
     }
@@ -372,7 +372,7 @@ void Enemy::snail(std::vector<Block> Blocks) {
 
 }
 
-void Enemy::butterfly(std::vector<Block> Blocks, Flamingo &player) {
+void Enemy::butterfly(std::vector<Block> Blocks, Flamingo* player) {
     getCloseBlocks(Blocks);
     if (behavior == 0) {
         angle += 3;
@@ -393,7 +393,7 @@ void Enemy::butterfly(std::vector<Block> Blocks, Flamingo &player) {
             }
         }
 
-        if (abs(player.rect.x-rect.x) + abs(player.rect.y-rect.y) < 60*SCALE) { // fun-mode: Butterfly-chase, change < to >
+        if (abs(player->rect.x-rect.x) + abs(player->rect.y-rect.y) < 60*SCALE) { // fun-mode: Butterfly-chase, change < to >
             behavior = 1;
         }
     } else if (behavior == 1) {
@@ -403,14 +403,14 @@ void Enemy::butterfly(std::vector<Block> Blocks, Flamingo &player) {
             angle = 0;
         }
     } else if (behavior >= 2) {
-        if (player.rect.x > rect.x) {
+        if (player->rect.x > rect.x) {
             vx = 3*SCALE;
-        } else if (rect.x > player.rect.x) {
+        } else if (rect.x > player->rect.x) {
             vx = -3*SCALE;
         }
-        if (player.rect.y > rect.y) {
+        if (player->rect.y > rect.y) {
             vy = 3*SCALE;
-        } else if (rect.y > player.rect.y) {
+        } else if (rect.y > player->rect.y) {
             vy = -3*SCALE;
         }
 
@@ -444,7 +444,7 @@ void Enemy::butterfly(std::vector<Block> Blocks, Flamingo &player) {
     
 }
 
-void Enemy::crab(Flamingo &player) {
+void Enemy::crab(Flamingo* player) {
     rect.x += vx;
     cx += vx;
     if (behavior == 0) {
@@ -454,17 +454,17 @@ void Enemy::crab(Flamingo &player) {
         if (rect.x+rect.width > patrol2) {
             vx = -2;
         }
-        if (abs(player.rect.x-rect.x) + abs(player.rect.y-rect.y) < 80*SCALE) {
+        if (abs(player->rect.x-rect.x) + abs(player->rect.y-rect.y) < 80*SCALE) {
             behavior = 1;
             vx = 4;
         }
     } else if (behavior == 1) {
-        if (player.rect.x > rect.x) {
+        if (player->rect.x > rect.x) {
             vx = 4;
         } else {
             vx = -4;
         }
-        if (abs(player.rect.x-rect.x) + abs(player.rect.y-rect.y) > 80*SCALE) {
+        if (abs(player->rect.x-rect.x) + abs(player->rect.y-rect.y) > 80*SCALE) {
             behavior = 0;
             vx = 2;
         }
@@ -479,20 +479,20 @@ void Enemy::crab(Flamingo &player) {
     }
 }
 
-void Enemy::meldrop(Flamingo &player, std::vector<Effect> &effects) {
+void Enemy::meldrop(Flamingo* player, std::vector<Effect> &effects) {
     if (behavior == 0) {
-        if (abs(cx - player.cx) + abs(cy - player.cy) < 120*SCALE) {
+        if (abs(cx - player->cx) + abs(cy - player->cy) < 120*SCALE) {
             behavior = 1;
         }
     } else if (behavior < 90) {
-        if (abs(cx - player.cx) + abs(cy - player.cy) > 120*SCALE) {
+        if (abs(cx - player->cx) + abs(cy - player->cy) > 120*SCALE) {
             behavior = 0;
         }
         behavior += 1;
     } else if (behavior >= 90) {
         Vector2 center = {cx, cy};
         Vector2 direction;
-        float angle = std::atan2(player.cx - cx, player.cy - cy);
+        float angle = std::atan2(player->cx - cx, player->cy - cy);
         direction.x = std::sin(angle)*5;
         direction.y = std::cos(angle)*5;
         int damager[5] = {0, 0, 0, 0, 1};

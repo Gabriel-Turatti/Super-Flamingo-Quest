@@ -66,7 +66,7 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
     cy = rect.y + rect.height/2;
 }
 
-bool Effect::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Item> &itens, std::vector<Enemy> &enemies) {
+bool Effect::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies) {
     bool value;
     switch(id) {
         case(1):
@@ -103,7 +103,7 @@ bool Effect::update(std::vector<Block> Blocks, Flamingo &player, std::vector<Ite
     return value;
 }
 
-bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo &player) {
+bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo* player) {
     if (tick % 5 == 0) {
         int sizeBT = Blocks.size();
         closeBlocks.clear();
@@ -128,11 +128,11 @@ bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo &player) {
         }
     }
 
-    if (GenericColision(player.rect, rect)) {
+    if (GenericColision(player->rect, rect)) {
         int q = 0;
         for(char type : {'H', 'R', 'P', 'C', 'W'}) {
             if (dmg[q] > 0) {
-                player.Health(-dmg[q], type);
+                player->Health(-dmg[q], type);
             }
             q++;
         }
