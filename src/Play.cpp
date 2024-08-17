@@ -23,7 +23,7 @@ void Play::loadFlamingo() {
 }
 
 void Play::search_universe(std::vector<std::string> &Universe) {
-    std::string name = "levels"; 
+    std::string name = "assets/levels"; 
     DIR* dirp = opendir(name.c_str());
     struct dirent * dp;
     while ((dp = readdir(dirp)) != NULL) {
