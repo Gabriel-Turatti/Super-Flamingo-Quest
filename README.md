@@ -1,3 +1,21 @@
+# Super Flamingo Quest
+
+### Build
+
+```sh
+cmake -B build
+cmake --build build
+mv build/super_flamingo_quest ./super_flamingo_quest
+```
+
+### Play
+
+```sh
+./super_flamingo_quest
+```
+
+---
+
 You're Flamingo, you're searching Happiness. Good Luck!
 
 Links uteis:
