@@ -37,9 +37,9 @@ public:
     int widthLevel;
     int heightLevel;
 
-    Texture2D iconEditor = LoadTexture("images/mapEditor.png");
-    Texture2D iconGame = LoadTexture("images/mainGame.png");
-    Sound finish = LoadSound("sfx/finishLine.wav");
+    Texture2D iconEditor = LoadTexture("assets/images/mapEditor.png");
+    Texture2D iconGame = LoadTexture("assets/images/mainGame.png");
+    Sound finish = LoadSound("assets/audio/sfx/finishLine.wav");
 
 
     struct Dust {

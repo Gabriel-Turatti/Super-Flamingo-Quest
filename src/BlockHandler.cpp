@@ -1,9 +1,9 @@
-#include "../header/BlockHandler.hpp"
+#include "../include/BlockHandler.hpp"
 
 
 BlockHandler::BlockHandler(std::vector<Block> &blocksLevel, Play* gamer) {
     game = gamer;
-    images[29] = LoadTexture("images/block_energy.png");
+    images[29] = LoadTexture("assets/images/block_energy.png");
     for (Block temp : blocksLevel) {
         if (images.count(temp.id) == 0) {
             addBlock(temp);
@@ -23,97 +23,97 @@ BlockHandler::~BlockHandler() {
 void BlockHandler::addBlock(Block temp) {
     switch (temp.id) {
         case 1:
-            images[temp.id] = LoadTexture("images/block_grass.png");
+            images[temp.id] = LoadTexture("assets/images/block_grass.png");
             break;
         case 2:
-            images[temp.id] = LoadTexture("images/block_dirt.png");
+            images[temp.id] = LoadTexture("assets/images/block_dirt.png");
             break;
         case 3:
-            images[temp.id] = LoadTexture("images/block_dirt2x2.png");
+            images[temp.id] = LoadTexture("assets/images/block_dirt2x2.png");
             break;
         case 4:
-            images[temp.id] = LoadTexture("images/block_brick.png");
+            images[temp.id] = LoadTexture("assets/images/block_brick.png");
             break;
         case 5:
-            images[temp.id] = LoadTexture("images/block_gate_hope_closed.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_hope_closed.png");
             break;
         case 6:
-            images[temp.id] = LoadTexture("images/block_gate_resilience_closed.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_resilience_closed.png");
             break;
         case 7:
-            images[temp.id] = LoadTexture("images/block_gate_power_closed.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_power_closed.png");
             break;
         case 8:
-            images[temp.id] = LoadTexture("images/block_gate_courage_closed.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_courage_closed.png");
             break;
         case 9:
-            images[temp.id] = LoadTexture("images/block_gate_wisdom_closed.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_wisdom_closed.png");
             break;
         case 10:
-            images[temp.id] = LoadTexture("images/block_gate_hope_open.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_hope_open.png");
             break;
         case 11:
-            images[temp.id] = LoadTexture("images/block_gate_resilience_open.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_resilience_open.png");
             break;
         case 12:
-            images[temp.id] = LoadTexture("images/block_gate_power_open.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_power_open.png");
             break;
         case 13:
-            images[temp.id] = LoadTexture("images/block_gate_courage_open.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_courage_open.png");
             break;
         case 14:
-            images[temp.id] = LoadTexture("images/block_gate_wisdom_open.png");
+            images[temp.id] = LoadTexture("assets/images/block_gate_wisdom_open.png");
             break;
         case 15:
-            images[temp.id] = LoadTexture("images/block_altar.png");
+            images[temp.id] = LoadTexture("assets/images/block_altar.png");
             break;
         case 16:
-            images[temp.id] = LoadTexture("images/block_spike.png");
+            images[temp.id] = LoadTexture("assets/images/block_spike.png");
             break;
         case 17:
-            images[temp.id] = LoadTexture("images/block_nextLevel.png");
+            images[temp.id] = LoadTexture("assets/images/block_nextLevel.png");
             break;
         case 18:
-            images[temp.id] = LoadTexture("images/block_StartLevel.png");
+            images[temp.id] = LoadTexture("assets/images/block_StartLevel.png");
             break;
         case 19:
-            images[temp.id] = LoadTexture("images/block_bird_yellow.png");
+            images[temp.id] = LoadTexture("assets/images/block_bird_yellow.png");
             break;
         case 20:
-            images[temp.id] = LoadTexture("images/block_bird_green.png");
+            images[temp.id] = LoadTexture("assets/images/block_bird_green.png");
             break;
         case 21:
-            images[temp.id] = LoadTexture("images/block_bird_blue.png");
+            images[temp.id] = LoadTexture("assets/images/block_bird_blue.png");
             break;
         case 22:
-            images[temp.id] = LoadTexture("images/block_bird_red.png");
+            images[temp.id] = LoadTexture("assets/images/block_bird_red.png");
             break;
         case 23:
-            images[temp.id] = LoadTexture("images/block_bird_orange.png");
+            images[temp.id] = LoadTexture("assets/images/block_bird_orange.png");
             break;
         case 24:
-            images[temp.id] = LoadTexture("images/block_honey.png");
+            images[temp.id] = LoadTexture("assets/images/block_honey.png");
             break;
         case 25:
-            images[temp.id] = LoadTexture("images/block_vines.png");
+            images[temp.id] = LoadTexture("assets/images/block_vines.png");
             break;
         case 26:
-            images[temp.id] = LoadTexture("images/block_ivy.png");
+            images[temp.id] = LoadTexture("assets/images/block_ivy.png");
             break;
         case 27:
-            images[temp.id] = LoadTexture("images/block_green_control.png");
+            images[temp.id] = LoadTexture("assets/images/block_green_control.png");
             break;
         case 28:
-            images[temp.id] = LoadTexture("images/block_green.png");
+            images[temp.id] = LoadTexture("assets/images/block_green.png");
             break;
         case 29:
-            images[temp.id] = LoadTexture("images/block_energy.png");
+            images[temp.id] = LoadTexture("assets/images/block_energy.png");
             break;
         case 30:
-            images[temp.id] = LoadTexture("images/platform.png");
+            images[temp.id] = LoadTexture("assets/images/platform.png");
             break;
         default:
-            images[temp.id] = LoadTexture("images/block_energy.png");
+            images[temp.id] = LoadTexture("assets/images/block_energy.png");
             break;
 
     }

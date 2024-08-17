@@ -1,4 +1,4 @@
-#include "../header/Block.hpp"
+#include "../include/Block.hpp"
 
 Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator, bool backgrounder, bool secreter) {
     rect.x = x;

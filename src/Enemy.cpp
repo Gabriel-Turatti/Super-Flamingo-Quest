@@ -1,4 +1,4 @@
-#include "../header/Enemy.hpp"
+#include "../include/Enemy.hpp"
 
 
 Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, std::map<int, Block>> Blocks, int ticker, int i, int j) {
@@ -9,29 +9,29 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
     tick = ticker;
     if (tick == 0) {
         if (name == "bee") {
-            images.push_back(LoadTexture("images/enemy-bee.png"));
+            images.push_back(LoadTexture("assets/images/enemy-bee.png"));
             rectImage.width = 12;
             rectImage.height = 13;
         } else if (name == "snail") {
-            images.push_back(LoadTexture("images/enemy-snail.png"));
+            images.push_back(LoadTexture("assets/images/enemy-snail.png"));
             rectImage.width = 12;
             rectImage.height = 13;
         } else if (name == "butterfly") {
-            images.push_back(LoadTexture("images/enemy-butterfly.png"));
+            images.push_back(LoadTexture("assets/images/enemy-butterfly.png"));
             rectImage.width = 11;
             rectImage.height = 11;
         } else if (name == "crab") {
-            images.push_back(LoadTexture("images/enemy-crab.png"));
+            images.push_back(LoadTexture("assets/images/enemy-crab.png"));
             rectImage.width = 13;
             rectImage.height = 13;
         } else if (name == "meldrop") {
-            images.push_back(LoadTexture("images/enemy-meldrop.png"));
+            images.push_back(LoadTexture("assets/images/enemy-meldrop.png"));
             rectImage.width = 13;
             rectImage.height = 13;
         }
     } else {
         if (name == "bee") {
-            images.push_back(LoadTexture("images/enemy-bee.png"));
+            images.push_back(LoadTexture("assets/images/enemy-bee.png"));
             imageSize = 2;
             rectImage.width = 12;
             rectImage.height = 13;
@@ -86,7 +86,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
                 }
             }
         } else if (name == "snail") {
-            images.push_back(LoadTexture("images/enemy-snail.png"));
+            images.push_back(LoadTexture("assets/images/enemy-snail.png"));
             imageSize = 3;
             rectImage.width = 12;
             rectImage.height = 13;
@@ -107,7 +107,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             behavior = 0; // *90º clock-wise
             rect.y = ground.rect.y - rectImage.height*SCALE + SCALE;
         } else if (name == "butterfly") {
-            images.push_back(LoadTexture("images/enemy-butterfly.png"));
+            images.push_back(LoadTexture("assets/images/enemy-butterfly.png"));
             imageSize = 2;
             rectImage.width = 11;
             rectImage.height = 11;
@@ -121,7 +121,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             orbit.x = x;
             orbit.y = y;
         } else if (name == "crab") {
-            images.push_back(LoadTexture("images/enemy-crab.png"));
+            images.push_back(LoadTexture("assets/images/enemy-crab.png"));
             imageSize = 4;
             dmgs[3] = 1;
 
@@ -221,7 +221,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             }
 
         } else if (name == "meldrop") {
-            images.push_back(LoadTexture("images/enemy-meldrop.png"));
+            images.push_back(LoadTexture("assets/images/enemy-meldrop.png"));
             imageSize = 2;
             rectImage.width = 13;
             rectImage.height = 13;

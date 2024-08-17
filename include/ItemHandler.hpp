@@ -2,7 +2,7 @@
 #define ITEMHANDLER_H
 
 #include "raylib.h"
-#include "item.hpp"
+#include "Item.hpp"
 #include <vector>
 #include <unordered_map>
 

@@ -1,4 +1,4 @@
-#include "../header/Item.hpp"
+#include "../include/Item.hpp"
 
 
 Item::Item(int x, int y, std::string namer, int SCALER, char categorizer) {

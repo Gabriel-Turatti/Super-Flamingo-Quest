@@ -25,7 +25,7 @@ public:
     int SCALE;
     std::string name;
 
-    // Sound sfxCoin = LoadSound("sfx/coin.wav");
+    // Sound sfxCoin = LoadSound("assets/audio/sfx/coin.wav");
 
     char types[5] = {'H', 'R', 'P', 'C', 'W'};
     int dmgs[5] = {0, 0, 0, 0, 0};

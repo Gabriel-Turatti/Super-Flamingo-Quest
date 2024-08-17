@@ -1,4 +1,4 @@
-#include "../header/Play.hpp"
+#include "../include/Play.hpp"
 
 
 Play::Play() {
@@ -36,7 +36,7 @@ void Play::search_universe(std::vector<std::string> &Universe) {
 
 void Play::Hub() {
     SetTargetFPS(30);
-    theme = LoadMusicStream("songs/MainTheme.wav");
+    theme = LoadMusicStream("assets/audio/songs/MainTheme.wav");
     PlayMusicStream(theme);
 
     Vector2 mousePosition;
@@ -273,7 +273,7 @@ void Play::EditLevel(std::string name) {
     relativeCameraCenter.y = HT/2;
     bool W, A, S, D, E, R, Q, F;
     Vector2 relativePos;
-    Texture2D grid = LoadTexture("images/grid.png");
+    Texture2D grid = LoadTexture("assets/images/grid.png");
     Rectangle mouseRect = {0, 0, 2, 2};
 
 
@@ -1140,7 +1140,7 @@ void Play::EditLevel(std::string name) {
                 }
                 if (IsKeyPressed(KEY_ENTER)) {
                     UnloadMusicStream(LevelTheme);
-                    std::string temp = "songs/" + (std::string)SongName + ".wav";
+                    std::string temp = "assets/audio/songs/" + (std::string)SongName + ".wav";
                     strcpy(SongNameFinal, temp.c_str());
                     LevelTheme = LoadMusicStream(SongNameFinal);
                     PlayMusicStream(LevelTheme);
@@ -1518,11 +1518,11 @@ int Play::mainLoop(Music LevelTheme) {
     downLimit = (heightLevel)*(BS-SCALE);
 
 
-    Texture2D birdY = LoadTexture("images/bird-flying-yellow.png");
-    Texture2D birdG = LoadTexture("images/bird-flying-green.png");
-    Texture2D birdB = LoadTexture("images/bird-flying-blue.png");
-    Texture2D birdR = LoadTexture("images/bird-flying-red.png");
-    Texture2D birdO = LoadTexture("images/bird-flying-orange.png");
+    Texture2D birdY = LoadTexture("assets/images/bird-flying-yellow.png");
+    Texture2D birdG = LoadTexture("assets/images/bird-flying-green.png");
+    Texture2D birdB = LoadTexture("assets/images/bird-flying-blue.png");
+    Texture2D birdR = LoadTexture("assets/images/bird-flying-red.png");
+    Texture2D birdO = LoadTexture("assets/images/bird-flying-orange.png");
 
     ItemHandler itemTaker = ItemHandler(itens);
     BlockHandler blockTaker = BlockHandler(Blocks, this);
