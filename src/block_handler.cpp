@@ -1,7 +1,6 @@
-#include "../include/BlockHandler.hpp"
+#include "../include/block_handler.hpp"
 
-
-BlockHandler::BlockHandler(std::vector<Block> &blocksLevel, Play* gamer) {
+BlockHandler::BlockHandler(std::vector<Block> &blocksLevel, Play *gamer) {
     game = gamer;
     images[29] = LoadTexture("assets/images/block_energy.png");
     for (Block temp : blocksLevel) {
@@ -9,13 +8,13 @@ BlockHandler::BlockHandler(std::vector<Block> &blocksLevel, Play* gamer) {
             addBlock(temp);
         }
     }
-    for (auto& [id, image]: images) {
+    for (auto &[id, image] : images) {
         SetTextureWrap(image, TEXTURE_WRAP_CLAMP);
     }
 }
 
 BlockHandler::~BlockHandler() {
-    for (auto& [id, image]: images) {
+    for (auto &[id, image] : images) {
         UnloadTexture(image);
     }
 }
@@ -115,11 +114,15 @@ void BlockHandler::addBlock(Block temp) {
         default:
             images[temp.id] = LoadTexture("assets/images/block_energy.png");
             break;
-
     }
 }
 
-void BlockHandler::DrawBlocks(std::vector<Block> &blocksLevel, Rectangle cameraCenter, Rectangle relativeCameraCenter, int SCALE, bool background, bool showSecret) {
+void BlockHandler::DrawBlocks(std::vector<Block> &blocksLevel,
+                              Rectangle cameraCenter,
+                              Rectangle relativeCameraCenter,
+                              int SCALE,
+                              bool background,
+                              bool showSecret) {
     int sizeB = blocksLevel.size();
     Vector2 relativePos;
     for (int i = 0; i < sizeB; i++) {
@@ -135,8 +138,8 @@ void BlockHandler::DrawBlocks(std::vector<Block> &blocksLevel, Rectangle cameraC
             }
         }
 
-        relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
-        relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+        relativePos.x = cameraCenter.x + temp.rect.x - relativeCameraCenter.x;
+        relativePos.y = cameraCenter.y + temp.rect.y - relativeCameraCenter.y;
         if (temp.direction != 0) {
             if (temp.direction == 1) {
                 relativePos.y += temp.rect.height;
@@ -157,7 +160,7 @@ void BlockHandler::DrawBlocks(std::vector<Block> &blocksLevel, Rectangle cameraC
 
         if (temp.name == "cage") {
             Rectangle source, dest;
-            if ((game->tick+(int)temp.rect.x+(int)temp.rect.y) % 20 < 10) {
+            if ((game->tick + (int)temp.rect.x + (int)temp.rect.y) % 20 < 10) {
                 source.x = 12;
             } else {
                 source.x = 0;
@@ -171,9 +174,9 @@ void BlockHandler::DrawBlocks(std::vector<Block> &blocksLevel, Rectangle cameraC
             dest.width = temp.rect.width;
             dest.height = temp.rect.height;
 
-            DrawTexturePro(images[temp.id], source, dest, {0, 0}, temp.direction*-90, transparency);
+            DrawTexturePro(images[temp.id], source, dest, {0, 0}, temp.direction * -90, transparency);
         } else {
-            DrawTextureEx(images[temp.id], relativePos, temp.direction*-90, SCALE, transparency);
+            DrawTextureEx(images[temp.id], relativePos, temp.direction * -90, SCALE, transparency);
         }
         if (temp.secret) {
             DrawText("S", relativePos.x, relativePos.y, game->BS, WHITE);
@@ -186,4 +189,3 @@ void BlockHandler::DrawBlockHud(const std::vector<Block> &BlocksOption, int SCAL
         DrawTextureEx(images[temp.id], {temp.rect.x, temp.rect.y}, 0, SCALE, WHITE);
     }
 }
-

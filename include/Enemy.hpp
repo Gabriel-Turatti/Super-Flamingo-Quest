@@ -1,24 +1,23 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include "raylib.h"
-#include "predefinitions.hpp"
-#include "Block.hpp"
+#include <cmath>
+#include <fstream>
+
+#include "block.hpp"
 #include "Effect.hpp"
 #include "Functions.hpp"
-#include <fstream>
-#include <cmath>
-
-
+#include "predefinitions.hpp"
+#include "raylib.h"
 
 class Enemy {
-public:
+   public:
     Rectangle rect;
     Rectangle rectImage;
     float cx, cy;
     float vx, vy;
     std::vector<Texture2D> images = {};
-    
+
     int imageCount = 0;
     int imageSize;
 
@@ -51,21 +50,28 @@ public:
     // all
     int behavior;
 
-    Enemy(float x, float y, std::string namer, int imagescale, std::map<int, std::map<int, Block>>, int ticker, int i = 0, int j = 0);
+    Enemy(float x,
+          float y,
+          std::string namer,
+          int imagescale,
+          std::map<int, std::map<int, Block>>,
+          int ticker,
+          int i = 0,
+          int j = 0);
 
     Enemy();
 
-    void update(std::vector<Block> Blocks, Flamingo* player, std::vector<Effect> &effects);
+    void update(std::vector<Block> Blocks, Flamingo *player, std::vector<Effect> &effects);
 
     void bee();
 
     void snail(std::vector<Block> Blocks);
 
-    void butterfly(std::vector<Block> Blocks, Flamingo* player);
+    void butterfly(std::vector<Block> Blocks, Flamingo *player);
 
-    void crab(Flamingo* player);
-    
-    void meldrop(Flamingo* player, std::vector<Effect> &effects);
+    void crab(Flamingo *player);
+
+    void meldrop(Flamingo *player, std::vector<Effect> &effects);
 
     void getCloseBlocks(std::vector<Block> Blocks);
 };

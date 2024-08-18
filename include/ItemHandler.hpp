@@ -1,13 +1,14 @@
 #ifndef ITEMHANDLER_H
 #define ITEMHANDLER_H
 
-#include "raylib.h"
-#include "Item.hpp"
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
+#include "Item.hpp"
+#include "raylib.h"
 
 class ItemHandler {
-public:
+   public:
     std::unordered_map<int, Texture2D> images;
 
     ItemHandler(std::vector<Item> &itensLevel);
@@ -16,7 +17,6 @@ public:
     void addItem(Item temp);
     void DrawItens(std::vector<Item> &itensLevel, Rectangle cameraCenter, Rectangle relativeCameraCenter, int SCALE);
     void DrawItemHud(const std::vector<Item> &itensOption, int SCALE);
-
 };
 
 #endif

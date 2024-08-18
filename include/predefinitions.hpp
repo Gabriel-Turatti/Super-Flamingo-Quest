@@ -1,11 +1,5 @@
-#include <vector>
-#include <memory>
-#include <string>
-#include <fstream>
-#include <random>
-#include <string.h>
+#pragma once
 
-class Block;
 class Effect;
 class Enemy;
 class Flamingo;

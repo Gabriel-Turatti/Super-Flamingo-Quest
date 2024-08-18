@@ -1,12 +1,10 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#pragma once
 
+#include <string>
 #include "raylib.h"
-#include <fstream>
-
 
 class Block {
-public:
+   public:
     Rectangle rect;
     Rectangle rectImage;
     float cx, cy;
@@ -19,8 +17,14 @@ public:
     int parameter;
     int id;
 
-    Block(int x, int y, int w, int h, std::string namer, int SCALER, int rotator = 0, bool backgrounder = false, bool secreter = false);
+    Block(int x,
+          int y,
+          int w,
+          int h,
+          std::string namer,
+          int SCALER,
+          int rotator = 0,
+          bool backgrounder = false,
+          bool secreter = false);
     Block();
 };
-
-#endif

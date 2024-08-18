@@ -1,17 +1,17 @@
-#ifndef EFFECT_H
-#define EFFECT_H
+#pragma once
 
-#include "raylib.h"
-#include "predefinitions.hpp"
-#include "Block.hpp"
-#include "Item.hpp"
-#include "Functions.hpp"
-#include "Flamingo.hpp"
 #include <fstream>
 #include <vector>
 
+#include "block.hpp"
+#include "Flamingo.hpp"
+#include "Functions.hpp"
+#include "Item.hpp"
+#include "predefinitions.hpp"
+#include "raylib.h"
+
 class Effect {
-public:
+   public:
     Rectangle rect;
     Rectangle rectImage;
     float cx, cy;
@@ -27,15 +27,12 @@ public:
     std::vector<int> closeItens;
     std::vector<int> closeEnemies;
 
-
     Effect(Vector2 position, Vector2 direction, int lifespan, int identificator, int damager[5], int SCALER);
 
-    bool update(std::vector<Block> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
+    bool update(std::vector<Block> Blocks, Flamingo *player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
 
-    bool meldropShot(std::vector<Block> Blocks, Flamingo* player);
+    bool meldropShot(std::vector<Block> Blocks, Flamingo *player);
     bool transmutation(std::vector<Item> &itens);
     bool spear(std::vector<Enemy> &enemies, std::vector<Item> &itens);
     bool bird();
 };
-
-#endif

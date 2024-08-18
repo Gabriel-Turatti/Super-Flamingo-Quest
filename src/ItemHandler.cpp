@@ -1,19 +1,18 @@
 #include "../include/ItemHandler.hpp"
 
-
 ItemHandler::ItemHandler(std::vector<Item> &itensLevel) {
     for (Item temp : itensLevel) {
         if (images.count(temp.id) == 0) {
             addItem(temp);
         }
     }
-    for (auto& [id, image]: images) {
+    for (auto &[id, image] : images) {
         SetTextureWrap(image, TEXTURE_WRAP_CLAMP);
     }
 }
 
 ItemHandler::~ItemHandler() {
-    for (auto& [id, image]: images) {
+    for (auto &[id, image] : images) {
         UnloadTexture(image);
     }
 }
@@ -112,23 +111,26 @@ void ItemHandler::addItem(Item temp) {
             break;
         case 31:
             images[temp.id] = LoadTexture("assets/images/power-transmutation.png");
-            break;            
+            break;
         case 32:
             images[temp.id] = LoadTexture("assets/images/coin-poison.png");
-            break;            
+            break;
     }
 }
 
-void ItemHandler::DrawItens(std::vector<Item> &itensLevel, Rectangle cameraCenter, Rectangle relativeCameraCenter, int SCALE) {
+void ItemHandler::DrawItens(std::vector<Item> &itensLevel,
+                            Rectangle cameraCenter,
+                            Rectangle relativeCameraCenter,
+                            int SCALE) {
     Vector2 relativePos;
     for (Item &temp : itensLevel) {
-        relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
-        relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+        relativePos.x = cameraCenter.x + temp.rect.x - relativeCameraCenter.x;
+        relativePos.y = cameraCenter.y + temp.rect.y - relativeCameraCenter.y;
 
         if (temp.category == 'C') {
             Rectangle source, dest;
 
-            source.x = 0 + temp.animation[temp.imageCount]*(temp.rectImage.width);
+            source.x = 0 + temp.animation[temp.imageCount] * (temp.rectImage.width);
             source.y = 0;
             source.width = temp.rectImage.width;
             source.height = temp.rectImage.height;
@@ -155,7 +157,6 @@ void ItemHandler::DrawItens(std::vector<Item> &itensLevel, Rectangle cameraCente
             if (temp.imageCount < 15) {
                 relativePos.y += SCALE;
             } else if (temp.imageCount < 30) {
-
             } else if (temp.imageCount < 45) {
                 relativePos.y -= SCALE;
             }
@@ -185,4 +186,3 @@ void ItemHandler::DrawItemHud(const std::vector<Item> &itensOption, int SCALE) {
         }
     }
 }
-

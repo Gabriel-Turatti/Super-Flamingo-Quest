@@ -1,12 +1,10 @@
 #include "../include/MapLoader.hpp"
 
-
-
 MapLoader::MapLoader(int SCALER, int BSer, float width, float height) {
     SCALE = SCALER;
     BS = BSer;
-    WT = BS*width;
-    HT = BS*height;
+    WT = BS * width;
+    HT = BS * height;
 }
 
 MapLoader::MapLoader() {}
@@ -24,11 +22,11 @@ void MapLoader::SaveLevel(Map level) {
         if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
             upMostBlock = temp.rect.y;
         }
-        if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
-            rightMostBlock = temp.rect.x+temp.rect.width;
+        if (rightMostBlock == 1.5 or temp.rect.x + temp.rect.width > rightMostBlock) {
+            rightMostBlock = temp.rect.x + temp.rect.width;
         }
-        if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
-            downMostBlock = temp.rect.y+temp.rect.height;
+        if (downMostBlock == 1.5 or temp.rect.y + temp.rect.height > downMostBlock) {
+            downMostBlock = temp.rect.y + temp.rect.height;
         }
     }
     for (Item temp : level.itens) {
@@ -38,41 +36,41 @@ void MapLoader::SaveLevel(Map level) {
         if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
             upMostBlock = temp.rect.y;
         }
-        if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
-            rightMostBlock = temp.rect.x+temp.rect.width;
+        if (rightMostBlock == 1.5 or temp.rect.x + temp.rect.width > rightMostBlock) {
+            rightMostBlock = temp.rect.x + temp.rect.width;
         }
-        if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
-            downMostBlock = temp.rect.y+temp.rect.height;
+        if (downMostBlock == 1.5 or temp.rect.y + temp.rect.height > downMostBlock) {
+            downMostBlock = temp.rect.y + temp.rect.height;
         }
     }
 
-    level.widthLevel = (int) (rightMostBlock - leftMostBlock -SCALE)/(BS-SCALE) +2;
-    level.heightLevel = (int) (downMostBlock - upMostBlock -SCALE)/(BS-SCALE) +2;
+    level.widthLevel = (int)(rightMostBlock - leftMostBlock - SCALE) / (BS - SCALE) + 2;
+    level.heightLevel = (int)(downMostBlock - upMostBlock - SCALE) / (BS - SCALE) + 2;
 
     int lineOffset;
     int columnOffset;
     if (leftMostBlock < 0) {
-        columnOffset = (leftMostBlock)/(BS-SCALE);
+        columnOffset = (leftMostBlock) / (BS - SCALE);
     } else {
-        columnOffset = (leftMostBlock)/(BS-SCALE);
+        columnOffset = (leftMostBlock) / (BS - SCALE);
     }
     if (upMostBlock < 0) {
-        lineOffset = (upMostBlock)/(BS-SCALE);
+        lineOffset = (upMostBlock) / (BS - SCALE);
     } else {
-        lineOffset = (upMostBlock)/(BS-SCALE);
+        lineOffset = (upMostBlock) / (BS - SCALE);
     }
-    lineOffset -= 1; // Gambiarra
+    lineOffset -= 1;  // Gambiarra
     columnOffset -= 1;
 
     std::map<int, std::map<int, Block>> NewBlocksGround;
     std::map<int, std::map<int, Block>> NewBlocksBackground;
     std::map<int, std::map<int, Item>> NewItens;
 
-    for (Block temp : level.Blocks) { // May cause bugs if position is negative
-        int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
-        int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
-        
-        if (temp.rect.width > BS and temp.direction == 3) { // Gambiarra
+    for (Block temp : level.Blocks) {  // May cause bugs if position is negative
+        int LinePos = (int)((temp.rect.y) / (BS - SCALE)) - lineOffset;
+        int ColumnPos = (int)((temp.rect.x) / (BS - SCALE)) - columnOffset;
+
+        if (temp.rect.width > BS and temp.direction == 3) {  // Gambiarra
             ColumnPos += 1;
         }
 
@@ -83,115 +81,112 @@ void MapLoader::SaveLevel(Map level) {
         }
     }
 
-
     for (Item temp : level.itens) {
         std::string name = temp.name;
         if (name == "coin-copper") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "coin-silver") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "coin-gold") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "coin-poison") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "coin-death") {
-            temp.rect.x -= 0*SCALE;
-            temp.rect.y -= 0*SCALE;
+            temp.rect.x -= 0 * SCALE;
+            temp.rect.y -= 0 * SCALE;
         } else if (name == "food-banana") {
-            temp.rect.x -= 1*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 1 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "food-pear") {
-            temp.rect.x += 1*SCALE;
-            temp.rect.y += 1*SCALE;
+            temp.rect.x += 1 * SCALE;
+            temp.rect.y += 1 * SCALE;
         } else if (name == "food-blueberry") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "food-pepper") {
-            temp.rect.x -= 1*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 1 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "food-orange") {
-            temp.rect.x -= 1*SCALE;
-            temp.rect.y -= 0*SCALE;
+            temp.rect.x -= 1 * SCALE;
+            temp.rect.y -= 0 * SCALE;
         } else if (name == "Hshard-hope") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 2*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 2 * SCALE;
         } else if (name == "Hshard-resilience") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 2*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 2 * SCALE;
         } else if (name == "Hshard-power") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 2*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 2 * SCALE;
         } else if (name == "Hshard-courage") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 2*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 2 * SCALE;
         } else if (name == "Hshard-wisdom") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 2*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 2 * SCALE;
         } else if (name == "Pshard-wind") {
-            temp.rect.x -= 2.5*SCALE;
-            temp.rect.y -= 2.5*SCALE;
+            temp.rect.x -= 2.5 * SCALE;
+            temp.rect.y -= 2.5 * SCALE;
         } else if (name == "Pshard-party") {
-            temp.rect.x -= 2.5*SCALE;
-            temp.rect.y -= 2.5*SCALE;
+            temp.rect.x -= 2.5 * SCALE;
+            temp.rect.y -= 2.5 * SCALE;
         } else if (name == "Pshard-fun") {
-            temp.rect.x -= 2.5*SCALE;
-            temp.rect.y -= 2.5*SCALE;
+            temp.rect.x -= 2.5 * SCALE;
+            temp.rect.y -= 2.5 * SCALE;
         } else if (name == "Pshard-hard") {
-            temp.rect.x -= 2.5*SCALE;
-            temp.rect.y -= 2.5*SCALE;
+            temp.rect.x -= 2.5 * SCALE;
+            temp.rect.y -= 2.5 * SCALE;
         } else if (name == "Pshard-eloise") {
-            temp.rect.x -= 2.5*SCALE;
-            temp.rect.y -= 2.5*SCALE;
+            temp.rect.x -= 2.5 * SCALE;
+            temp.rect.y -= 2.5 * SCALE;
         } else if (name == "key-hope") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "key-resilience") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "key-power") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "key-courage") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "key-wisdom") {
-            temp.rect.x -= 3*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 3 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "courage-potion") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "party-potion") {
-            temp.rect.x -= 2*SCALE;
-            temp.rect.y -= 1*SCALE;
+            temp.rect.x -= 2 * SCALE;
+            temp.rect.y -= 1 * SCALE;
         } else if (name == "power-dash") {
-            temp.rect.x += 1*SCALE;
-            temp.rect.y += 1*SCALE;
+            temp.rect.x += 1 * SCALE;
+            temp.rect.y += 1 * SCALE;
         } else if (name == "power-toast") {
-            temp.rect.x += 1*SCALE;
-            temp.rect.y += 1*SCALE;
+            temp.rect.x += 1 * SCALE;
+            temp.rect.y += 1 * SCALE;
         } else if (name == "power-boost") {
-            temp.rect.x += 1*SCALE;
-            temp.rect.y += 1*SCALE;
+            temp.rect.x += 1 * SCALE;
+            temp.rect.y += 1 * SCALE;
         } else if (name == "power-spear") {
-            temp.rect.x += 1*SCALE;
-            temp.rect.y += 1*SCALE;
+            temp.rect.x += 1 * SCALE;
+            temp.rect.y += 1 * SCALE;
         } else if (name == "power-transmutation") {
-            temp.rect.x += 1*SCALE;
-            temp.rect.y += 1*SCALE;
+            temp.rect.x += 1 * SCALE;
+            temp.rect.y += 1 * SCALE;
         }
 
-        int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
-        int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
+        int LinePos = (int)((temp.rect.y) / (BS - SCALE)) - lineOffset;
+        int ColumnPos = (int)((temp.rect.x) / (BS - SCALE)) - columnOffset;
         NewItens[LinePos][ColumnPos] = temp;
     }
 
-
-
-    std::ofstream LevelSave("assets/levels/"+level.name);
+    std::ofstream LevelSave("assets/levels/" + level.name);
     if (LevelSave.is_open()) {
         std::string emptyLine(level.widthLevel, '-');
 
@@ -201,13 +196,11 @@ void MapLoader::SaveLevel(Map level) {
         LevelSave << std::to_string(level.time) << '\n';
 
         for (std::string exit : level.exits) {
-            LevelSave << "S-" +exit+"\n"; 
+            LevelSave << "S-" + exit + "\n";
         }
         for (std::string entrance : level.entrances) {
-            LevelSave << "E-" +entrance+"\n"; 
+            LevelSave << "E-" + entrance + "\n";
         }
-
-
 
         LevelSave << "P1\n";
         for (int i = 0; i < level.heightLevel; i++) {
@@ -271,10 +264,6 @@ void MapLoader::SaveLevel(Map level) {
             LevelSave << '\n';
         }
 
-
-
-        
-        
         LevelSave << "P2\n";
         for (int i = 0; i < level.heightLevel; i++) {
             if (NewBlocksBackground.count(i) == 0) {
@@ -337,9 +326,6 @@ void MapLoader::SaveLevel(Map level) {
             LevelSave << '\n';
         }
 
-
-
-
         LevelSave << "P3\n";
         for (int i = 0; i < level.heightLevel; i++) {
             if (NewItens.count(i) == 0) {
@@ -367,7 +353,6 @@ void MapLoader::SaveLevel(Map level) {
                     } else if (NewItens[i][j].name == "food-orange") {
                         LevelSave << "(Fw)";
 
-
                     } else if (NewItens[i][j].name == "Hshard-hope") {
                         LevelSave << "(Hh)";
                     } else if (NewItens[i][j].name == "Hshard-resilience") {
@@ -378,7 +363,6 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << "(Hc)";
                     } else if (NewItens[i][j].name == "Hshard-wisdom") {
                         LevelSave << "(Hw)";
-
 
                     } else if (NewItens[i][j].name == "key-hope") {
                         LevelSave << "(Kh)";
@@ -391,7 +375,6 @@ void MapLoader::SaveLevel(Map level) {
                     } else if (NewItens[i][j].name == "key-wisdom") {
                         LevelSave << "(Kw)";
 
-
                     } else if (NewItens[i][j].name == "Pshard-wind") {
                         LevelSave << "(Pw)";
                     } else if (NewItens[i][j].name == "Pshard-party") {
@@ -403,7 +386,6 @@ void MapLoader::SaveLevel(Map level) {
                     } else if (NewItens[i][j].name == "Pshard-eloise") {
                         LevelSave << "(Pe)";
 
-
                     } else if (NewItens[i][j].name == "power-dash") {
                         LevelSave << "(Sw)";
                     } else if (NewItens[i][j].name == "power-toast") {
@@ -414,7 +396,6 @@ void MapLoader::SaveLevel(Map level) {
                         LevelSave << "(Sh)";
                     } else if (NewItens[i][j].name == "power-transmutation") {
                         LevelSave << "(Se)";
-
 
                     } else if (NewItens[i][j].name == "courage-potion") {
                         LevelSave << 'C';
@@ -430,36 +411,34 @@ void MapLoader::SaveLevel(Map level) {
             LevelSave << '\n';
         }
 
-
-
-
         LevelSave << "P4\n";
         for (Enemy temp : level.enemies) {
-            int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
-            int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
+            int LinePos = (int)((temp.rect.y) / (BS - SCALE)) - lineOffset;
+            int ColumnPos = (int)((temp.rect.x) / (BS - SCALE)) - columnOffset;
             if (temp.name == "snail") {
                 LinePos += 1;
             }
-            LevelSave << std::to_string(LinePos) << '-' << std::to_string(ColumnPos) << '-' << '\"' << temp.name << "\"\n";
+            LevelSave << std::to_string(LinePos) << '-' << std::to_string(ColumnPos) << '-' << '\"' << temp.name
+                      << "\"\n";
         }
-
-
 
         LevelSave << "endmap";
     }
 
-
     LevelSave.close();
 }
 
-void MapLoader::SaveFlamingo(Flamingo* player) {
+void MapLoader::SaveFlamingo(Flamingo *player) {
     std::ofstream FlamFile("saves/Flamingo1/player.txt");
 
-    FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH << '\n';
+    FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH
+             << '\n';
     FlamFile << player->HH << '-' << player->RH << '-' << player->PH << '-' << player->CH << '-' << player->WH << '\n';
-    FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP << '\n';
+    FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP
+             << '\n';
     FlamFile << player->WP << '-' << player->PP << '-' << player->FP << '-' << player->HP << '-' << player->EP << '\n';
-    FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4] << '\n';
+    FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4]
+             << '\n';
 
     FlamFile.close();
 }
@@ -474,11 +453,11 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     int i = 0;
     std::string value = "";
     int questCount = 0;
-    while(line[i] != '\n') {
+    while (line[i] != '\n') {
         if (line[i] != '-') {
             value += line[i];
         } else {
-            switch(questCount) {
+            switch (questCount) {
                 case 0:
                     player->MHH = std::stoi(value);
                     break;
@@ -500,16 +479,15 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
         }
     }
 
-
     std::getline(FlamFile, line);
     i = 0;
     value = "";
     questCount = 0;
-    while(line[i] != '\n') {
+    while (line[i] != '\n') {
         if (line[i] != '-') {
             value += line[i];
         } else {
-            switch(questCount) {
+            switch (questCount) {
                 case 0:
                     player->HH = std::stoi(value);
                     break;
@@ -530,17 +508,16 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
             questCount += 1;
         }
     }
-    
 
     std::getline(FlamFile, line);
     i = 0;
     value = "";
     questCount = 0;
-    while(line[i] != '\n') {
+    while (line[i] != '\n') {
         if (line[i] != '-') {
             value += line[i];
         } else {
-            switch(questCount) {
+            switch (questCount) {
                 case 0:
                     player->MWP = std::stoi(value);
                     break;
@@ -562,16 +539,15 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
         }
     }
 
-
     std::getline(FlamFile, line);
     i = 0;
     value = "";
     questCount = 0;
-    while(line[i] != '\n') {
+    while (line[i] != '\n') {
         if (line[i] != '-') {
             value += line[i];
         } else {
-            switch(questCount) {
+            switch (questCount) {
                 case 0:
                     player->WP = std::stoi(value);
                     break;
@@ -592,13 +568,10 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
             questCount += 1;
         }
     }
-    
-    
-
 
     std::getline(FlamFile, line);
     i = 0;
-    while (i !='\n') {
+    while (i != '\n') {
         if (line[i] == '0') {
             player->powers[i] = false;
         } else {
@@ -606,12 +579,11 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
         }
     }
 
-
     return std::move(player);
 }
 
 Map MapLoader::LoadLevel(std::string name) {
-    std::ifstream level("assets/levels/"+name);
+    std::ifstream level("assets/levels/" + name);
     if (!level) {
         level.close();
         Map Error;
@@ -620,7 +592,7 @@ Map MapLoader::LoadLevel(std::string name) {
     }
 
     std::string line;
-    int CHL = 0; // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
+    int CHL = 0;  // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
     int widthLevel;
     int heightLevel;
     std::vector<std::string> exits;
@@ -632,20 +604,16 @@ Map MapLoader::LoadLevel(std::string name) {
 
     int charPoint = 0;
 
-
-
     std::getline(level, line);
     heightLevel = std::stoi(line);
     std::getline(level, line);
     widthLevel = std::stoi(line);
 
     std::getline(level, line);
-    char* LevelTheme = strdup(line.c_str());
+    char *LevelTheme = strdup(line.c_str());
 
     std::getline(level, line);
     int timeLimit = std::stoi(line);
-
-
 
     std::getline(level, line);
     while (line[0] == 'S') {
@@ -658,9 +626,6 @@ Map MapLoader::LoadLevel(std::string name) {
         entrances.push_back(line);
         std::getline(level, line);
     }
-
-
-
 
     int RenderPhase = 0;
     // 1 = Blocks Ground;
@@ -693,101 +658,117 @@ Map MapLoader::LoadLevel(std::string name) {
         }
         if (RenderPhase == 1 or RenderPhase == 2) {
             charPoint = -1;
-            for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
+            for (int CWL = 0; CWL < widthLevel; CWL++) {  // Current Width Level
                 charPoint++;
                 if (line[charPoint] == '-') {
                     continue;
                 }
                 Block tile;
-                int direction = line[charPoint+1] - '0';
+                int direction = line[charPoint + 1] - '0';
                 if (line[charPoint] == 'F') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "startLevel", SCALE, direction);
+                    tile = Block(
+                        CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS * 2 - SCALE, "startLevel", SCALE, direction);
                 } else if (line[charPoint] == 'N') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "nextLevel", SCALE, direction);
+                    tile = Block(
+                        CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS * 2 - SCALE, "nextLevel", SCALE, direction);
                 } else if (line[charPoint] == 'G') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "grass", SCALE, direction);
                 } else if (line[charPoint] == 'B') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "brick", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "brick", SCALE, direction);
                 } else if (line[charPoint] == 'D') {
-                    if (line[charPoint+1] == '2') {
-                        direction = line[charPoint+2] - '0';
+                    if (line[charPoint + 1] == '2') {
+                        direction = line[charPoint + 2] - '0';
                         if (direction > 3 or direction < 0) {
-                            direction = line[charPoint+1] - '0';
-                            tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE, direction);
+                            direction = line[charPoint + 1] - '0';
+                            tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "dirt", SCALE, direction);
                         } else {
-                            tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE, direction);
+                            tile = Block(CWL * (BS - SCALE),
+                                         CHL * (BS - SCALE),
+                                         BS * 2 - SCALE,
+                                         BS * 2 - SCALE,
+                                         "dirt2",
+                                         SCALE,
+                                         direction);
                             charPoint++;
                             CWL++;
                         }
                     } else {
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "dirt", SCALE, direction);
+                        tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "dirt", SCALE, direction);
                     }
                 } else if (line[charPoint] == 'P') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS*2-SCALE, BS, "platform", SCALE, direction);
+                    tile =
+                        Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS * 2 - SCALE, BS, "platform", SCALE, direction);
                 } else if (line[charPoint] == 'A') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "altar", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "altar", SCALE, direction);
                 } else if (line[charPoint] == 'S') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "spike", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "spike", SCALE, direction);
                 } else if (line[charPoint] == 'C') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "cage", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "cage", SCALE, direction);
                 } else if (line[charPoint] == 'H') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "honey", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "honey", SCALE, direction);
                 } else if (line[charPoint] == 'V') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "vines", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "vines", SCALE, direction);
                 } else if (line[charPoint] == 'I') {
-                    tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "ivy", SCALE, direction);
+                    tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "ivy", SCALE, direction);
                 } else if (line[charPoint] == '(') {
-                    if (line[charPoint+1] == 'K') {
-                        direction = line[charPoint+4] - '0';
+                    if (line[charPoint + 1] == 'K') {
+                        direction = line[charPoint + 4] - '0';
                         std::string type;
-                        if (line[charPoint+2] == 'h') {
+                        if (line[charPoint + 2] == 'h') {
                             type = "hope";
                         }
-                        if (line[charPoint+2] == 'r') {
+                        if (line[charPoint + 2] == 'r') {
                             type = "resilience";
                         }
-                        if (line[charPoint+2] == 'p') {
+                        if (line[charPoint + 2] == 'p') {
                             type = "power";
                         }
-                        if (line[charPoint+2] == 'c') {
+                        if (line[charPoint + 2] == 'c') {
                             type = "courage";
                         }
-                        if (line[charPoint+2] == 'w') {
+                        if (line[charPoint + 2] == 'w') {
                             type = "wisdom";
                         }
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "gate-" + type, SCALE, direction);
-                    } else if (line[charPoint+1] == 'S') {
-                        direction = line[charPoint+4] - '0';
+                        tile = Block(CWL * (BS - SCALE),
+                                     CHL * (BS - SCALE),
+                                     BS,
+                                     BS * 2 - SCALE,
+                                     "gate-" + type,
+                                     SCALE,
+                                     direction);
+                    } else if (line[charPoint + 1] == 'S') {
+                        direction = line[charPoint + 4] - '0';
                         std::string type;
-                        if (line[charPoint+2] == 'y') {
+                        if (line[charPoint + 2] == 'y') {
                             type = "yellow";
-                        } else if (line[charPoint+2] == 'g') {
+                        } else if (line[charPoint + 2] == 'g') {
                             type = "green";
-                        } else if (line[charPoint+2] == 'b') {
+                        } else if (line[charPoint + 2] == 'b') {
                             type = "blue";
-                        } else if (line[charPoint+2] == 'r') {
+                        } else if (line[charPoint + 2] == 'r') {
                             type = "red";
-                        } else if (line[charPoint+2] == 'o') {
+                        } else if (line[charPoint + 2] == 'o') {
                             type = "orange";
                         }
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "switch_" + type, SCALE, direction);
-                    } else if (line[charPoint+1] == 'B') {
-                        direction = line[charPoint+4] - '0';
+                        tile =
+                            Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, "switch_" + type, SCALE, direction);
+                    } else if (line[charPoint + 1] == 'B') {
+                        direction = line[charPoint + 4] - '0';
                         std::string type;
-                        if (line[charPoint+2] == 'y') {
+                        if (line[charPoint + 2] == 'y') {
                             type = "yellow";
-                        } else if (line[charPoint+2] == 'g') {
+                        } else if (line[charPoint + 2] == 'g') {
                             type = "green";
-                        } else if (line[charPoint+2] == 'b') {
+                        } else if (line[charPoint + 2] == 'b') {
                             type = "blue";
-                        } else if (line[charPoint+2] == 'r') {
+                        } else if (line[charPoint + 2] == 'r') {
                             type = "red";
-                        } else if (line[charPoint+2] == 'o') {
+                        } else if (line[charPoint + 2] == 'o') {
                             type = "orange";
                         }
-                        tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, type, SCALE, direction);
+                        tile = Block(CWL * (BS - SCALE), CHL * (BS - SCALE), BS, BS, type, SCALE, direction);
                     }
-                    if (line[charPoint+4] == 's') {
+                    if (line[charPoint + 4] == 's') {
                         tile.secret = true;
                         charPoint++;
                     }
@@ -795,11 +776,11 @@ Map MapLoader::LoadLevel(std::string name) {
                 } else {
                     continue;
                 }
-                
-                if (line[charPoint+2] == 's') {
+
+                if (line[charPoint + 2] == 's') {
                     tile.secret = true;
                     charPoint++;
-                } else if (line[charPoint+3] == 's' and line[charPoint+1] == '2' and line[charPoint] == 'D') {
+                } else if (line[charPoint + 3] == 's' and line[charPoint + 1] == '2' and line[charPoint] == 'D') {
                     tile.secret = true;
                     charPoint++;
                 }
@@ -813,95 +794,95 @@ Map MapLoader::LoadLevel(std::string name) {
             CHL++;
         } else if (RenderPhase == 3) {
             charPoint = -1;
-            for (int CWL = 0; CWL < widthLevel; CWL++) { // Current Width Level
+            for (int CWL = 0; CWL < widthLevel; CWL++) {  // Current Width Level
                 charPoint++;
                 if (line[charPoint] == '-') {
                     continue;
                 }
                 Item temp;
                 if (line[charPoint] == 'C') {
-                    temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "courage-potion", SCALE, 'S');
+                    temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "courage-potion", SCALE, 'S');
                 } else if (line[charPoint] == 'P') {
-                    temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "party-potion", SCALE, 'S');
+                    temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "party-potion", SCALE, 'S');
                 } else if (line[charPoint] == '(') {
-                    if (line[charPoint+1] == 'C') {
+                    if (line[charPoint + 1] == 'C') {
                         std::string addon = "copper";
-                        if (line[charPoint+2] == 'p') {
+                        if (line[charPoint + 2] == 'p') {
                             addon = "silver";
-                        } else if (line[charPoint+2] == 'g') {
+                        } else if (line[charPoint + 2] == 'g') {
                             addon = "gold";
-                        } else if (line[charPoint+2] == 'd') {
+                        } else if (line[charPoint + 2] == 'd') {
                             addon = "death";
-                        } else if (line[charPoint+2] == 'v') {
+                        } else if (line[charPoint + 2] == 'v') {
                             addon = "poison";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "coin-"+addon, SCALE, 'C');
-                    } else if (line[charPoint+1] == 'F') {
+                        temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "coin-" + addon, SCALE, 'C');
+                    } else if (line[charPoint + 1] == 'F') {
                         std::string addon = "banana";
-                        if (line[charPoint+2] == 'r') {
+                        if (line[charPoint + 2] == 'r') {
                             addon = "pear";
-                        } else if (line[charPoint+2] == 'p') {
+                        } else if (line[charPoint + 2] == 'p') {
                             addon = "blueberry";
-                        } else if (line[charPoint+2] == 'c') {
+                        } else if (line[charPoint + 2] == 'c') {
                             addon = "pepper";
-                        } else if (line[charPoint+2] == 'w') {
+                        } else if (line[charPoint + 2] == 'w') {
                             addon = "orange";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "food-"+addon, SCALE, 'F');
-                    } else if (line[charPoint+1] == 'H') {
+                        temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "food-" + addon, SCALE, 'F');
+                    } else if (line[charPoint + 1] == 'H') {
                         std::string addon = "hope";
-                        if (line[charPoint+2] == 'r') {
+                        if (line[charPoint + 2] == 'r') {
                             addon = "resilience";
-                        } else if (line[charPoint+2] == 'p') {
+                        } else if (line[charPoint + 2] == 'p') {
                             addon = "power";
-                        } else if (line[charPoint+2] == 'c') {
+                        } else if (line[charPoint + 2] == 'c') {
                             addon = "courage";
-                        } else if (line[charPoint+2] == 'w') {
+                        } else if (line[charPoint + 2] == 'w') {
                             addon = "wisdom";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Hshard-"+addon, SCALE, 'H');
-                    } else if (line[charPoint+1] == 'K') {
+                        temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "Hshard-" + addon, SCALE, 'H');
+                    } else if (line[charPoint + 1] == 'K') {
                         std::string addon = "hope";
-                        if (line[charPoint+2] == 'r') {
+                        if (line[charPoint + 2] == 'r') {
                             addon = "resilience";
-                        } else if (line[charPoint+2] == 'p') {
+                        } else if (line[charPoint + 2] == 'p') {
                             addon = "power";
-                        } else if (line[charPoint+2] == 'c') {
+                        } else if (line[charPoint + 2] == 'c') {
                             addon = "courage";
-                        } else if (line[charPoint+2] == 'w') {
+                        } else if (line[charPoint + 2] == 'w') {
                             addon = "wisdom";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "key-"+addon, SCALE, 'K');
-                    } else if (line[charPoint+1] == 'P') {
+                        temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "key-" + addon, SCALE, 'K');
+                    } else if (line[charPoint + 1] == 'P') {
                         std::string addon = "wind";
-                        if (line[charPoint+2] == 'p') {
+                        if (line[charPoint + 2] == 'p') {
                             addon = "party";
-                        } else if (line[charPoint+2] == 'f') {
+                        } else if (line[charPoint + 2] == 'f') {
                             addon = "fun";
-                        } else if (line[charPoint+2] == 'h') {
+                        } else if (line[charPoint + 2] == 'h') {
                             addon = "hard";
-                        } else if (line[charPoint+2] == 'e') {
+                        } else if (line[charPoint + 2] == 'e') {
                             addon = "eloise";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Pshard-"+addon, SCALE, 'P');
-                    } else if (line[charPoint+1] == 'S') {
+                        temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "Pshard-" + addon, SCALE, 'P');
+                    } else if (line[charPoint + 1] == 'S') {
                         std::string addon = "dash";
-                        if (line[charPoint+2] == 'p') {
+                        if (line[charPoint + 2] == 'p') {
                             addon = "toast";
-                        } else if (line[charPoint+2] == 'f') {
+                        } else if (line[charPoint + 2] == 'f') {
                             addon = "boost";
-                        } else if (line[charPoint+2] == 'h') {
+                        } else if (line[charPoint + 2] == 'h') {
                             addon = "spear";
-                        } else if (line[charPoint+2] == 'e') {
+                        } else if (line[charPoint + 2] == 'e') {
                             addon = "transmutation";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "power-"+addon, SCALE, 'S');
+                        temp = Item(CWL * (BS - SCALE), CHL * (BS - SCALE), "power-" + addon, SCALE, 'S');
                     }
                     charPoint += 3;
                 }
                 itens.push_back(temp);
             }
-            
+
             CHL++;
         } else if (RenderPhase == 4) {
             int i = 0;
@@ -911,7 +892,7 @@ Map MapLoader::LoadLevel(std::string name) {
 
             if (line[i] == '-') {
                 continue;
-            } 
+            }
 
             for (; line[i] != '-'; i++) {
                 if (isdigit(line[i])) {
@@ -924,7 +905,7 @@ Map MapLoader::LoadLevel(std::string name) {
 
             if (line[i] == '-') {
                 continue;
-            } 
+            }
 
             for (; line[i] != '-'; i++) {
                 if (isdigit(line[i])) {
@@ -935,7 +916,6 @@ Map MapLoader::LoadLevel(std::string name) {
             CWL = std::stoi(text);
             text = "";
 
-
             for (; line[i] != '\0'; i++) {
                 if (line[i] == '\"') {
                     continue;
@@ -944,13 +924,16 @@ Map MapLoader::LoadLevel(std::string name) {
             }
             name = text;
 
-            enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), CHL, CWL));
+            enemies.push_back(
+                Enemy((CWL) * (BS - SCALE), CHL * (BS - SCALE), name, SCALE, BlocksMap, RNG100(rng), CHL, CWL));
             // if (name == "snail") {
-            //     enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), ground));
+            //     enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng),
+            //     ground));
             // } else if (name == "butterfly") {
             //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
             // } else if (name == "crab") {
-            //     enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), ground));
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng),
+            //     ground));
             // } else if (name == "meldrop") {
             //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
             // } else {
@@ -958,8 +941,8 @@ Map MapLoader::LoadLevel(std::string name) {
             // }
         }
     }
-    
-    if (BlocksMap.count(heightLevel-1) == 0) {
+
+    if (BlocksMap.count(heightLevel - 1) == 0) {
         heightLevel -= 1;
     }
 

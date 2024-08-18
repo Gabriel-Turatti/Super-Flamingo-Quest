@@ -35,7 +35,7 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
         rectImage.width = 15;
         rectImage.height = 15;
     } else if (id == 4) {
-        switch(damager[0]) {
+        switch (damager[0]) {
             case 0:
                 image = LoadTexture("assets/images/bird-flying-yellow.png");
                 break;
@@ -51,38 +51,39 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
             case 4:
                 image = LoadTexture("assets/images/bird-flying-orange.png");
                 break;
-
         }
-        
+
         imageSize = 2;
         rectImage.width = 13;
         rectImage.height = 13;
     }
-    
-    
-    rect.width = rectImage.width*SCALE;
-    rect.height = rectImage.height*SCALE;
-    cx = rect.x + rect.width/2;
-    cy = rect.y + rect.height/2;
+
+    rect.width = rectImage.width * SCALE;
+    rect.height = rectImage.height * SCALE;
+    cx = rect.x + rect.width / 2;
+    cy = rect.y + rect.height / 2;
 }
 
-bool Effect::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies) {
+bool Effect::update(std::vector<Block> Blocks,
+                    Flamingo *player,
+                    std::vector<Item> &itens,
+                    std::vector<Enemy> &enemies) {
     bool value;
-    switch(id) {
-        case(1):
+    switch (id) {
+        case (1):
             value = meldropShot(Blocks, player);
             break;
-        case(2):
+        case (2):
             value = transmutation(itens);
             break;
-        case(3):
+        case (3):
             value = spear(enemies, itens);
             break;
-        case(4):
+        case (4):
             value = bird();
             break;
     }
-    
+
     rect.x += vx;
     rect.y += vy;
     cx += vx;
@@ -93,17 +94,17 @@ bool Effect::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Ite
             imageCount = 0;
         }
     }
-    
+
     if (timer <= 0) {
         return true;
     }
-    
+
     timer -= 1;
     tick += 1;
     return value;
 }
 
-bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo* player) {
+bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo *player) {
     if (tick % 5 == 0) {
         int sizeBT = Blocks.size();
         closeBlocks.clear();
@@ -112,9 +113,9 @@ bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo* player) {
                 continue;
             }
             int dx = abs(Blocks[i].cx - cx);
-            if (dx < Blocks[i].rect.width*2) {
+            if (dx < Blocks[i].rect.width * 2) {
                 int dy = abs(Blocks[i].cy - cy);
-                if (dy < Blocks[i].rect.height*2) {
+                if (dy < Blocks[i].rect.height * 2) {
                     closeBlocks.push_back(i);
                 }
             }
@@ -130,7 +131,7 @@ bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo* player) {
 
     if (GenericColision(player->rect, rect)) {
         int q = 0;
-        for(char type : {'H', 'R', 'P', 'C', 'W'}) {
+        for (char type : {'H', 'R', 'P', 'C', 'W'}) {
             if (dmg[q] > 0) {
                 player->Health(-dmg[q], type);
             }
@@ -148,9 +149,9 @@ bool Effect::transmutation(std::vector<Item> &itens) {
         closeItens.clear();
         for (int i = 0; i < sizeI; i++) {
             int dx = abs(itens[i].cx - cx);
-            if (dx < itens[i].rect.width*2) {
+            if (dx < itens[i].rect.width * 2) {
                 int dy = abs(itens[i].cy - cy);
-                if (dy < itens[i].rect.height*2) {
+                if (dy < itens[i].rect.height * 2) {
                     closeItens.push_back(i);
                 }
             }
@@ -208,9 +209,9 @@ bool Effect::spear(std::vector<Enemy> &enemies, std::vector<Item> &itens) {
         closeEnemies.clear();
         for (int i = 0; i < sizeE; i++) {
             int dx = abs(enemies[i].cx - cx);
-            if (dx < enemies[i].rect.width*2) {
+            if (dx < enemies[i].rect.width * 2) {
                 int dy = abs(enemies[i].cy - cy);
-                if (dy < enemies[i].rect.height*2) {
+                if (dy < enemies[i].rect.height * 2) {
                     closeEnemies.push_back(i);
                 }
             }
@@ -245,11 +246,3 @@ bool Effect::bird() {
     }
     return false;
 }
-
-
-
-
-
-
-
-

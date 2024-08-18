@@ -1,34 +1,33 @@
 #ifndef PLAY_H
 #define PLAY_H
 
+#include <dirent.h>
+#include <sys/types.h>
+
+#include "block.hpp"
+#include "BlockHandler.hpp"
+#include "Effect.hpp"
+#include "Enemy.hpp"
+#include "Flamingo.hpp"
+#include "Functions.hpp"
+#include "Item.hpp"
+#include "ItemHandler.hpp"
+#include "Level.hpp"
+#include "MapLoader.hpp"
 #include "raylib.h"
 
-#include <sys/types.h>
-#include <dirent.h>
-
-#include "Block.hpp"
-#include "Effect.hpp"
-#include "Item.hpp"
-#include "Level.hpp"
-#include "Flamingo.hpp"
-#include "Enemy.hpp"
-#include "Functions.hpp"
-#include "MapLoader.hpp"
-#include "ItemHandler.hpp"
-#include "BlockHandler.hpp"
-
 /*
-*   Class dedicated to running the game.
-*/
+ *   Class dedicated to running the game.
+ */
 class Play {
-public:
+   public:
     const int SCALE = 3;
     const bool DEBUG = false;
-    const float BS = 13*SCALE;
+    const float BS = 13 * SCALE;
     const int BWT = 34;
     const int BHT = 25;
-    const float WT = BS*BWT;
-    const float HT = BS*BHT;
+    const float WT = BS * BWT;
+    const float HT = BS * BHT;
     const float FW = 18;
     const float FH = 23;
     int tick = 1;
@@ -41,7 +40,6 @@ public:
     Texture2D iconGame = LoadTexture("assets/images/mainGame.png");
     Sound finish = LoadSound("assets/audio/sfx/finishLine.wav");
 
-
     struct Dust {
         Vector2 pos;
         Vector2 dt;
@@ -52,7 +50,6 @@ public:
 
     Music theme;
 
-    
     std::random_device dev;
     std::mt19937 rng;
     std::uniform_int_distribution<std::mt19937::result_type> RNG100;
@@ -77,7 +74,6 @@ public:
     float cx, cy;
 
     Rectangle cameraCenter, relativeCameraCenter;
-
 
     std::unique_ptr<MapLoader> loader;
 

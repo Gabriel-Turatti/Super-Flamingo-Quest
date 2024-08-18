@@ -1,12 +1,13 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include "raylib.h"
 #include <fstream>
 #include <vector>
 
+#include "raylib.h"
+
 class Item {
-public:
+   public:
     Rectangle rect;
     Rectangle rectImage;
     float cx, cy;

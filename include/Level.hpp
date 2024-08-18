@@ -2,19 +2,20 @@
 #define LEVEL_H
 
 #include <vector>
-#include "Block.hpp"
-#include "Item.hpp"
+
+#include "block.hpp"
 #include "Enemy.hpp"
+#include "Item.hpp"
 
 class Map {
-public:
+   public:
     std::vector<Block> Blocks;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
     int widthLevel;
     int heightLevel;
     std::string name;
-    char* levelTheme;
+    char *levelTheme;
     int time;
     std::vector<std::string> entrances;
     std::vector<std::string> exits;

@@ -1,25 +1,25 @@
 #ifndef MAPLOADER_H
 #define MAPLOADER_H
 
-#include "raylib.h"
-#include "predefinitions.hpp"
-#include <string>
-#include <vector>
-#include <fstream>
-#include <random>
 #include <string.h>
 
-#include "Block.hpp"
+#include <fstream>
+#include <random>
+#include <string>
+#include <vector>
+
+#include "block.hpp"
 #include "Effect.hpp"
+#include "Enemy.hpp"
+#include "Flamingo.hpp"
+#include "Functions.hpp"
 #include "Item.hpp"
 #include "Level.hpp"
-#include "Flamingo.hpp"
-#include "Enemy.hpp"
-#include "Functions.hpp"
-
+#include "predefinitions.hpp"
+#include "raylib.h"
 
 class MapLoader {
-public:
+   public:
     struct Dust {
         Vector2 pos;
         Vector2 dt;
@@ -40,7 +40,7 @@ public:
     MapLoader();
 
     void SaveLevel(Map level);
-    void SaveFlamingo(Flamingo* player);
+    void SaveFlamingo(Flamingo *player);
     std::unique_ptr<Flamingo> LoadFlamingo();
     Map LoadLevel(std::string name);
 };
