@@ -964,7 +964,6 @@ Map MapLoader::LoadLevel(std::string name) {
     }
 
     level.close();
-
     Map Level;
     Level.Blocks = Blocks;
     Level.itens = itens;

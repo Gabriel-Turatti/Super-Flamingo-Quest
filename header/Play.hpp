@@ -15,6 +15,7 @@
 #include "Functions.hpp"
 #include "MapLoader.hpp"
 #include "ItemHandler.hpp"
+#include "BlockHandler.hpp"
 
 /*
 *   Class dedicated to running the game.
@@ -30,7 +31,6 @@ public:
     const float HT = BS*BHT;
     const float FW = 18;
     const float FH = 23;
-    int tickBlockUpdate = 5;
     int tick = 1;
     int seconds = 0;
     std::unique_ptr<Flamingo> player;

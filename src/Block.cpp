@@ -7,40 +7,40 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     rectImage.width = w/SCALE;
     rectImage.height = h/SCALE;
     if (namer == "grass") {
-        image = LoadTexture("images/block_grass.png");
+        id = 1;
         friction = 2;
-    } else if (namer == "dirt2") {
-        image = LoadTexture("images/block_dirt2x2.png");
-        friction = 2.1;
     } else if (namer == "dirt") {
-        image = LoadTexture("images/block_dirt.png");
+        id = 2;
+        friction = 2.1;
+    } else if (namer == "dirt2") {
+        id = 3;
         friction = 2.1;
     } else if (namer == "brick") {
-        image = LoadTexture("images/block_brick.png");
+        id = 4;
         friction = 1.8;
     } else if (namer == "gate-hope") {
-        image = LoadTexture("images/block_gate_hope_closed.png");
+        id = 5;
         friction = 1.5;
     } else if (namer == "gate-resilience") {
-        image = LoadTexture("images/block_gate_resilience_closed.png");
+        id = 6;
         friction = 1.5;
     } else if (namer == "gate-power") {
-        image = LoadTexture("images/block_gate_power_closed.png");
+        id = 7;
         friction = 1.5;
     } else if (namer == "gate-courage") {
-        image = LoadTexture("images/block_gate_courage_closed.png");
+        id = 8;
         friction = 1.5;
     } else if (namer == "gate-wisdom") {
-        image = LoadTexture("images/block_gate_wisdom_closed.png");
+        id = 9;
         friction = 1.5;
     } else if (namer == "platform") {
-        image = LoadTexture("images/platform.png");
+        id = 30;
         friction = 2;
     } else if (namer == "altar") {
-        image = LoadTexture("images/block_altar.png");
+        id = 15;
         friction = 8.5;
     } else if (namer == "spike") {
-        image = LoadTexture("images/block_spike.png");
+        id = 16;
         friction = 0.9;
         rectImage.width = 13;
         rectImage.height = 8;
@@ -54,55 +54,53 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
             rect.x += (3-rectImage.height)*SCALE;
         }
     } else if (namer == "nextLevel") {
-        image = LoadTexture("images/block_nextLevel.png");
+        id = 17;
         friction = 1;
     } else if (namer == "startLevel") {
-        image = LoadTexture("images/block_StartLevel.png");
+        id = 18;
         friction = 1;
-    } else if (namer == "rotator") {
-        image = LoadTexture("images/block_rotator.png");
-        friction = 2;
     } else if (namer == "cage") {
         int type = (x+y) % 5;
         switch (type) {
             case 0:
-                image = LoadTexture("images/block_bird_yellow.png");
+                id = 19;
                 break;
             case 1:
-                image = LoadTexture("images/block_bird_green.png");
+                id = 20;
                 break;
             case 2:
-                image = LoadTexture("images/block_bird_blue.png");
+                id = 21;
                 break;
             case 3:
-                image = LoadTexture("images/block_bird_red.png");
+                id = 22;
                 break;
             case 4:
-                image = LoadTexture("images/block_bird_orange.png");
+                id = 23;
                 break;
         }
         friction = 2;
     } else if (namer == "honey") {
-        image = LoadTexture("images/block_honey.png");
+        id = 24;
         friction = 5.5;
     } else if (namer == "vines") {
-        image = LoadTexture("images/block_vines.png");
+        id = 25;
         friction = 2.5;
     } else if (namer == "ivy") {
-        image = LoadTexture("images/block_ivy.png");
+        id = 26;
         friction = 3;
     } else if (namer == "switch_green") {
-        image = LoadTexture("images/block_green_control.png");
+        id = 27;
         friction = 1.8;
     } else if (namer == "green") {
-        image = LoadTexture("images/block_green.png");
+        id = 28;
         friction = 2;
     } else if (namer == "energy") {
-        image = LoadTexture("images/block_energy.png");
+        id = 29;
         friction = 3;
         parameter = 450;
     }
     // If you're adding a new block, make sure to also add it to:
+    // BlockHandler
     // editLevel
     // SaveFile
     // LoadFile

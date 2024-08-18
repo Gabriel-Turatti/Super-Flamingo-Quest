@@ -2,7 +2,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 ## Correção de Bugs
     ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (Happened with: butterfly and bee; Did not happen with: Meldrop)
-    ( ) [B] Not able to walk backwards, when turning around not possible
+    ( ) [BC] Sometimes if you save a level file, it will crash (the file is still saved)
 
 ## Alterações gerais
     ( ) [+] Sound Effects:
@@ -25,6 +25,9 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Transmute birds
     ( ) [+] Break cages with spear
 
+    ( ) [+] Add challenge modes: Invisible walls, Upside down, arcade
+    ( ) [+] Add alternative modes: arcade
+
 ## Refatoração
     ## Quality of code
     ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
@@ -34,6 +37,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [R] Unite Ground and Background save/load file
     ( ) [R] Create temporary textures of hud with all details that can be printed without calculations, and updated when change happens
     ## Quality of life
+    ( ) [R] Better precision of slow movement
     ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
     ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
  
@@ -42,16 +46,21 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 ( ) 0.9 - Planes of Paris Update
+    (X) [B**] I'VE DEFEATED THE STRONGEST BUG OF THE GAME, BLOCK-CLIPPING
     (X) [R] Item Handling Class
-    ( ) [R] Block Handling Class
+    (X) [R] Block Handling Class
+    (X) [B] Jumping crouch
+    ( ) [+] Save and Load Flamingo
+    ( ) [+] Effects for regenerating Hope
+    ( ) [+] Effects for regenerating Wisdom
+    ( ) [+] Song for playing the level's title
+    ( ) [B] Altar not depleting
     (X) [+] Moeda de Ouro Envenenada -> Dano Hope
     (X) [+] Toast spell
     (X) [+] Mana regenerating differently
     (X) [+] Adding More Blocks: Vines, Poison Ivy, Honey block, Green Switch, Green Block
     (X) [B] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     (X) [+] Moedas e Itens terem animação de brilho e giro
-    ( ) [B] The most infamous bug, BLOCK CLIPPING -> Refactor all colision maybe?
-    ( ) [ ] This bug is simply impossible to solve, i'm crying
     (X) [B] The Misterious Forbidden last Item
     (X) [B] Spikes teleport from left to right
     (X) [B] Black Lines from sprites
@@ -64,9 +73,6 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [+] coletar itens dropar particulas
     (X) [+] Different levels of jumping
     (X) [+] Bird's "thank you's"
-    ( ) [+] Save and Load Flamingo
-    ( ) [+] Effects for regenerating Hope
-    ( ) [+] Effects for regenerating Wisdom
     (X) [BC] If a Crab can't spawn, it crashes the game, do a fail-safe
     (X) [+] Planes of Paris I
     (X) [+] Planes of Paris II
@@ -76,12 +82,12 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [+] Freeing Birds mechanic
     (X) [R] Gate changing image
     (X) [R] Centralizing block draw
+    (X) [B] Not able to walk backwards, when turning around not possible
     (X) [R] Secrets reveal completely
     (X) [B] Platform not platforming
     (X) [B] Spike not glueing properly
     (X) [B] Bees not respecting boundaries
     (X) [B] Meldrop line glitching
-    ( ) [+] Song for playing the level's title
 
 
 
@@ -92,11 +98,19 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 ( ) ??? - Search for Hope Mountain Update
-    ( ) - Grassy Walks I
-    ( ) - Grassy Walks II
-    ( ) - Bee's Valley
+    (X) - Grassy Walks I
+    (X) - Grassy Walks II
+    (X) - Bee's Valley
+    ( ) - Fertile Grounds I
+    ( ) - Fertile Grounds II
+    ( ) - Tulip Garden I
     ( ) - Secret Garden
-    ( ) - Add Green button and green blocks (toggle)
+    ( ) - Tulip Garden II
+    ( ) - Watery Falls I
+    ( ) - Watery Falls II
+    ( ) - Mountain Winds I
+    ( ) - Islands Paradise
+    ( ) - Mountain Winds II
 
 ( ) ??? - Save the world Update
     ( ) - Add save files for players, and for completed levels

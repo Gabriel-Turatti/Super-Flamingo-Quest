@@ -84,6 +84,12 @@ void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std:
             invincibility[type] -= 1;
         }
     }
+    
+    // if (abs(player->vy) > 8 or abs(player->vx) > 8) {
+    //     tickBlockUpdate = 1;
+    // } else {
+    //     tickBlockUpdate = 5;
+    // }
     if (tick % 300 == 0) {
         if (RH < MRH) {
             RH += 1;
@@ -98,15 +104,19 @@ void Flamingo::update(std::vector<Block> &Blocks, std::vector<Item> &itens, std:
 void Flamingo::CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies) {
     if (tick % tickBlockUpdate == 0) {
         CBs.clear();
+        int lookSize = 2;
+        if (abs(vy) > 6*SCALE or abs(vx) > 6*SCALE) {
+            lookSize = 4;
+        }
         int sizeB = Blocks.size();
         for (int i = 0; i < sizeB; i++) {
             if (Blocks[i].background) {
                 continue;
             }
             int dx = abs(Blocks[i].cx - cx);
-            if (dx < rect.width*3) {
+            if (dx < rect.width*lookSize) {
                 int dy = abs(Blocks[i].cy - cy);
-                if (dy < rect.height*3) {
+                if (dy < rect.height*lookSize) {
                     CBs.push_back(i);
                 }
             }
@@ -274,7 +284,7 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
     crouch = false;
 
 
-    if (W) {
+    if (W and !toggleCrouch) {
         jumpQueue = 5;
         strength += 1;
         if (strength > 5) {
@@ -346,7 +356,6 @@ void Flamingo::keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects
             jumpQueue = 0;
         }
     }
-
 }
 
 void Flamingo::gravity() {
@@ -419,15 +428,13 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
     }
     Dspace = colision(HBox, temp.rect);
     if (vert) {
-        rect.y += Dspace.y;
+        if (!(Dspace.y > 30 and abs(vy) < 18)) { // Gambiarra
+            rect.y += Dspace.y;
+        }
     } else {
-        if (Dspace.x > 0) {
-            Dspace.x += SCALE;
+        if (!(Dspace.x > 30 and abs(vx) < 18)) {
+            rect.x += Dspace.x;
         }
-        if (Dspace.x < 0) {
-            Dspace.x -= SCALE;
-        }
-        rect.x += Dspace.x;
     }
     if ((!vert and Dspace.x != 0) or (vert and Dspace.y != 0)) {
         int doReturn = 2;
@@ -516,7 +523,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                     doReturn = 3;
                     CH += 1;
                     temp.friction -= 0.5;
-                    if (temp.friction <= 1.6f) {
+                    if (temp.friction <= 1.6f) { // to-do
                         temp.image = LoadTexture("images/block_altar0at2.png");
                     } else if (temp.friction <= 5.0f) {
                         temp.image = LoadTexture("images/block_altar1at2.png");
@@ -524,19 +531,19 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                 }
             }
 
-            Hitbox1.y += Dspace.y;
-            Hitbox2.y += Dspace.y;
-            Hitbox3.y += Dspace.y;
-            HitboxA.y += Dspace.y;
             vy = -vy/temp.friction;
+            if (abs(vy) < 1) {
+                vy = 0;
+            }
         } else {
-            Hitbox1.x += Dspace.x;
-            Hitbox2.x += Dspace.x;
-            Hitbox3.x += Dspace.x;
-            HitboxA.x += Dspace.x;
             vx = -vx/temp.friction;
+            if (abs(vx) < 1) {
+                vx = 0;
+            }
             naturalSpeed = 0;
         }
+        
+        updateHitbox();
         return doReturn;
     }
     return 0;
@@ -938,14 +945,14 @@ Vector2 Flamingo::colision(Rectangle hitbox, Rectangle B) {
         (hitbox.y) < (B.y + B.height) and
         (hitbox.height + hitbox.y) > (B.y)
     ) {
-        if (hitbox.x < B.x) {
+        if (vx > 0) {
             dx = B.x - (hitbox.x+hitbox.width);
-        } else if (hitbox.x > B.x) {
+        } else if(vx < 0) {
             dx = (B.width + B.x) - hitbox.x;
         }
-        if (hitbox.y < B.y) {
+        if (vy > 0) {
             dy = B.y - (hitbox.y+hitbox.height);
-        } else if (hitbox.y > B.y) {
+        } else if (vy < 0) {
             dy = (B.height + B.y) - hitbox.y;
         }
     }

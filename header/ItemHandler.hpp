@@ -1,3 +1,6 @@
+#ifndef ITEMHANDLER_H
+#define ITEMHANDLER_H
+
 #include "raylib.h"
 #include "item.hpp"
 #include <vector>
@@ -15,3 +18,5 @@ public:
     void DrawItemHud(const std::vector<Item> &itensOption, int SCALE);
 
 };
+
+#endif

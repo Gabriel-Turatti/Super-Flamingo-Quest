@@ -279,6 +279,7 @@ void Play::EditLevel(std::string name) {
 
     int Menu = 0;
     std::vector<Block> BlockOptions;
+
     BlockOptions.push_back(Block(0, 0, BS, BS, "dirt", SCALE));
     BlockOptions.push_back(Block(0, 0, BS*2-SCALE, BS*2-SCALE, "dirt2", SCALE));
     BlockOptions.push_back(Block(0, 0, BS, BS, "grass", SCALE));
@@ -342,6 +343,7 @@ void Play::EditLevel(std::string name) {
     EnemyOptions.push_back(Enemy(0, 0, "meldrop", SCALE, templates, 0));
 
     ItemHandler itensLevelTaker(itens), itensOptionsTaker(ItemOptions);
+    BlockHandler blocksLevelTaker(Blocks, this), blocksOptionsTaker(BlockOptions, this);
 
 
     float Px = WT*2/3 + 30;
@@ -505,6 +507,7 @@ void Play::EditLevel(std::string name) {
     // int Debug3 = 0;
     // int Debug4 = 0;
 
+
     while (!WindowShouldClose()) {
         UpdateMusicStream(LevelTheme);
 
@@ -612,10 +615,14 @@ void Play::EditLevel(std::string name) {
                             temp = {blockOption.rect.x, blockOption.rect.y, blockOption.rectImage.width*SCALE, blockOption.rectImage.height*SCALE};
                             if (GenericColision(mouseRect, temp)) {
                                 mouseBlock = Block(mouseRect.x, mouseRect.y, blockOption.rect.width, blockOption.rect.height, blockOption.name, SCALE, 0, background, secret);
+                                blocksLevelTaker.addBlock(mouseBlock);
+                                break;
                             }
                         }
                         if (GenericColision(mouseRect, blockOption.rect)) {
                             mouseBlock = Block(mouseRect.x, mouseRect.y, blockOption.rect.width, blockOption.rect.height, blockOption.name, SCALE, 0, background, secret);
+                            blocksLevelTaker.addBlock(mouseBlock);
+                            break;
                         }
                     }
                 } else if (Menu == 2) {
@@ -848,9 +855,10 @@ void Play::EditLevel(std::string name) {
         }
 
         
-
+        // Desenhando Blocos Background
+        blocksLevelTaker.DrawBlocks(Blocks, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE, true, false);
         
-        // Desenhando blocos Background
+        // Colisão Blocos Background
         for (int i = 0; i < sizeB; i++) {
             if (!Blocks[i].background) {
                 continue;
@@ -873,23 +881,6 @@ void Play::EditLevel(std::string name) {
                         placeBlock.rect.y -= 2*SCALE;
                     }
                 }
-            }
-
-
-            relativePos.x = WT/2 +Blocks[i].rect.x -cx;
-            relativePos.y = HT/2 +Blocks[i].rect.y -cy;
-            if (Blocks[i].direction != 0) {
-                if (Blocks[i].direction == 1) {
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 2) {
-                    relativePos.x += Blocks[i].rect.width;
-                    relativePos.y += Blocks[i].rect.height;
-                } else if (Blocks[i].direction == 3) {
-                    relativePos.x += Blocks[i].rect.width;
-                }
-                DrawTextureEx(Blocks[i].image, relativePos, Blocks[i].direction*-90, SCALE, GRAY);
-            } else {
-                DrawTextureEx(Blocks[i].image, relativePos, 0, SCALE, GRAY);
             }
         }
 
@@ -932,7 +923,7 @@ void Play::EditLevel(std::string name) {
             DrawTexturePro(enemies[i].images[0], source, dest, {0, 0}, 0, WHITE);
         }
 
-        // Desenhando blocos Ground
+        // Colisão Blocos Ground
         for (int i = 0; i < sizeB; i++) {
             if (Blocks[i].background) {
                 continue;
@@ -992,58 +983,9 @@ void Play::EditLevel(std::string name) {
                     }
                 }
             }
-            
-            Block temp = Blocks[i];
-
-            relativePos.x = WT/2 +temp.rect.x -cx;
-            relativePos.y = HT/2 +temp.rect.y -cy;
-
-            if (temp.direction != 0) {
-                if (temp.direction == 1) {
-                    relativePos.y += temp.rect.height;
-                } else if (temp.direction == 2) {
-                    relativePos.x += temp.rect.width;
-                    relativePos.y += temp.rect.height;
-                } else if (temp.direction == 3) {
-                    relativePos.x += temp.rect.width;
-                }
-            }
-
-            Color transparency;
-            if (temp.background) {
-                transparency = GRAY;
-            } else {
-                transparency = WHITE;
-            }
-
-            if (temp.name == "cage") {
-                Rectangle source, dest;
-                if (tick % 20 < 10) {
-                    source.x = 12;
-                } else {
-                    source.x = 0;
-                }
-                source.y = 0;
-                source.width = temp.rectImage.width;
-                source.height = temp.rectImage.height;
-
-                dest.x = relativePos.x;
-                dest.y = relativePos.y;
-                dest.width = temp.rect.width;
-                dest.height = temp.rect.height;
-
-                DrawTexturePro(temp.image, source, dest, {0, 0}, temp.direction*-90, transparency);
-            } else {
-                DrawTextureEx(temp.image, relativePos, temp.direction*-90, SCALE, transparency);
-            }
-
-            
-            if (temp.secret) {
-                DrawText("S", relativePos.x, relativePos.y, BS, WHITE);
-            }
         }
 
-        // Desenhando itens
+        // Colisão Itens
         for (int i = 0; i < sizeI; i++) {
             if (Menu == 2) {
                 if (GenericColision(itens[i].rect, placeItem.rect)) {
@@ -1065,7 +1007,10 @@ void Play::EditLevel(std::string name) {
                 }
             }
         }
+        // Desenhando itens
         itensLevelTaker.DrawItens(itens, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE);
+        // Desenhando Ground
+        blocksLevelTaker.DrawBlocks(Blocks, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE, false, true);
 
 
 
@@ -1151,28 +1096,7 @@ void Play::EditLevel(std::string name) {
 
         // Side-Bar Object Options
         if (Menu == 1) {
-            for (Block blockOption : BlockOptions) {
-                if (blockOption.name == "cage") {
-                    Rectangle source, dest;
-                    if (tick % 20 < 10) {
-                        source.x = 12;
-                    } else {
-                        source.x = 0;
-                    }
-                    source.y = 0;
-                    source.width = blockOption.rectImage.width;
-                    source.height = blockOption.rectImage.height;
-
-                    dest.x = blockOption.rect.x;
-                    dest.y = blockOption.rect.y;
-                    dest.width = blockOption.rect.width;
-                    dest.height = blockOption.rect.height;
-
-                    DrawTexturePro(blockOption.image, source, dest, {0, 0}, 0, WHITE);
-                } else {
-                    DrawTextureEx(blockOption.image, {blockOption.rect.x, blockOption.rect.y}, 0, SCALE, WHITE);
-                }
-            }
+            blocksOptionsTaker.DrawBlockHud(BlockOptions, SCALE);
         } else if (Menu == 2) {
             itensOptionsTaker.DrawItemHud(ItemOptions, SCALE);
         } else if (Menu == 3) {
@@ -1408,25 +1332,13 @@ void Play::EditLevel(std::string name) {
 
         // Object in Mouse
         if (Menu == 1 and mouseBlock.SCALE != 0) {
-            relativePos.x = mouseBlock.rect.x;
-            relativePos.y = mouseBlock.rect.y;
-            if (mouseBlock.direction == 1) {
-                // relativePos.y += mouseBlock.rect.height;
-            } else if (mouseBlock.direction == 2) {
-                relativePos.x += mouseBlock.rect.width;
-                relativePos.y += mouseBlock.rect.height;
-            } else if (mouseBlock.direction == 3) {
-                relativePos.x += mouseBlock.rect.width;
-            }
             if (background) {
-                DrawTextureEx(mouseBlock.image, {relativePos.x, relativePos.y}, mouseBlock.direction*-90, SCALE, GRAY);
+                DrawTextureEx(blocksLevelTaker.images[mouseBlock.id], {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, GRAY);
             } else {
-                DrawTextureEx(mouseBlock.image, {relativePos.x, relativePos.y}, mouseBlock.direction*-90, SCALE, WHITE);
+                DrawTextureEx(blocksLevelTaker.images[mouseBlock.id], {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, WHITE);
             }
             if (secret) {
-                int tcx = mouseBlock.rect.x + mouseBlock.rect.width/2;
-                int tcy = mouseBlock.rect.y + mouseBlock.rect.height/2;
-                DrawText("S", tcx, tcy, BS, WHITE);
+                DrawText("S", mouseBlock.rect.x, mouseBlock.rect.y, BS, WHITE);
             }
         } else if (Menu == 2 and mouseItem.SCALE != 0) {
             DrawTextureEx(itensLevelTaker.images[mouseItem.id], {mouseItem.rect.x, mouseItem.rect.y}, 0, SCALE, WHITE);
@@ -1526,6 +1438,7 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     enemies = Level.enemies;
     seconds = Level.time;
     
+    
     int trueEntrance = 0;
     if (entrance != "") {
         for (std::string option : Level.entrances) {
@@ -1580,6 +1493,7 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
 
 int Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
+    // SetTargetFPS(2);
     player->vx = 0;
     player->vy = 0;
     // Effect(player->cx, player->cy, 150, 5, {7, 0, 0, 0, 0}, SCALE);
@@ -1611,6 +1525,7 @@ int Play::mainLoop(Music LevelTheme) {
     Texture2D birdO = LoadTexture("images/bird-flying-orange.png");
 
     ItemHandler itemTaker = ItemHandler(itens);
+    BlockHandler blockTaker = BlockHandler(Blocks, this);
 
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
@@ -1636,11 +1551,6 @@ int Play::mainLoop(Music LevelTheme) {
                 DustBringer(player->cx, posY, {0, 255, 255, 127}, RNG100(rng), false);
             }
 
-            if (abs(player->vy) > 8 or abs(player->vx) > 8) {
-                tickBlockUpdate = 1;
-            } else {
-                tickBlockUpdate = 5;
-            }
 
             // Particles
             for (int i = 0; i < sizeD; i++) {
@@ -1771,7 +1681,7 @@ int Play::mainLoop(Music LevelTheme) {
 
 
         // Desenhando blocos Background
-        DesenharBlocos(true, false);
+        blockTaker.DrawBlocks(Blocks, cameraCenter, relativeCameraCenter, SCALE, true, false);
 
 
 
@@ -1854,7 +1764,7 @@ int Play::mainLoop(Music LevelTheme) {
         itemTaker.DrawItens(itens, cameraCenter, relativeCameraCenter, SCALE);
 
         // Desenhando blocos Ground
-        DesenharBlocos(false, false);
+        blockTaker.DrawBlocks(Blocks, cameraCenter, relativeCameraCenter, SCALE, false, false);
 
         // Desenhando Efeitos
         for (int i = 0; i < sizeS; i++) {
@@ -2079,7 +1989,6 @@ int Play::mainLoop(Music LevelTheme) {
 
 
 
-
         // DrawRectangle(cameraCenter.x, cameraCenter.y, relativeCameraCenter.width, relativeCameraCenter.height, {255, 255, 255, 127});
 
 
@@ -2253,6 +2162,7 @@ int Play::mainLoop(Music LevelTheme) {
         tick++;
     }
     fadeout = 0;
+    // SetTargetFPS(30);
 
     UnloadTexture(birdY);
     UnloadTexture(birdG);
