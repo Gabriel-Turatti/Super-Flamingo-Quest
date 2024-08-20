@@ -24,6 +24,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Not grab potion if full
     ( ) [+] Transmute birds
     ( ) [+] Break cages with spear
+    ( ) [+] Music not playing constantly
 
     ( ) [+] Add challenge modes: Invisible walls, Upside down, arcade
     ( ) [+] Add alternative modes: arcade
@@ -111,6 +112,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) - Mountain Winds I
     ( ) - Islands Paradise
     ( ) - Mountain Winds II
+    ( ) - Alternate ending if you reach the peak late.
 
 ( ) ??? - Save the world Update
     ( ) - Add save files for players, and for completed levels
@@ -129,6 +131,11 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) Throw Away stuff
     ( ) Use itens
     ( ) Hourglass
+    ( ) Pause Menu:
+        ( ) Continue
+        ( ) Restart Level (takes damage)
+        ( ) Options -> Music and Sound Regulation, control Binding?
+        ( ) Exit to Map (takes damage)
 
 ( ) ??? - Quad-tree Update
 
