@@ -1,4 +1,4 @@
-#include "../header/Flamingo.hpp"
+#include "../include/Flamingo.hpp"
 
 
 
@@ -449,35 +449,35 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
             temp.background = true;
             PlaySound(sfxDoor);
             UnloadTexture(temp.image);
-            temp.image = LoadTexture("images/block_gate_hope_open.png");
+            temp.image = LoadTexture("assets/images/block_gate_hope_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-resilience" and keyResilience > 0) {
             keyResilience -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
             UnloadTexture(temp.image);
-            temp.image = LoadTexture("images/block_gate_resilience_open.png");
+            temp.image = LoadTexture("assets/images/block_gate_resilience_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-power" and keyPower > 0) {
             keyPower -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
             UnloadTexture(temp.image);
-            temp.image = LoadTexture("images/block_gate_power_open.png");
+            temp.image = LoadTexture("assets/images/block_gate_power_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-courage" and keyCourage > 0) {
             keyCourage -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
             UnloadTexture(temp.image);
-            temp.image = LoadTexture("images/block_gate_courage_open.png");
+            temp.image = LoadTexture("assets/images/block_gate_courage_open.png");
             doReturn = 3;
         } else if (temp.name == "gate-wisdom" and keyWisdom > 0) {
             keyWisdom -= 1;
             temp.background = true;
             PlaySound(sfxDoor);
             UnloadTexture(temp.image);
-            temp.image = LoadTexture("images/block_gate_wisdom_open.png");
+            temp.image = LoadTexture("assets/images/block_gate_wisdom_open.png");
             doReturn = 3;
         } else if (temp.name == "spike") {
             if (invincibility['R'] <= 0) {
@@ -524,9 +524,9 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                     CH += 1;
                     temp.friction -= 0.5;
                     if (temp.friction <= 1.6f) { // to-do
-                        temp.image = LoadTexture("images/block_altar0at2.png");
+                        temp.image = LoadTexture("assets/images/block_altar0at2.png");
                     } else if (temp.friction <= 5.0f) {
-                        temp.image = LoadTexture("images/block_altar1at2.png");
+                        temp.image = LoadTexture("assets/images/block_altar1at2.png");
                     }
                 }
             }

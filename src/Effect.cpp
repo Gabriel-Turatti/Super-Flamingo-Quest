@@ -1,4 +1,4 @@
-#include "../header/Effect.hpp"
+#include "../include/Effect.hpp"
 
 Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identificator, int damager[5], int SCALER) {
     tick = 1;
@@ -17,39 +17,39 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
     dmg[4] = damager[4];
 
     if (id == 1) {
-        Sound sfxtemp = LoadSound("sfx/meldrop-shot.wav");
+        Sound sfxtemp = LoadSound("assets/audio/sfx/meldrop-shot.wav");
         PlaySound(sfxtemp);
         UnloadSound(sfxtemp);
-        image = LoadTexture("images/effect-meldrop-shot.png");
+        image = LoadTexture("assets/images/effect-meldrop-shot.png");
         imageSize = 2;
         rectImage.width = 6;
         rectImage.height = 6;
     } else if (id == 2) {
-        image = LoadTexture("images/effect-transmutation.png");
+        image = LoadTexture("assets/images/effect-transmutation.png");
         imageSize = 1;
         rectImage.width = 15;
         rectImage.height = 15;
     } else if (id == 3) {
-        image = LoadTexture("images/effect-spear.png");
+        image = LoadTexture("assets/images/effect-spear.png");
         imageSize = 1;
         rectImage.width = 15;
         rectImage.height = 15;
     } else if (id == 4) {
         switch(damager[0]) {
             case 0:
-                image = LoadTexture("images/bird-flying-yellow.png");
+                image = LoadTexture("assets/images/bird-flying-yellow.png");
                 break;
             case 1:
-                image = LoadTexture("images/bird-flying-green.png");
+                image = LoadTexture("assets/images/bird-flying-green.png");
                 break;
             case 2:
-                image = LoadTexture("images/bird-flying-blue.png");
+                image = LoadTexture("assets/images/bird-flying-blue.png");
                 break;
             case 3:
-                image = LoadTexture("images/bird-flying-red.png");
+                image = LoadTexture("assets/images/bird-flying-red.png");
                 break;
             case 4:
-                image = LoadTexture("images/bird-flying-orange.png");
+                image = LoadTexture("assets/images/bird-flying-orange.png");
                 break;
 
         }

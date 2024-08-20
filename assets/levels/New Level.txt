@@ -1,6 +1,6 @@
 3
 3
-songs/MainTheme.wav
+assets/audio/songs/MainTheme.wav
 0
 P1
 ---

@@ -1,4 +1,4 @@
-#include "../header/MapLoader.hpp"
+#include "../include/MapLoader.hpp"
 
 
 
@@ -191,7 +191,7 @@ void MapLoader::SaveLevel(Map level) {
 
 
 
-    std::ofstream LevelSave("levels/"+level.name);
+    std::ofstream LevelSave("assets/levels/"+level.name);
     if (LevelSave.is_open()) {
         std::string emptyLine(level.widthLevel, '-');
 
@@ -611,7 +611,7 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
 }
 
 Map MapLoader::LoadLevel(std::string name) {
-    std::ifstream level("levels/"+name);
+    std::ifstream level("assets/levels/"+name);
     if (!level) {
         level.close();
         Map Error;

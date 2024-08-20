@@ -1,4 +1,4 @@
-#include "../header/Functions.hpp"
+#include "../include/Functions.hpp"
 
 
 bool GenericColision(Rectangle A, Rectangle B) {

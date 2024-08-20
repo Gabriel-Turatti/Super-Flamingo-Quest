@@ -1,4 +1,4 @@
-#include "../header/ItemHandler.hpp"
+#include "../include/ItemHandler.hpp"
 
 
 ItemHandler::ItemHandler(std::vector<Item> &itensLevel) {
@@ -21,100 +21,100 @@ ItemHandler::~ItemHandler() {
 void ItemHandler::addItem(Item temp) {
     switch (temp.id) {
         case 1:
-            images[temp.id] = LoadTexture("images/coin-copper2.png");
+            images[temp.id] = LoadTexture("assets/images/coin-copper2.png");
             break;
         case 2:
-            images[temp.id] = LoadTexture("images/coin-silver2.png");
+            images[temp.id] = LoadTexture("assets/images/coin-silver2.png");
             break;
         case 3:
-            images[temp.id] = LoadTexture("images/coin-gold2.png");
+            images[temp.id] = LoadTexture("assets/images/coin-gold2.png");
             break;
         case 4:
-            images[temp.id] = LoadTexture("images/coin-death2.png");
+            images[temp.id] = LoadTexture("assets/images/coin-death2.png");
             break;
         case 5:
-            images[temp.id] = LoadTexture("images/food-banana.png");
+            images[temp.id] = LoadTexture("assets/images/food-banana.png");
             break;
         case 6:
-            images[temp.id] = LoadTexture("images/food-pear.png");
+            images[temp.id] = LoadTexture("assets/images/food-pear.png");
             break;
         case 7:
-            images[temp.id] = LoadTexture("images/food-blueberry.png");
+            images[temp.id] = LoadTexture("assets/images/food-blueberry.png");
             break;
         case 8:
-            images[temp.id] = LoadTexture("images/food-pepper.png");
+            images[temp.id] = LoadTexture("assets/images/food-pepper.png");
             break;
         case 9:
-            images[temp.id] = LoadTexture("images/food-orange.png");
+            images[temp.id] = LoadTexture("assets/images/food-orange.png");
             break;
         case 10:
-            images[temp.id] = LoadTexture("images/Hshard-hope.png");
+            images[temp.id] = LoadTexture("assets/images/Hshard-hope.png");
             break;
         case 11:
-            images[temp.id] = LoadTexture("images/Hshard-resilience.png");
+            images[temp.id] = LoadTexture("assets/images/Hshard-resilience.png");
             break;
         case 12:
-            images[temp.id] = LoadTexture("images/Hshard-power.png");
+            images[temp.id] = LoadTexture("assets/images/Hshard-power.png");
             break;
         case 13:
-            images[temp.id] = LoadTexture("images/Hshard-courage.png");
+            images[temp.id] = LoadTexture("assets/images/Hshard-courage.png");
             break;
         case 14:
-            images[temp.id] = LoadTexture("images/Hshard-wisdom.png");
+            images[temp.id] = LoadTexture("assets/images/Hshard-wisdom.png");
             break;
         case 15:
-            images[temp.id] = LoadTexture("images/Pshard-wind.png");
+            images[temp.id] = LoadTexture("assets/images/Pshard-wind.png");
             break;
         case 16:
-            images[temp.id] = LoadTexture("images/Pshard-party.png");
+            images[temp.id] = LoadTexture("assets/images/Pshard-party.png");
             break;
         case 17:
-            images[temp.id] = LoadTexture("images/Pshard-fun.png");
+            images[temp.id] = LoadTexture("assets/images/Pshard-fun.png");
             break;
         case 18:
-            images[temp.id] = LoadTexture("images/Pshard-hard.png");
+            images[temp.id] = LoadTexture("assets/images/Pshard-hard.png");
             break;
         case 19:
-            images[temp.id] = LoadTexture("images/Pshard-eloise.png");
+            images[temp.id] = LoadTexture("assets/images/Pshard-eloise.png");
             break;
         case 20:
-            images[temp.id] = LoadTexture("images/key-hope.png");
+            images[temp.id] = LoadTexture("assets/images/key-hope.png");
             break;
         case 21:
-            images[temp.id] = LoadTexture("images/key-resilience.png");
+            images[temp.id] = LoadTexture("assets/images/key-resilience.png");
             break;
         case 22:
-            images[temp.id] = LoadTexture("images/key-power.png");
+            images[temp.id] = LoadTexture("assets/images/key-power.png");
             break;
         case 23:
-            images[temp.id] = LoadTexture("images/key-courage.png");
+            images[temp.id] = LoadTexture("assets/images/key-courage.png");
             break;
         case 24:
-            images[temp.id] = LoadTexture("images/key-wisdom.png");
+            images[temp.id] = LoadTexture("assets/images/key-wisdom.png");
             break;
         case 25:
-            images[temp.id] = LoadTexture("images/courage-potion.png");
+            images[temp.id] = LoadTexture("assets/images/courage-potion.png");
             break;
         case 26:
-            images[temp.id] = LoadTexture("images/party-potion.png");
+            images[temp.id] = LoadTexture("assets/images/party-potion.png");
             break;
         case 27:
-            images[temp.id] = LoadTexture("images/power-dash.png");
+            images[temp.id] = LoadTexture("assets/images/power-dash.png");
             break;
         case 28:
-            images[temp.id] = LoadTexture("images/power-toast.png");
+            images[temp.id] = LoadTexture("assets/images/power-toast.png");
             break;
         case 29:
-            images[temp.id] = LoadTexture("images/power-boost.png");
+            images[temp.id] = LoadTexture("assets/images/power-boost.png");
             break;
         case 30:
-            images[temp.id] = LoadTexture("images/power-spear.png");
+            images[temp.id] = LoadTexture("assets/images/power-spear.png");
             break;
         case 31:
-            images[temp.id] = LoadTexture("images/power-transmutation.png");
+            images[temp.id] = LoadTexture("assets/images/power-transmutation.png");
             break;            
         case 32:
-            images[temp.id] = LoadTexture("images/coin-poison.png");
+            images[temp.id] = LoadTexture("assets/images/coin-poison.png");
             break;            
     }
 }

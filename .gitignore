@@ -31,5 +31,18 @@
 *.out
 *.app
 
-# VSCode
+# IDEs and editors
 .vscode
+.idea
+.vs
+
+# CMake
+cmake-build-debug/
+bin/
+build/
+out/
+CMakeSettings.json
+CMakeFiles
+CMakeCache.txt
+_deps
+.cache
