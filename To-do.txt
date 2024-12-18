@@ -1,8 +1,11 @@
-Se está dando bug, já tentou ver se você não confundiu as variáveis de Height e Width pela 105 vez?
+Se está dando bug, já tentou ver se você não confundiu as variáveis de Height e Width pela 105ª vez?
 
 ## Correção de Bugs
-    ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (Happened with: butterfly and bee; Did not happen with: Meldrop)
+    ( ) [BC] Sometimes if you kill a spawned enemy, the game crashes (Probably popping last enemy of list)
     ( ) [BC] Sometimes if you save a level file, it will crash (the file is still saved)
+    ( ) [B] Finish level twice in editor
+    ( ) [B] Ceil clip in editLevel
+    ( ) [B] Crabs walking over secret blocks
 
 ## Alterações gerais
     ( ) [+] Sound Effects:
@@ -26,6 +29,7 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Break cages with spear
     ( ) [+] Music not playing constantly
 
+    ( ) [+] Add different save files for players, and for completed levels
     ( ) [+] Add challenge modes: Invisible walls, Upside down, arcade
     ( ) [+] Add alternative modes: arcade
 
@@ -41,21 +45,45 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [R] Better precision of slow movement
     ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
     ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
+    ( ) [R] Fitting Flamingo in holes.
+    ( ) [R] Time warning
  
 
 
 
 
 ( ) 0.9 - Planes of Paris Update
-    (X) [B**] I'VE DEFEATED THE STRONGEST BUG OF THE GAME, BLOCK-CLIPPING
+    (?) [B**] STILL HAVEN'T DEFEATED THIS BITCH
+        (?) [B] TP on head-stand going right
+        (?) [B] Spike TP
+    ( ) [BC] Sometimes exiting a level crashes.
+    (X) [B] Death coin no image in imageloader
+    (X) [B] Can't crouch on platform
+    (X) [B] Clipping on chest walk -> Jumping too high
+    (X) [B] Falling when not pressing crouch
+    (X) [B] Clipping on jumping, (maybe jump is too strong?) Check jump
+    (X) [B] Clipping on back walking
+    ( ) [B] 1 pixel above platforms
+    ( ) [B] Altar not depleting
+    ( ) [B] Map Editor not rotating blocks
+    (X) [B] First jump sticky
+    (X) [B] Not grabbing itens sometimes
+    (X) [B] Ledge-head-jump
+    (?) [B] Not accounting all time score.
+    
+    ( ) [R] Collision -> Fixes all clip bugs
+    ( ) [R] Grassy Walks I Orange Key unreachable.
+    (X) [R] Jumping more dynamic.
     (X) [R] Item Handling Class
     (X) [R] Block Handling Class
     (X) [B] Jumping crouch
-    ( ) [+] Save and Load Flamingo
-    ( ) [+] Effects for regenerating Hope
+    (X) [B] Door does not have key
+    (X) [B] Remove S
+    (X) [+] Save and Load Flamingo
+    ( ) [+] Save and Load heart/pearl pieces
     ( ) [+] Effects for regenerating Wisdom
     ( ) [+] Song for playing the level's title
-    ( ) [B] Altar not depleting
+    (X) [+] Effects for regenerating Hope
     (X) [+] Moeda de Ouro Envenenada -> Dano Hope
     (X) [+] Toast spell
     (X) [+] Mana regenerating differently
@@ -97,25 +125,41 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 
 
-
 ( ) ??? - Search for Hope Mountain Update
     (X) - Grassy Walks I
+        (X) - Music
+        (X) - Level Design
     (X) - Grassy Walks II
     (X) - Bee's Valley
+        ( ) - Music
+        (X) - Level Design
     ( ) - Fertile Grounds I
     ( ) - Fertile Grounds II
+        ( ) - Music
+        ( ) - Level Design
     ( ) - Tulip Garden I
-    ( ) - Secret Garden
     ( ) - Tulip Garden II
+        (X) - Music
+        ( ) - Level Design
+    ( ) - Secret Garden
+        (X) - Music
+        ( ) - Level Design
     ( ) - Watery Falls I
     ( ) - Watery Falls II
+        ( ) - Music
+        ( ) - Level Design
     ( ) - Mountain Winds I
-    ( ) - Islands Paradise
     ( ) - Mountain Winds II
+        ( ) - Music
+        ( ) - Level Design
+    ( ) - Islands Paradise
+        ( ) - Music
+        ( ) - Level Design
+    ( ) - Ending
     ( ) - Alternate ending if you reach the peak late.
 
-( ) ??? - Save the world Update
-    ( ) - Add save files for players, and for completed levels
+
+( ) ??? - Flying Update
 
 ( ) ??? - Decorating the World Update
     ( ) - Adding grass
@@ -123,7 +167,16 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) - Adding Vine
     ( ) - More variety of Dirt blocks
     ( ) - More Blocks
-    ( ) - Background
+    ( ) - Trees (learn to draw)
+    ( ) - Mushrooms
+    ( ) - Backgrounds
+        (X) - Planes of Paris
+        
+        (X) - Grassy Walks
+        ( ) - Fertile Grounds
+        ( ) - Tulip Garden
+        ( ) - Watery Falls
+        ( ) - Mountain Winds
     ( ) - Clouds
 
 ( ) ??? - Inventory Update
@@ -139,15 +192,16 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 ( ) ??? - Quad-tree Update
 
-( ) ??? - Friends Update
+( ) ??? - Friends Update -. Cutscenes
     ( ) Add Bird class
     ( ) Add Stork
     ( ) Add Dialog box
     ( ) Add Dialog Behavior
     ( ) Add Bird Path-finding
-    ( ) Add Dialogs to Levels
+    ( ) Add Dialogs to Level files
 
-
+( ) ??? - More Magic
+    ( ) Power.2 -> Lighter
 
 
 

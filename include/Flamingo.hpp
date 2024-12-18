@@ -157,7 +157,7 @@ public:
 
     Flamingo(float x, float y, float w, float h, int worldWidth, int worldHeight, int imagescale);
 
-    Flamingo();
+    Flamingo(int imagescale);
 
     void unload();
 

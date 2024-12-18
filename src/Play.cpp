@@ -12,14 +12,22 @@ Play::~Play() {
     UnloadTexture(iconEditor);
     UnloadTexture(iconGame);
     UnloadSound(finish);
+    loader->SaveFlamingo(player.get());
     player->unload();
 }
 
 
 
 void Play::loadFlamingo() {
-    player.reset(new Flamingo(400, 400, FW, FH, WT, HT, SCALE));
+    // player.reset(new Flamingo(400, 400, FW, FH, WT, HT, SCALE));
+    player = loader->LoadFlamingo();
     player->game = this;
+    player->rect.width = FW*SCALE;
+    player->rect.height = FH*SCALE;
+    player->WT = WT;
+    player->HT = HT;
+    player->rectImage.width = FW;
+    player->rectImage.height = FH;
 }
 
 void Play::search_universe(std::vector<std::string> &Universe) {
@@ -1437,6 +1445,8 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     itens = Level.itens;
     enemies = Level.enemies;
     seconds = Level.time;
+    effects.clear();
+    dusts.clear();
     
     
     int trueEntrance = 0;
@@ -1475,18 +1485,21 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     int saida = mainLoop(LevelTheme);
     UnloadMusicStream(LevelTheme);
 
-    
+
     player->birdsToSave[0] = 0;
     player->birdsToSave[1] = 0;
     player->birdsToSave[2] = 0;
     player->birdsToSave[3] = 0;
     player->birdsToSave[4] = 0;
 
+
+
     if (saida == -1) {
         return "";
     }
 
     std::string nextLevel = Level.exits[saida];
+
 
     return nextLevel;
 }
@@ -1496,8 +1509,6 @@ int Play::mainLoop(Music LevelTheme) {
     // SetTargetFPS(2);
     player->vx = 0;
     player->vy = 0;
-    // Effect(player->cx, player->cy, 150, 5, {7, 0, 0, 0, 0}, SCALE);
-    player->Health(7, 'H');
 
     
 
@@ -1526,6 +1537,14 @@ int Play::mainLoop(Music LevelTheme) {
 
     ItemHandler itemTaker = ItemHandler(itens);
     BlockHandler blockTaker = BlockHandler(Blocks, this);
+
+    
+    Vector2 posEffect = {(float)GetScreenWidth()/2-100, (float)GetScreenHeight()/2-100}, dirEffect = {-5, -5};
+    // posEffect.x += -cameraCenter.x +relativeCameraCenter.x;
+    // posEffect.y += -cameraCenter.y +relativeCameraCenter.y;
+    int dmg[5] = {-7, 0, 0, 0, 0};
+    effects.push_back(Effect(posEffect, dirEffect, 500, 6, dmg, SCALE));
+
 
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
@@ -1577,6 +1596,10 @@ int Play::mainLoop(Music LevelTheme) {
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
 
+                    if (effects[i].id == 6) {
+                        player->Health(7, 'H');
+                    }
+
                     auto it = std::next(effects.begin(), i);
                     effects.erase(it);
                 }
@@ -1595,6 +1618,29 @@ int Play::mainLoop(Music LevelTheme) {
             }
             if (seconds < 0 and tick % 60 == 0) {
                 player->Health(-1, 'H');
+            }
+        } else {
+            if (tick % 10 == 0 and seconds > 10) {
+                seconds -= 10;
+                player->score += 50;
+                Vector2 posEffect = {(float)GetScreenWidth()/2-100, 30}, dirEffect = {-5, 0};
+                // posEffect.x += -cameraCenter.x +relativeCameraCenter.x;
+                // posEffect.y += -cameraCenter.y +relativeCameraCenter.y;
+                int dmg[5] = {0, 0, 0, 0, -7};
+                effects.push_back(Effect(posEffect, dirEffect, 500, 5, dmg, SCALE));
+            }
+            sizeS = effects.size();
+            for (int i = 0; i < sizeS; i++) {
+                if (effects[i].id == 5 and effects[i].update(Blocks, player.get(), itens, enemies)) {
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
+                    DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
+
+                    auto it = std::next(effects.begin(), i);
+                    effects.erase(it);
+                    i--;
+                    player->Health(1, 'W');
+                }
             }
         }
 
@@ -1771,8 +1817,13 @@ int Play::mainLoop(Music LevelTheme) {
             Effect temp = effects[i];
             Rectangle source, dest;
 
-            relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+            if (temp.id == 5 or temp.id == 6) {
+                relativePos.y = temp.rect.y;
+                relativePos.x = temp.rect.x;
+            } else {
+                relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+                relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
+            }
 
             source.x = 0 + temp.imageCount*(temp.rectImage.width);
             source.y = 0;
@@ -2054,20 +2105,13 @@ int Play::mainLoop(Music LevelTheme) {
 
 
         if (DEBUG) {
-            relativePos.x = WT/2 +player->groundBlock.rect.x -relativeCameraCenter.x;
-            relativePos.y = HT/2 +player->groundBlock.rect.y -relativeCameraCenter.y;
-            DrawRectangle(relativePos.x, relativePos.y, player->groundBlock.rect.width, player->groundBlock.rect.height, YELLOW);
-
+            // DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player->groundBlock.rect.x, player->groundBlock.rect.y, player->groundBlock.rect.width, player->groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
             
-            DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player->groundBlock.rect.x, player->groundBlock.rect.y, player->groundBlock.rect.width, player->groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
             if (player->crouch) {
                 relativePos.x = cameraCenter.x +player->HitboxA.x -relativeCameraCenter.x;
                 relativePos.y = cameraCenter.y +player->HitboxA.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player->HitboxA.width, player->HitboxA.height, RED);
             } else {
-                relativePos.x = cameraCenter.x +player->Hitbox1.x -relativeCameraCenter.x;
-                relativePos.y = cameraCenter.y +player->Hitbox1.y -relativeCameraCenter.y;
-                DrawRectangle(relativePos.x, relativePos.y, player->Hitbox1.width, player->Hitbox1.height, RED);
                 relativePos.x = cameraCenter.x +player->Hitbox2.x -relativeCameraCenter.x;
                 relativePos.y = cameraCenter.y +player->Hitbox2.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player->Hitbox2.width, player->Hitbox2.height, RED);
@@ -2075,9 +2119,7 @@ int Play::mainLoop(Music LevelTheme) {
                 relativePos.y = cameraCenter.y +player->Hitbox3.y -relativeCameraCenter.y;
                 DrawRectangle(relativePos.x, relativePos.y, player->Hitbox3.width, player->Hitbox3.height, RED);
             }
-            relativePos.x = cameraCenter.x +player->HB1.x -relativeCameraCenter.x;
-            relativePos.y = cameraCenter.y +player->HB1.y -relativeCameraCenter.y;
-            DrawRectangle(relativePos.x, relativePos.y, player->HB1.width, player->HB1.height, DARKBLUE);
+            
 
             relativePos.x = cameraCenter.x +player->cx -relativeCameraCenter.x;
             relativePos.y = cameraCenter.y +player->cy -relativeCameraCenter.y;
@@ -2156,6 +2198,24 @@ int Play::mainLoop(Music LevelTheme) {
                     }
                 }
             }
+
+            relativePos.x = cameraCenter.x +player->groundBlock.rect.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player->groundBlock.rect.y -relativeCameraCenter.y;
+            DrawRectangle(relativePos.x, relativePos.y, player->groundBlock.rect.width, player->groundBlock.rect.height, YELLOW);
+
+            relativePos.x = cameraCenter.x +player->Hitbox1.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player->Hitbox1.y -relativeCameraCenter.y;
+            if (player->groundCheck(player->groundBlock)) { // Why does it affect when i move??
+                DrawRectangle(relativePos.x, relativePos.y, player->Hitbox1.width, player->Hitbox1.height, GREEN);
+            } else {
+                DrawRectangle(relativePos.x, relativePos.y, player->Hitbox1.width, player->Hitbox1.height, RED);
+            }
+
+
+            relativePos.x = cameraCenter.x +player->HB1.x -relativeCameraCenter.x;
+            relativePos.y = cameraCenter.y +player->HB1.y -relativeCameraCenter.y;
+            DrawRectangle(relativePos.x, relativePos.y, player->HB1.width, player->HB1.height, DARKBLUE);
+
         }
 
         EndDrawing();
@@ -2176,9 +2236,7 @@ int Play::mainLoop(Music LevelTheme) {
         return -1;
     }
 
-    if (seconds > 0) {
-        player->Health(seconds/10, 'W');
-    }
+    player->score += 50 * (seconds/10);
 
     int trueSaida = 0;
     for (int i = 0; i < sizeB; i++) {

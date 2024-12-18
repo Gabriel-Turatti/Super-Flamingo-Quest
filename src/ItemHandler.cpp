@@ -10,6 +10,7 @@ ItemHandler::ItemHandler(std::vector<Item> &itensLevel) {
     for (auto& [id, image]: images) {
         SetTextureWrap(image, TEXTURE_WRAP_CLAMP);
     }
+    images[4] = LoadTexture("assets/images/coin-death2.png");
 }
 
 ItemHandler::~ItemHandler() {
@@ -29,9 +30,9 @@ void ItemHandler::addItem(Item temp) {
         case 3:
             images[temp.id] = LoadTexture("assets/images/coin-gold2.png");
             break;
-        case 4:
-            images[temp.id] = LoadTexture("assets/images/coin-death2.png");
-            break;
+        // case 4:
+        //     images[temp.id] = LoadTexture("assets/images/coin-death2.png");
+        //     break;
         case 5:
             images[temp.id] = LoadTexture("assets/images/food-banana.png");
             break;

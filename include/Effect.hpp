@@ -36,6 +36,8 @@ public:
     bool transmutation(std::vector<Item> &itens);
     bool spear(std::vector<Enemy> &enemies, std::vector<Item> &itens);
     bool bird();
+    bool hope();
+    bool wisdom();
 };
 
 #endif

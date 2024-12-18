@@ -455,11 +455,12 @@ void MapLoader::SaveLevel(Map level) {
 void MapLoader::SaveFlamingo(Flamingo* player) {
     std::ofstream FlamFile("saves/Flamingo1/player.txt");
 
-    FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH << '\n';
-    FlamFile << player->HH << '-' << player->RH << '-' << player->PH << '-' << player->CH << '-' << player->WH << '\n';
-    FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP << '\n';
-    FlamFile << player->WP << '-' << player->PP << '-' << player->FP << '-' << player->HP << '-' << player->EP << '\n';
-    FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4] << '\n';
+    FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH << '*' << '\n';
+    FlamFile << player->HH << '-' << player->RH << '-' << player->PH << '-' << player->CH << '-' << player->WH << '*' << '\n';
+    FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP << '*' << '\n';
+    FlamFile << player->WP << '-' << player->PP << '-' << player->FP << '-' << player->HP << '-' << player->EP << '*' << '\n';
+    FlamFile << player->score << '*' << '\n';
+    FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4] << '*' << '\n';
 
     FlamFile.close();
 }
@@ -468,13 +469,13 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     std::ifstream FlamFile("saves/Flamingo1/player.txt");
     std::string line;
 
-    std::unique_ptr<Flamingo> player(new Flamingo());
+    std::unique_ptr<Flamingo> player(new Flamingo(SCALE));
 
     std::getline(FlamFile, line);
     int i = 0;
     std::string value = "";
     int questCount = 0;
-    while(line[i] != '\n') {
+    while(line[i] != '*') {
         if (line[i] != '-') {
             value += line[i];
         } else {
@@ -498,6 +499,7 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
             value = "";
             questCount += 1;
         }
+        i++;
     }
 
 
@@ -505,7 +507,7 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     i = 0;
     value = "";
     questCount = 0;
-    while(line[i] != '\n') {
+    while(line[i] != '*') {
         if (line[i] != '-') {
             value += line[i];
         } else {
@@ -529,14 +531,15 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
             value = "";
             questCount += 1;
         }
+        i++;
     }
-    
+
 
     std::getline(FlamFile, line);
     i = 0;
     value = "";
     questCount = 0;
-    while(line[i] != '\n') {
+    while(line[i] != '*') {
         if (line[i] != '-') {
             value += line[i];
         } else {
@@ -560,6 +563,7 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
             value = "";
             questCount += 1;
         }
+        i++;
     }
 
 
@@ -567,7 +571,7 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     i = 0;
     value = "";
     questCount = 0;
-    while(line[i] != '\n') {
+    while(line[i] != '*') {
         if (line[i] != '-') {
             value += line[i];
         } else {
@@ -591,22 +595,32 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
             value = "";
             questCount += 1;
         }
+        i++;
     }
-    
-    
 
 
     std::getline(FlamFile, line);
     i = 0;
-    while (i !='\n') {
+    value = "";
+    while(line[i] != '*') {
+        value += line[i];
+        i++;
+    }
+    player->score = std::stoi(value);
+
+
+    std::getline(FlamFile, line);
+    i = 0;
+    while (line[i] != '*') {
         if (line[i] == '0') {
             player->powers[i] = false;
         } else {
             player->powers[i] = true;
         }
+        i++;
     }
 
-
+    FlamFile.close();
     return std::move(player);
 }
 

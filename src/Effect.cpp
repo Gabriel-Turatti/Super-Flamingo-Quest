@@ -51,15 +51,24 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
             case 4:
                 image = LoadTexture("assets/images/bird-flying-orange.png");
                 break;
-
         }
         
         imageSize = 2;
         rectImage.width = 13;
         rectImage.height = 13;
+    } else if (id == 5) {
+        image = LoadTexture("assets/images/effect_wisdom_regen.png");
+        imageSize = 4;
+        rectImage.width = 15;
+        rectImage.height = 15;
+    } else if (id == 6) {
+        image = LoadTexture("assets/images/effect_hope_regen.png");
+        imageSize = 4;
+        rectImage.width = 15;
+        rectImage.height = 15;
     }
-    
-    
+
+
     rect.width = rectImage.width*SCALE;
     rect.height = rectImage.height*SCALE;
     cx = rect.x + rect.width/2;
@@ -80,6 +89,12 @@ bool Effect::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Ite
             break;
         case(4):
             value = bird();
+            break;
+        case(5):
+            value = wisdom();
+            break;
+        case(6):
+            value = hope();
             break;
     }
     
@@ -242,6 +257,31 @@ bool Effect::bird() {
     }
     if (rect.x < -300 and rect.y < -300) {
         return true;
+    }
+    return false;
+}
+
+bool Effect::hope() {
+    if (rect.x > 10) {
+        rect.x -= 5;
+    }
+    if (rect.y > 10) {
+        rect.y -= 5;
+    }
+    if (rect.y <= 10 and rect.x <= 10) {
+        return true;
+    }
+    return false;
+}
+
+bool Effect::wisdom() {
+    if (rect.x > 10) {
+        rect.x -= 5;
+    } else {
+        return true;
+    }
+    if (rect.y > 10+12*SCALE*4) {
+        rect.y -= 5;
     }
     return false;
 }

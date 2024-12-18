@@ -41,7 +41,7 @@ $(OB):
 
 # Target to build the final executable
 all: $(OBJS)
-	$(CPP) -o Quest.exe $(OBJS) $(FLAGS) $(LDFLAGS)
+	$(CPP) -g -o Quest.exe $(OBJS) $(FLAGS) $(LDFLAGS)
 
 # Rules to compile each .cpp file into .o file
 $(OB)/Block.o: $(S)/Block.cpp $(HD)/Block.hpp

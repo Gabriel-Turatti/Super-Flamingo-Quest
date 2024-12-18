@@ -36,18 +36,23 @@ void BlockHandler::addBlock(Block temp) {
             break;
         case 5:
             images[temp.id] = LoadTexture("assets/images/block_gate_hope_closed.png");
+            images[temp.id+5] = LoadTexture("assets/images/block_gate_hope_open.png");
             break;
         case 6:
             images[temp.id] = LoadTexture("assets/images/block_gate_resilience_closed.png");
+            images[temp.id+5] = LoadTexture("assets/images/block_gate_resilience_open.png");
             break;
         case 7:
             images[temp.id] = LoadTexture("assets/images/block_gate_power_closed.png");
+            images[temp.id+5] = LoadTexture("assets/images/block_gate_power_open.png");
             break;
         case 8:
             images[temp.id] = LoadTexture("assets/images/block_gate_courage_closed.png");
+            images[temp.id+5] = LoadTexture("assets/images/block_gate_courage_open.png");
             break;
         case 9:
             images[temp.id] = LoadTexture("assets/images/block_gate_wisdom_closed.png");
+            images[temp.id+5] = LoadTexture("assets/images/block_gate_wisdom_open.png");
             break;
         case 10:
             images[temp.id] = LoadTexture("assets/images/block_gate_hope_open.png");
@@ -175,7 +180,7 @@ void BlockHandler::DrawBlocks(std::vector<Block> &blocksLevel, Rectangle cameraC
         } else {
             DrawTextureEx(images[temp.id], relativePos, temp.direction*-90, SCALE, transparency);
         }
-        if (temp.secret) {
+        if (temp.secret and showSecret) {
             DrawText("S", relativePos.x, relativePos.y, game->BS, WHITE);
         }
     }
