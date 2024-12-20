@@ -509,7 +509,7 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                 }
             }
         } else if (temp.name == "cage") {
-            if (abs(vx) + abs(vy) > 9*SCALE) {
+            if (abs(vx) + abs(vy) > 13*SCALE) {
                 int color = ((int)temp.rect.x+(int)temp.rect.y) % 5;
                 int colorArray[5] = {color, 0, 0, 0, 0};
                 effects.push_back(Effect({temp.cx-5*SCALE, temp.cy-5*SCALE}, {0, 0}, 5000, 4, colorArray, SCALE));
@@ -530,9 +530,6 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
         }
         
         if (vert) {
-            if (Dspace.y < 0) {
-                canJump = true;
-            }
             if (abs(vy) > 12*SCALE) {
                 Health(-(((int)abs(vy) - 12*SCALE)/2), 'R');
             }
@@ -542,14 +539,20 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
                     CH += 1;
                     temp.friction -= 0.5;
                     if (temp.friction <= 1.6f) { // to-do
-                        temp.image = LoadTexture("assets/images/block_altar0at2.png");
+                        temp.id = 31;
                     } else if (temp.friction <= 5.0f) {
-                        temp.image = LoadTexture("assets/images/block_altar1at2.png");
+                        temp.id = 30;
                     }
+                    doReturn = 3;
                 }
             }
 
-            vy = -vy/temp.friction;
+            if (Dspace.y < 0) {
+                canJump = true;
+                vy = -vy/temp.friction;
+            } else {
+                vy = 0;
+            }
             if (abs(vy) < 1) {
                 vy = 0;
             }
@@ -581,7 +584,6 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
 //         return 0;
 //     }
 //     Dspace = colision(HBox, temp.rect);
-
 //     if ((!vert and Dspace.x != 0) or (vert and Dspace.y != 0)) {
 //         int doReturn = 2;
 //         if (temp.secret) {
@@ -651,7 +653,6 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
 //                 Health(-2, 'P');
 //             }
 //         }
-
 //         if (vert) {
 //             if (Dspace.y < 0) {
 //                 canJump = true;
@@ -671,7 +672,6 @@ int Flamingo::blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<
 //                     }
 //                 }
 //             }
-
 //             vy = -vy/temp.friction;
 //             if (abs(vy) < 1) {
 //                 vy = 0;

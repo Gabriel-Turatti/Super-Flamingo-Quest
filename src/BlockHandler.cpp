@@ -71,6 +71,8 @@ void BlockHandler::addBlock(Block temp) {
             break;
         case 15:
             images[temp.id] = LoadTexture("assets/images/block_altar.png");
+            images[30] = LoadTexture("assets/images/block_altar1at2.png");
+            images[31] = LoadTexture("assets/images/block_altar0at2.png");
             break;
         case 16:
             images[temp.id] = LoadTexture("assets/images/block_spike.png");
@@ -114,7 +116,7 @@ void BlockHandler::addBlock(Block temp) {
         case 29:
             images[temp.id] = LoadTexture("assets/images/block_energy.png");
             break;
-        case 30:
+        case 32:
             images[temp.id] = LoadTexture("assets/images/platform.png");
             break;
         default:

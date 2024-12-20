@@ -280,8 +280,8 @@ bool Effect::wisdom() {
     } else {
         return true;
     }
-    if (rect.y > 10+12*SCALE*4) {
-        rect.y -= 5;
+    if (rect.y > 10+16*SCALE*4) {
+        rect.y -= 6;
     }
     return false;
 }

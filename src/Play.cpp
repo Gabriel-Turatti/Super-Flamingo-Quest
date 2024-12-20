@@ -1341,9 +1341,9 @@ void Play::EditLevel(std::string name) {
         // Object in Mouse
         if (Menu == 1 and mouseBlock.SCALE != 0) {
             if (background) {
-                DrawTextureEx(blocksLevelTaker.images[mouseBlock.id], {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, GRAY);
+                DrawTextureEx(blocksLevelTaker.images[mouseBlock.id], {mouseBlock.rect.x, mouseBlock.rect.y}, rotation*-90, SCALE, GRAY);
             } else {
-                DrawTextureEx(blocksLevelTaker.images[mouseBlock.id], {mouseBlock.rect.x, mouseBlock.rect.y}, 0, SCALE, WHITE);
+                DrawTextureEx(blocksLevelTaker.images[mouseBlock.id], {mouseBlock.rect.x, mouseBlock.rect.y}, rotation*-90, SCALE, WHITE);
             }
             if (secret) {
                 DrawText("S", mouseBlock.rect.x, mouseBlock.rect.y, BS, WHITE);
@@ -1623,10 +1623,10 @@ int Play::mainLoop(Music LevelTheme) {
             if (tick % 10 == 0 and seconds > 10) {
                 seconds -= 10;
                 player->score += 50;
-                Vector2 posEffect = {(float)GetScreenWidth()/2-100, 30}, dirEffect = {-5, 0};
+                Vector2 posEffect = {(float)GetScreenWidth()/2-100, 30}, dirEffect = {-10, 0};
                 // posEffect.x += -cameraCenter.x +relativeCameraCenter.x;
                 // posEffect.y += -cameraCenter.y +relativeCameraCenter.y;
-                int dmg[5] = {0, 0, 0, 0, -7};
+                int dmg[5] = {0, 0, 0, 0, -1};
                 effects.push_back(Effect(posEffect, dirEffect, 500, 5, dmg, SCALE));
             }
             sizeS = effects.size();

@@ -457,8 +457,10 @@ void MapLoader::SaveFlamingo(Flamingo* player) {
 
     FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH << '*' << '\n';
     FlamFile << player->HH << '-' << player->RH << '-' << player->PH << '-' << player->CH << '-' << player->WH << '*' << '\n';
+    FlamFile << player->PHH << '-' << player->PRH << '-' << player->PPH << '-' << player->PCH << '-' << player->PWH << '*' << '\n';
     FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP << '*' << '\n';
     FlamFile << player->WP << '-' << player->PP << '-' << player->FP << '-' << player->HP << '-' << player->EP << '*' << '\n';
+    FlamFile << player->PWP << '-' << player->PPP << '-' << player->PFP << '-' << player->PHP << '-' << player->PEP << '*' << '\n';
     FlamFile << player->score << '*' << '\n';
     FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4] << '*' << '\n';
 
@@ -545,6 +547,38 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
         } else {
             switch(questCount) {
                 case 0:
+                    player->PHH = std::stoi(value);
+                    break;
+                case 1:
+                    player->PRH = std::stoi(value);
+                    break;
+                case 2:
+                    player->PPH = std::stoi(value);
+                    break;
+                case 3:
+                    player->PCH = std::stoi(value);
+                    break;
+                case 4:
+                    player->PWH = std::stoi(value);
+                    break;
+            }
+            value = "";
+            questCount += 1;
+        }
+        i++;
+    }
+
+
+    std::getline(FlamFile, line);
+    i = 0;
+    value = "";
+    questCount = 0;
+    while(line[i] != '*') {
+        if (line[i] != '-') {
+            value += line[i];
+        } else {
+            switch(questCount) {
+                case 0:
                     player->MWP = std::stoi(value);
                     break;
                 case 1:
@@ -590,6 +624,38 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
                     break;
                 case 4:
                     player->EP = std::stoi(value);
+                    break;
+            }
+            value = "";
+            questCount += 1;
+        }
+        i++;
+    }
+
+
+    std::getline(FlamFile, line);
+    i = 0;
+    value = "";
+    questCount = 0;
+    while(line[i] != '*') {
+        if (line[i] != '-') {
+            value += line[i];
+        } else {
+            switch(questCount) {
+                case 0:
+                    player->PWP = std::stoi(value);
+                    break;
+                case 1:
+                    player->PPP = std::stoi(value);
+                    break;
+                case 2:
+                    player->PFP = std::stoi(value);
+                    break;
+                case 3:
+                    player->PHP = std::stoi(value);
+                    break;
+                case 4:
+                    player->PEP = std::stoi(value);
                     break;
             }
             value = "";

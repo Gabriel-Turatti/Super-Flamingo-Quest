@@ -34,7 +34,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         id = 9;
         friction = 1.5;
     } else if (namer == "platform") {
-        id = 30;
+        id = 32;
         friction = 2;
     } else if (namer == "altar") {
         id = 15;
@@ -98,7 +98,11 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
         id = 29;
         friction = 3;
         parameter = 450;
+    } else if (namer == ""){ // 30 and 31 are used for altar.
+        id = 33;
+        friction = 2;
     }
+
     // If you're adding a new block, make sure to also add it to:
     // BlockHandler
     // editLevel
@@ -139,5 +143,5 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
 }
 
 Block::Block() {
-    SCALE = 0;
+    SCALE = 10;
 }
