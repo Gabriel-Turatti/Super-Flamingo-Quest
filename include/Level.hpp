@@ -6,9 +6,10 @@
 #include "Item.hpp"
 #include "Enemy.hpp"
 
-class Map {
+class Level {
 public:
-    std::vector<Block> Blocks;
+    std::map<int, std::map<int, Block>> FrontBlocksMap;
+    std::map<int, std::map<int, Block>> BackBlocksMap;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
     int widthLevel;
@@ -16,8 +17,8 @@ public:
     std::string name;
     char* levelTheme;
     int time;
-    std::vector<std::string> entrances;
-    std::vector<std::string> exits;
+    std::vector<door> entrances;
+    std::vector<door> exits;
 };
 
 #endif

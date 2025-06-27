@@ -1,5 +1,5 @@
 #include "../include/MapLoader.hpp"
-
+#include <iostream>
 
 
 MapLoader::MapLoader(int SCALER, int BSer, float width, float height) {
@@ -11,26 +11,48 @@ MapLoader::MapLoader(int SCALER, int BSer, float width, float height) {
 
 MapLoader::MapLoader() {}
 
-void MapLoader::SaveLevel(Map level) {
+void MapLoader::SaveLevel(Level level) {
     float leftMostBlock = 1.5;
     float upMostBlock = 1.5;
     float rightMostBlock = 1.5;
     float downMostBlock = 1.5;
 
-    for (Block temp : level.Blocks) {
-        if (leftMostBlock == 1.5 or temp.rect.x < leftMostBlock) {
-            leftMostBlock = temp.rect.x;
-        }
-        if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
-            upMostBlock = temp.rect.y;
-        }
-        if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
-            rightMostBlock = temp.rect.x+temp.rect.width;
-        }
-        if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
-            downMostBlock = temp.rect.y+temp.rect.height;
+
+    for(auto & line : level.FrontBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp =column.second;
+            if (leftMostBlock == 1.5 or temp.rect.x < leftMostBlock) {
+                leftMostBlock = temp.rect.x;
+            }
+            if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
+                upMostBlock = temp.rect.y;
+            }
+            if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
+                rightMostBlock = temp.rect.x+temp.rect.width;
+            }
+            if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
+                downMostBlock = temp.rect.y+temp.rect.height;
+            }
         }
     }
+    for(auto & line : level.BackBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp =column.second;
+            if (leftMostBlock == 1.5 or temp.rect.x < leftMostBlock) {
+                leftMostBlock = temp.rect.x;
+            }
+            if (upMostBlock == 1.5 or temp.rect.y < upMostBlock) {
+                upMostBlock = temp.rect.y;
+            }
+            if (rightMostBlock == 1.5 or temp.rect.x+temp.rect.width > rightMostBlock) {
+                rightMostBlock = temp.rect.x+temp.rect.width;
+            }
+            if (downMostBlock == 1.5 or temp.rect.y+temp.rect.height > downMostBlock) {
+                downMostBlock = temp.rect.y+temp.rect.height;
+            }
+        }
+    }
+
     for (Item temp : level.itens) {
         if (leftMostBlock == 1.5 or temp.rect.x < leftMostBlock) {
             leftMostBlock = temp.rect.x;
@@ -68,21 +90,32 @@ void MapLoader::SaveLevel(Map level) {
     std::map<int, std::map<int, Block>> NewBlocksBackground;
     std::map<int, std::map<int, Item>> NewItens;
 
-    for (Block temp : level.Blocks) { // May cause bugs if position is negative
-        int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
-        int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
-        
-        if (temp.rect.width > BS and temp.direction == 3) { // Gambiarra
-            ColumnPos += 1;
-        }
 
-        if (temp.background) {
-            NewBlocksBackground[LinePos][ColumnPos] = temp;
-        } else {
+
+    for(auto & line : level.FrontBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp = column.second;
+            int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
+            int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
+
+            if (temp.rect.width > BS and temp.direction == 3) { // Gambiarra
+                ColumnPos += 1;
+            }
             NewBlocksGround[LinePos][ColumnPos] = temp;
         }
     }
+    for(auto & line : level.BackBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp = column.second;
+            int LinePos = (int) ((temp.rect.y)/(BS-SCALE)) - lineOffset;
+            int ColumnPos = (int) ((temp.rect.x)/(BS-SCALE)) - columnOffset;
 
+            if (temp.rect.width > BS and temp.direction == 3) { // Gambiarra
+                ColumnPos += 1;
+            }
+            NewBlocksBackground[LinePos][ColumnPos] = temp;
+        }
+    }
 
     for (Item temp : level.itens) {
         std::string name = temp.name;
@@ -200,11 +233,12 @@ void MapLoader::SaveLevel(Map level) {
         LevelSave << level.levelTheme << '\n';
         LevelSave << std::to_string(level.time) << '\n';
 
-        for (std::string exit : level.exits) {
-            LevelSave << "S-" +exit+"\n"; 
+        
+        for(auto exit : level.exits) {
+            LevelSave << "S-" +exit.place+"\n"; 
         }
-        for (std::string entrance : level.entrances) {
-            LevelSave << "E-" +entrance+"\n"; 
+        for (auto entrance : level.entrances) {
+            LevelSave << "E-" +entrance.place+"\n"; 
         }
 
 
@@ -471,7 +505,7 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     std::ifstream FlamFile("saves/Flamingo1/player.txt");
     std::string line;
 
-    std::unique_ptr<Flamingo> player(new Flamingo(SCALE));
+    std::unique_ptr<Flamingo> player(new Flamingo(SCALE)); // Scale
 
     std::getline(FlamFile, line);
     int i = 0;
@@ -690,11 +724,11 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
     return std::move(player);
 }
 
-Map MapLoader::LoadLevel(std::string name) {
+Level MapLoader::LoadLevel(std::string name) {
     std::ifstream level("assets/levels/"+name);
     if (!level) {
         level.close();
-        Map Error;
+        Level Error;
         Error.time = -1;
         return Error;
     }
@@ -703,8 +737,8 @@ Map MapLoader::LoadLevel(std::string name) {
     int CHL = 0; // Current Height Level (AKA. what column of blocks we are currently looking during the Blocks load)
     int widthLevel;
     int heightLevel;
-    std::vector<std::string> exits;
-    std::vector<std::string> entrances;
+    std::vector<door> exits;
+    std::vector<door> entrances;
 
     std::random_device dev;
     std::mt19937 rng(dev());
@@ -730,12 +764,16 @@ Map MapLoader::LoadLevel(std::string name) {
     std::getline(level, line);
     while (line[0] == 'S') {
         line = line.substr(2, line.size() - 1);
-        exits.push_back(line);
+        door newd;
+        newd.place = line;
+        exits.push_back(newd);
         std::getline(level, line);
     }
     while (line[0] == 'E') {
         line = line.substr(2, line.size() - 1);
-        entrances.push_back(line);
+        door newd;
+        newd.place = line;
+        entrances.push_back(newd);
         std::getline(level, line);
     }
 
@@ -751,11 +789,14 @@ Map MapLoader::LoadLevel(std::string name) {
         RenderPhase = 1;
     }
 
-    std::vector<Block> Blocks;
-    std::map<int, std::map<int, Block>> BlocksMap;
+    std::map<int, std::map<int, Block>> FrontBlocksMap;
+    std::map<int, std::map<int, Block>> BackBlocksMap;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
     while (!level.eof()) {
+        int positionS = 0;
+        int positionX = 0;
+
         std::getline(level, line);
         if (line == "endmap") {
             break;
@@ -782,8 +823,12 @@ Map MapLoader::LoadLevel(std::string name) {
                 int direction = line[charPoint+1] - '0';
                 if (line[charPoint] == 'F') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "startLevel", SCALE, direction);
+                    entrances[positionS].arrow = tile;
+                    positionS++;
                 } else if (line[charPoint] == 'N') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS*2-SCALE, "nextLevel", SCALE, direction);
+                    exits[positionX].arrow = tile;
+                    positionX++;
                 } else if (line[charPoint] == 'G') {
                     tile = Block(CWL*(BS-SCALE), CHL*(BS-SCALE), BS, BS, "grass", SCALE, direction);
                 } else if (line[charPoint] == 'B') {
@@ -886,9 +931,11 @@ Map MapLoader::LoadLevel(std::string name) {
                 charPoint++;
                 if (RenderPhase == 2) {
                     tile.background = true;
+                    BackBlocksMap[CHL][CWL] = tile;
+                } else {
+                    FrontBlocksMap[CHL][CWL] = tile;
                 }
-                BlocksMap[CHL][CWL] = tile;
-                Blocks.push_back(tile);
+
             }
             CHL++;
         } else if (RenderPhase == 3) {
@@ -900,9 +947,9 @@ Map MapLoader::LoadLevel(std::string name) {
                 }
                 Item temp;
                 if (line[charPoint] == 'C') {
-                    temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "courage-potion", SCALE, 'S');
+                   temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "courage-potion", SCALE, 'S');
                 } else if (line[charPoint] == 'P') {
-                    temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "party-potion", SCALE, 'S');
+                   temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "party-potion", SCALE, 'S');
                 } else if (line[charPoint] == '(') {
                     if (line[charPoint+1] == 'C') {
                         std::string addon = "copper";
@@ -915,7 +962,7 @@ Map MapLoader::LoadLevel(std::string name) {
                         } else if (line[charPoint+2] == 'v') {
                             addon = "poison";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "coin-"+addon, SCALE, 'C');
+                       temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "coin-"+addon, SCALE, 'C');
                     } else if (line[charPoint+1] == 'F') {
                         std::string addon = "banana";
                         if (line[charPoint+2] == 'r') {
@@ -927,7 +974,7 @@ Map MapLoader::LoadLevel(std::string name) {
                         } else if (line[charPoint+2] == 'w') {
                             addon = "orange";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "food-"+addon, SCALE, 'F');
+                       temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "food-"+addon, SCALE, 'F');
                     } else if (line[charPoint+1] == 'H') {
                         std::string addon = "hope";
                         if (line[charPoint+2] == 'r') {
@@ -939,7 +986,7 @@ Map MapLoader::LoadLevel(std::string name) {
                         } else if (line[charPoint+2] == 'w') {
                             addon = "wisdom";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Hshard-"+addon, SCALE, 'H');
+                       temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Hshard-"+addon, SCALE, 'H');
                     } else if (line[charPoint+1] == 'K') {
                         std::string addon = "hope";
                         if (line[charPoint+2] == 'r') {
@@ -951,7 +998,7 @@ Map MapLoader::LoadLevel(std::string name) {
                         } else if (line[charPoint+2] == 'w') {
                             addon = "wisdom";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "key-"+addon, SCALE, 'K');
+                       temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "key-"+addon, SCALE, 'K');
                     } else if (line[charPoint+1] == 'P') {
                         std::string addon = "wind";
                         if (line[charPoint+2] == 'p') {
@@ -963,7 +1010,7 @@ Map MapLoader::LoadLevel(std::string name) {
                         } else if (line[charPoint+2] == 'e') {
                             addon = "eloise";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Pshard-"+addon, SCALE, 'P');
+                       temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "Pshard-"+addon, SCALE, 'P');
                     } else if (line[charPoint+1] == 'S') {
                         std::string addon = "dash";
                         if (line[charPoint+2] == 'p') {
@@ -975,7 +1022,7 @@ Map MapLoader::LoadLevel(std::string name) {
                         } else if (line[charPoint+2] == 'e') {
                             addon = "transmutation";
                         }
-                        temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "power-"+addon, SCALE, 'S');
+                       temp = Item(CWL*(BS-SCALE), CHL*(BS-SCALE), "power-"+addon, SCALE, 'S');
                     }
                     charPoint += 3;
                 }
@@ -1024,28 +1071,47 @@ Map MapLoader::LoadLevel(std::string name) {
             }
             name = text;
 
-            enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), CHL, CWL));
+            enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, FrontBlocksMap, RNG100(rng), CHL, CWL)); // SCALE = 2
             // if (name == "snail") {
-            //     enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), ground));
+            //     enemies.push_back(Enemy((CWL)*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, FrontBlocksMap, RNG100(rng), ground));
             // } else if (name == "butterfly") {
-            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, FrontBlocksMap, RNG100(rng)));
             // } else if (name == "crab") {
-            //     enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng), ground));
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), (CHL)*(BS-SCALE), name, SCALE, FrontBlocksMap, RNG100(rng), ground));
             // } else if (name == "meldrop") {
-            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, FrontBlocksMap, RNG100(rng)));
             // } else {
-            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, BlocksMap, RNG100(rng)));
+            //     enemies.push_back(Enemy(CWL*(BS-SCALE), CHL*(BS-SCALE), name, SCALE, FrontBlocksMap, RNG100(rng)));
             // }
         }
     }
     
-    if (BlocksMap.count(heightLevel-1) == 0) {
+    if (FrontBlocksMap.count(heightLevel-1) == 0) {
         heightLevel -= 1;
     }
 
+
+    
+    // DEBUG
+    // std::ofstream debugFile("debug");
+    // if (debugFile.is_open()) {
+    //     for(auto & line : FrontBlocksMap) {
+    //         for(auto & column : line.second) {
+    //             Block temp = column.second;
+    //             if (temp.rect.x != (column.first)*(BS-SCALE) or temp.rect.y != line.first*(BS-SCALE)) {
+    //                 debugFile << std::to_string(column.first) << "-" << std::to_string(line.first) << "  -> " << std::to_string(temp.rect.x) << '-' << std::to_string(temp.rect.y) << '\n';
+    //             }
+    //         }
+    //     }
+    // } else {
+    //     throw std::invalid_argument("Didn't open file");
+    // }
+    // debugFile.close();
+
     level.close();
-    Map Level;
-    Level.Blocks = Blocks;
+    Level Level;
+    Level.FrontBlocksMap = FrontBlocksMap;
+    Level.BackBlocksMap = BackBlocksMap;
     Level.itens = itens;
     Level.enemies = enemies;
     Level.widthLevel = widthLevel;

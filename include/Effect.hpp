@@ -23,16 +23,16 @@ public:
     int imageSize, imageCount;
     int dmg[5];
     int tick;
-    std::vector<int> closeBlocks;
+    std::vector<Block> closeBlocks;
     std::vector<int> closeItens;
     std::vector<int> closeEnemies;
 
 
     Effect(Vector2 position, Vector2 direction, int lifespan, int identificator, int damager[5], int SCALER);
 
-    bool update(std::vector<Block> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
+    bool update(std::map<int, std::map<int, Block>> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies);
 
-    bool meldropShot(std::vector<Block> Blocks, Flamingo* player);
+    bool meldropShot(std::map<int, std::map<int, Block>> Blocks, Flamingo* player);
     bool transmutation(std::vector<Item> &itens);
     bool spear(std::vector<Enemy> &enemies, std::vector<Item> &itens);
     bool bird();

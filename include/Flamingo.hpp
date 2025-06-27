@@ -50,13 +50,22 @@ public:
     int CH = 2*7;
     int WH = 1*7;
 
-    // Partial
-    int PHH = 0;
-    int PRH = 0;
-    int PPH = 0;
-    int PCH = 0;
-    int PWH = 0;
+    // Partial Max
+    int PHH = 10;
+    int PRH = 300;
+    int PPH = 24;
+    int PCH = 8;
+    int PWH = 15;
 
+    // Partial Current
+    int pHH = 0;
+    int pRH = 0;
+    int pPH = 0;
+    int pCH = 0;
+    int pWH = 0;
+
+
+    
     // Mana
     // Max
     int MWP = 2*7; // Wind Pearl
@@ -73,11 +82,11 @@ public:
     int EP = 2*7;
 
     // Partial Max
-    int PWP = 0;
-    int PPP = 0;
-    int PFP = 0;
-    int PHP = 0;
-    int PEP = 0;
+    int PWP = 8;
+    int PPP = 28;
+    int PFP = 14;
+    int PHP = 20;
+    int PEP = 35;
 
     // Partial Current
     int pWP = 0;
@@ -163,14 +172,14 @@ public:
 
     void Health(int qtd, char type);
     
-    void update(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects);
-    void CheckCloseObjects(std::vector<Block> &Blocks, std::vector<Item> &itens, std::vector<Enemy> enemies);
+    void update(std::map<int, std::map<int, Block>> &Blocks, std::map<int, std::map<int, Block>> &BackBlocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects);
+    void CheckCloseObjects(std::vector<Item> &itens, std::vector<Enemy> enemies);
 
-    int blockColision(Rectangle HBox, Block &temp, bool vert, std::vector<Effect> &effects);
+    int blockReaction(Rectangle HBox, Block &temp, bool vert, std::vector<Effect> &effects);
 
-    void keyPress(std::vector<Block> &Blocks, std::vector<Effect> &effects);
+    void keyPress(std::map<int, std::map<int, Block>> &Blocks, std::vector<Effect> &effects);
     void gravity();
-    void Physics(std::vector<Block> &Blocks, std::vector<Effect> &effects);
+    void Physics(std::map<int, std::map<int, Block>> &Blocks, std::map<int, std::map<int, Block>> &BackBlocks, std::vector<Effect> &effects);
     void ItemColision (std::vector<Item> &itens);
 
     void EnemyColision(std::vector<Enemy> enemies);
@@ -183,8 +192,8 @@ public:
     void updateHitbox();
     Vector2 colision(Rectangle hitbox, Rectangle B);
 
-    bool CheckMirror(std::vector<Block> &Blocks);
-    bool CrouchCheck(std::vector<Block> &Blocks);
+    bool CheckMirror(std::map<int, std::map<int, Block>> &Blocks);
+    bool CrouchCheck(std::map<int, std::map<int, Block>> &Blocks);
 };
 
 #endif

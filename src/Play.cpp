@@ -79,7 +79,7 @@ void Play::Hub() {
                 HubLevelSelect();
             }
         }
-        
+
         BeginDrawing();
         ClearBackground(BLUE);
 
@@ -259,18 +259,23 @@ int Play::complexityCalc(Enemy temp) {
 }
 
 void Play::EditLevel(std::string name) {
-    Map LevelMap = loader->LoadLevel(name);
-    Blocks = LevelMap.Blocks;
+    Level LevelMap = loader->LoadLevel(name);
+    FrontBlocksMap = LevelMap.FrontBlocksMap;
+    BackBlocksMap = LevelMap.BackBlocksMap;
     itens = LevelMap.itens;
     enemies = LevelMap.enemies;
     seconds = LevelMap.time;
     widthLevel = LevelMap.widthLevel;
     heightLevel = LevelMap.heightLevel;
 
-    for (Block temp : Blocks) {
-        if (temp.name == "startLevel") {
-            player->rect.x = temp.rect.x + 1;
-            player->rect.y = temp.rect.y-SCALE;
+
+    for(auto & line : FrontBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp = column.second;
+            if (temp.name == "startLevel") {
+                player->rect.x = temp.rect.x + 1;
+                player->rect.y = temp.rect.y;
+            }
         }
     }
 
@@ -351,7 +356,7 @@ void Play::EditLevel(std::string name) {
     EnemyOptions.push_back(Enemy(0, 0, "meldrop", SCALE, templates, 0));
 
     ItemHandler itensLevelTaker(itens), itensOptionsTaker(ItemOptions);
-    BlockHandler blocksLevelTaker(Blocks, this), blocksOptionsTaker(BlockOptions, this);
+    BlockRenderer blocksLevelTaker(LevelMap, this), blocksOptionsTaker(BlockOptions, this);
 
 
     float Px = WT*2/3 + 30;
@@ -448,34 +453,39 @@ void Play::EditLevel(std::string name) {
 
 
 
-    std::vector<Block> FinishLines;
-    std::vector<std::string> FinishLinesDestination;
-    std::vector<int> FLDsize;
+    std::vector<door> FinishLines;
     int FLFocus = 0;
     int sizeFL = 0;
     Rectangle FinishRect = {WT*2/3+100, 325, WT/3-110, 30};
-    FinishLinesDestination = LevelMap.exits;
+    FinishLines = LevelMap.exits;
 
-    std::vector<Block> StartLines;
-    std::vector<std::string> StartLinesDestination;
-    std::vector<int> SLDsize;
+    std::vector<door> StartLines;
     int SLFocus = 0;
     int sizeSL = 0;
-    StartLinesDestination = LevelMap.entrances;
+    StartLines = LevelMap.entrances;
 
 
     int in = 0;
     int out = 0;
-    for (Block temp : Blocks) {
-        if (temp.name == "nextLevel") {
-            FinishLines.push_back(temp);
-            FLDsize.push_back(FinishLinesDestination[out].size()-1);
-            out++;
-        }
-        if (temp.name == "startLevel") {
-            StartLines.push_back(temp);
-            SLDsize.push_back(StartLinesDestination[in].size()-1);
-            in++;
+    for(auto & line : FrontBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp = column.second;
+            if (temp.name == "nextLevel") {
+                door newd;
+                newd.arrow = temp;
+                newd.place = "\0";
+                newd.placeSize = 0;
+                FinishLines.push_back(newd);
+                out++;
+            }
+            if (temp.name == "startLevel") {
+                door newd;
+                newd.arrow = temp;
+                newd.place = "\0";
+                newd.placeSize = 0;
+                StartLines.push_back(newd);
+                in++;
+            }
         }
     }
 
@@ -519,7 +529,15 @@ void Play::EditLevel(std::string name) {
     while (!WindowShouldClose()) {
         UpdateMusicStream(LevelTheme);
 
-        sizeB = Blocks.size();
+        sizeFB = 0;
+        sizeBB = 0;
+        for(auto & line : FrontBlocksMap)
+            for(auto & column : line.second)
+                sizeFB++;
+        for(auto & line : BackBlocksMap)
+            for(auto & column : line.second)
+                sizeBB++;
+
         sizeE = enemies.size();
         sizeI = itens.size();
 
@@ -667,13 +685,14 @@ void Play::EditLevel(std::string name) {
 
                     if (GenericColision(PlayTest, mouseRect) and StartLines.size() > 0) {
                         std::vector<Item> backupItens = itens;
-                        std::vector<Block> backupBlocks = Blocks;
+                        std::map<int, std::map<int, Block>> backupFrontBlocks = FrontBlocksMap;
+                        std::map<int, std::map<int, Block>> backupBackBlocks = BackBlocksMap;
                         std::vector<Enemy> backupEnemies = enemies;
 
                         
                         Music Musica = LoadMusicStream(SongNameFinal);
-                        player->rect.x = StartLines[0].rect.x;
-                        player->rect.y = StartLines[0].rect.y-SCALE; // test
+                        player->rect.x = StartLines[0].arrow.rect.x;
+                        player->rect.y = StartLines[0].arrow.rect.y; // test
                         tick = 1;
                         seconds = finalTime;
                         mainLoop(Musica);
@@ -681,22 +700,24 @@ void Play::EditLevel(std::string name) {
 
                         levelTime = tick/30;
                         recomendedTime = levelTime*2;
-                        Blocks = backupBlocks;
+                        FrontBlocksMap = backupFrontBlocks;
+                        BackBlocksMap = backupBackBlocks;
                         enemies = backupEnemies;
                         itens = backupItens;
                         tick = 1;
                     }
 
                     if (GenericColision(SaveFileRect, mouseRect)) {
-                        Map finalLevel;
-                        finalLevel.Blocks = Blocks;
+                        Level finalLevel;
+                        finalLevel.FrontBlocksMap = FrontBlocksMap;
+                        finalLevel.BackBlocksMap = BackBlocksMap;
                         finalLevel.enemies = enemies;
                         finalLevel.itens = itens;
                         finalLevel.name = (std::string) NameLevel;
                         finalLevel.time = finalTime;
                         finalLevel.levelTheme = SongNameFinal;
-                        finalLevel.entrances = StartLinesDestination;
-                        finalLevel.exits = FinishLinesDestination;
+                        finalLevel.entrances = StartLines;
+                        finalLevel.exits = FinishLines;
                         loader->SaveLevel(finalLevel);
                         break;
                     }
@@ -736,38 +757,46 @@ void Play::EditLevel(std::string name) {
             mouseRectTemp.y = cy + mouseRect.y - HT/2;
             if (Menu == 1) {
                 if (mouseBlock.SCALE == 0) {
-                    for (int i = 0; i < sizeB; i++) {
-                        if (GenericColision(Blocks[i].rect, mouseRectTemp)) {
-                            if (Blocks[i].name == "nextLevel") {
+                    for (int j = 0; j < sizeFL; j++) {
+                        Block temp = FinishLines[j].arrow;
+                        if (GenericColision(temp.rect, mouseRectTemp)) {
+                            if (temp.name == "nextLevel") {
                                 sizeFL = FinishLines.size();
                                 for (int j = 0; j < sizeFL; j++) {
-                                    if (Blocks[i].rect.x == FinishLines[j].rect.x and Blocks[i].rect.y == FinishLines[j].rect.y) {
-                                        auto it1 = std::next(FinishLines.begin(), j);
-                                        auto it2 = std::next(FinishLinesDestination.begin(), j);
-                                        auto it3 = std::next(FLDsize.begin(), j);
-                                        FinishLines.erase(it1);
-                                        FinishLinesDestination.erase(it2);
-                                        FLDsize.erase(it3);
+                                    if (temp.rect.x == FinishLines[j].arrow.rect.x and temp.rect.y == FinishLines[j].arrow.rect.y) {
+                                        auto it = std::next(FinishLines.begin(), j);
+                                        FinishLines.erase(it);
                                         break;
                                     }
                                 }
-                            } else if (Blocks[i].name == "startLevel") {
+                            } else if (temp.name == "startLevel") {
                                 sizeSL = StartLines.size();
                                 for (int j = 0; j < sizeSL; j++) {
-                                    if (Blocks[i].rect.x == StartLines[j].rect.x and Blocks[i].rect.y == StartLines[j].rect.y) {
+                                    if (temp.rect.x == StartLines[j].arrow.rect.x and temp.rect.y == StartLines[j].arrow.rect.y) {
                                         auto it1 = std::next(StartLines.begin(), j);
-                                        auto it2 = std::next(StartLinesDestination.begin(), j);
-                                        auto it3 = std::next(SLDsize.begin(), j);
                                         StartLines.erase(it1);
-                                        StartLinesDestination.erase(it2);
-                                        SLDsize.erase(it3);
                                         break;
                                     }
                                 }
                             }
-                            auto it = std::next(Blocks.begin(), i);
-                            Blocks.erase(it);
-                            sizeB -= 1;
+                            for(auto & line : FrontBlocksMap) {
+                                for(auto & column : line.second) {
+                                    if (temp.rect.x == column.second.rect.x and temp.rect.y == column.second.rect.y and temp.name == column.second.name) {
+                                        FrontBlocksMap[line.first].erase(column.first);
+                                        sizeFB--;
+                                        break;
+                                    }
+                                }
+                            }
+                            for(auto & line : BackBlocksMap) {
+                                for(auto & column : line.second) {
+                                    if (temp.rect.x == column.second.rect.x and temp.rect.y == column.second.rect.y) {
+                                        BackBlocksMap[line.first].erase(column.first);
+                                        sizeBB--;
+                                        break;
+                                    }
+                                }
+                            }
                             break;
                         }
                     }
@@ -864,33 +893,42 @@ void Play::EditLevel(std::string name) {
 
         
         // Desenhando Blocos Background
-        blocksLevelTaker.DrawBlocks(Blocks, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE, true, false);
-        
+        blocksLevelTaker.DrawBlocks(BackBlocksMap, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE, true, false);
+
         // Colisão Blocos Background
-        for (int i = 0; i < sizeB; i++) {
-            if (!Blocks[i].background) {
-                continue;
-            }
-            if (Menu == 1 and background) {
-                if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
-                    placeBlock.rect.x += 2*SCALE;
-                    placeBlock.rect.y += 2*SCALE;
-                    if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
-                        placeBlock.rect.x -= 4*SCALE;
-                        placeBlock.rect.y -= 4*SCALE;
-                        if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
-                            placeable = false;
-                        } else {
-                            placeBlock.rect.x += 2*SCALE;
-                            placeBlock.rect.y += 2*SCALE;
-                        }
-                    } else {
-                        placeBlock.rect.x -= 2*SCALE;
-                        placeBlock.rect.y -= 2*SCALE;
-                    }
-                }
+        if (Menu == 1 and background) {
+            int line = placeBlock.rect.x/(BS-SCALE);
+            int column = placeBlock.rect.y/(BS-SCALE);
+            if (BackBlocksMap.count(line) and BackBlocksMap[line].count(column)) {
+                placeable = false;
             }
         }
+        // for (int i = 0; i < sizeB; i++) {
+        //     if (!Blocks[i].background) {
+        //         continue;
+        //     }
+        //     if (Menu == 1 and background) {
+        //         if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+        //             placeBlock.rect.x += 2*SCALE;
+        //             placeBlock.rect.y += 2*SCALE;
+        //             if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+        //                 placeBlock.rect.x -= 4*SCALE;
+        //                 placeBlock.rect.y -= 4*SCALE;
+        //                 if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
+        //                     placeable = false;
+        //                 } else {
+        //                     placeBlock.rect.x += 2*SCALE;
+        //                     placeBlock.rect.y += 2*SCALE;
+        //                 }
+        //             } else {
+        //                 placeBlock.rect.x -= 2*SCALE;
+        //                 placeBlock.rect.y -= 2*SCALE;
+        //             }
+        //         }
+        //     }
+        // }
+
+
 
         // Desenhando inimigos
         for (int i = 0; i < sizeE; i++) {
@@ -932,66 +970,61 @@ void Play::EditLevel(std::string name) {
         }
 
         // Colisão Blocos Ground
-        for (int i = 0; i < sizeB; i++) {
-            if (Blocks[i].background) {
-                continue;
+
+        if (Menu == 1 and !background) {
+            int line = placeBlock.rect.x/(BS-SCALE);
+            int column = placeBlock.rect.y/(BS-SCALE);
+            if (FrontBlocksMap.count(line) and FrontBlocksMap[line].count(column)) {
+                placeable = false;
             }
-            if (Menu == 1 and !background) {
-                if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
-                    placeBlock.rect.x += 2*SCALE;
-                    placeBlock.rect.y += 2*SCALE;
-                    if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
-                        placeBlock.rect.x -= 4*SCALE;
-                        placeBlock.rect.y -= 4*SCALE;
-                        if (GenericColision(Blocks[i].rect, placeBlock.rect)) {
-                            placeable = false;
+        } else if (Menu == 2) {
+            for(auto & line : FrontBlocksMap) {
+                for(auto & column : line.second) {
+                    Block temp = column.second;
+                    if (GenericColision(temp.rect, placeItem.rect)) {
+                        placeItem.rect.x += 2*SCALE;
+                        placeItem.rect.y += 2*SCALE;
+                        if (GenericColision(temp.rect, placeItem.rect)) {
+                            placeItem.rect.x -= 4*SCALE;
+                            placeItem.rect.y -= 4*SCALE;
+                            if (GenericColision(temp.rect, placeItem.rect)) {
+                                placeable = false;
+                            } else {
+                                placeItem.rect.x += 2*SCALE;
+                                placeItem.rect.y += 2*SCALE;
+                            }
                         } else {
-                            placeBlock.rect.x += 2*SCALE;
-                            placeBlock.rect.y += 2*SCALE;
+                            placeItem.rect.x -= 2*SCALE;
+                            placeItem.rect.y -= 2*SCALE;
                         }
-                    } else {
-                        placeBlock.rect.x -= 2*SCALE;
-                        placeBlock.rect.y -= 2*SCALE;
                     }
                 }
-            } else if (Menu == 2) {
-                if (GenericColision(Blocks[i].rect, placeItem.rect)) {
-                    placeItem.rect.x += 2*SCALE;
-                    placeItem.rect.y += 2*SCALE;
-                    if (GenericColision(Blocks[i].rect, placeItem.rect)) {
-                        placeItem.rect.x -= 4*SCALE;
-                        placeItem.rect.y -= 4*SCALE;
-                        if (GenericColision(Blocks[i].rect, placeItem.rect)) {
-                            placeable = false;
+            }
+        } else if (Menu == 3) {
+            for(auto & line : FrontBlocksMap) {
+                for(auto & column : line.second) {
+                    Block temp = column.second;
+                    if (GenericColision(temp.rect, placeEnemy.rect)) {
+                        placeEnemy.rect.x += 2*SCALE;
+                        placeEnemy.rect.y += 2*SCALE;
+                        if (GenericColision(temp.rect, placeEnemy.rect)) {
+                            placeEnemy.rect.x -= 4*SCALE;
+                            placeEnemy.rect.y -= 4*SCALE;
+                            if (GenericColision(temp.rect, placeEnemy.rect)) {
+                                placeable = false;
+                            } else {
+                                placeEnemy.rect.x += 2*SCALE;
+                                placeEnemy.rect.y += 2*SCALE;
+                            }
                         } else {
-                            placeItem.rect.x += 2*SCALE;
-                            placeItem.rect.y += 2*SCALE;
+                            placeEnemy.rect.x -= 2*SCALE;
+                            placeEnemy.rect.y -= 2*SCALE;
                         }
-                    } else {
-                        placeItem.rect.x -= 2*SCALE;
-                        placeItem.rect.y -= 2*SCALE;
-                    }
-                }
-            } else if (Menu == 3) {
-                if (GenericColision(Blocks[i].rect, placeEnemy.rect)) {
-                    placeEnemy.rect.x += 2*SCALE;
-                    placeEnemy.rect.y += 2*SCALE;
-                    if (GenericColision(Blocks[i].rect, placeEnemy.rect)) {
-                        placeEnemy.rect.x -= 4*SCALE;
-                        placeEnemy.rect.y -= 4*SCALE;
-                        if (GenericColision(Blocks[i].rect, placeEnemy.rect)) {
-                            placeable = false;
-                        } else {
-                            placeEnemy.rect.x += 2*SCALE;
-                            placeEnemy.rect.y += 2*SCALE;
-                        }
-                    } else {
-                        placeEnemy.rect.x -= 2*SCALE;
-                        placeEnemy.rect.y -= 2*SCALE;
                     }
                 }
             }
         }
+
 
         // Colisão Itens
         for (int i = 0; i < sizeI; i++) {
@@ -1017,31 +1050,42 @@ void Play::EditLevel(std::string name) {
         }
         // Desenhando itens
         itensLevelTaker.DrawItens(itens, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE);
+        
         // Desenhando Ground
-        blocksLevelTaker.DrawBlocks(Blocks, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE, false, true);
+        blocksLevelTaker.DrawBlocks(FrontBlocksMap, {WT/2, HT/2, 1, 1}, {cx, cy, 1, 1}, SCALE, false, true);
 
 
 
 
         if (placeable) {
             if (Menu == 1) {
-                Blocks.push_back(placeBlock);
+                int line = placeBlock.rect.x/(SCALE-BS);
+                int column = placeBlock.rect.y/(SCALE-BS);
+                if (placeBlock.background) {
+                    BackBlocksMap[line][column] = placeBlock; // bug crash -> line doesn't exist
+                } else {
+                    FrontBlocksMap[line][column] = placeBlock; // bug crash -> line doesn't exist
+                }
                 if (placeBlock.name == "nextLevel") {
                     int i = 0;
                     bool sucess = false;
-                    for (Block temp : FinishLines) {
-                        if (placeBlock.rect.y < temp.rect.y) {
-                            FinishLines.insert(FinishLines.begin() + i, placeBlock);
-                            FinishLinesDestination.insert(FinishLinesDestination.begin() + i, "Goes to\0");
-                            FLDsize.insert(FLDsize.begin() + i, 7);
+                    for (door temp : FinishLines) {
+                        if (placeBlock.rect.y < temp.arrow.rect.y) {
+                            door newd;
+                            newd.arrow = placeBlock;
+                            newd.place = "Goes to\0";
+                            newd.placeSize = 7;
+                            FinishLines.insert(FinishLines.begin() + i, newd);
                             sucess = true;
                             break;
                         }
-                        if (placeBlock.rect.y == temp.rect.y) {
-                            if (placeBlock.rect.x < temp.rect.x) {
-                                FinishLines.insert(FinishLines.begin() + i, placeBlock);
-                                FinishLinesDestination.insert(FinishLinesDestination.begin() + i, "Goes to\0");
-                                FLDsize.insert(FLDsize.begin() + i, 7);
+                        if (placeBlock.rect.y == temp.arrow.rect.y) {
+                            if (placeBlock.rect.x < temp.arrow.rect.x) {
+                                door newd;
+                                newd.arrow = placeBlock;
+                                newd.place = "Goes to\0";
+                                newd.placeSize = 7;
+                                FinishLines.insert(FinishLines.begin() + i, newd);
                                 sucess = true;
                                 break;
                             }
@@ -1049,28 +1093,34 @@ void Play::EditLevel(std::string name) {
                         i++;
                     }
                     if (!sucess) {
-                        FinishLines.insert(FinishLines.begin() + i, placeBlock);
-                        FinishLinesDestination.insert(FinishLinesDestination.begin() + i, "Goes to\0");
-                        FLDsize.insert(FLDsize.begin() + i, 7);
+                        door newd;
+                        newd.arrow = placeBlock;
+                        newd.place = "Goes to\0";
+                        newd.placeSize = 7;
+                        FinishLines.insert(FinishLines.begin() + i, newd);
                     }
                 } else if (placeBlock.name == "startLevel") {
                     int i = 0;
                     bool sucess = false;
                     player->rect.x = placeBlock.rect.x;
                     player->rect.y = placeBlock.rect.y;
-                    for (Block temp : StartLines) {
-                        if (placeBlock.rect.y < temp.rect.y) {
-                            StartLines.insert(StartLines.begin() + i, placeBlock);
-                            StartLinesDestination.insert(StartLinesDestination.begin() + i, "Arrives from\0");
-                            SLDsize.insert(SLDsize.begin() + i, 12);
+                    for (door temp : StartLines) {
+                        if (placeBlock.rect.y < temp.arrow.rect.y) {
+                            door newd;
+                            newd.arrow = placeBlock;
+                            newd.place = "Arrives From\0";
+                            newd.placeSize = 12;
+                            StartLines.insert(StartLines.begin() + i, newd);
                             sucess = true;
                             break;
                         }
-                        if (placeBlock.rect.y == temp.rect.y) {
-                            if (placeBlock.rect.x < temp.rect.x) {
-                                StartLines.insert(StartLines.begin() + i, placeBlock);
-                                StartLinesDestination.insert(StartLinesDestination.begin() + i, "Arrives from\0");
-                                SLDsize.insert(SLDsize.begin() + i, 12);
+                        if (placeBlock.rect.y == temp.arrow.rect.y) {
+                            if (placeBlock.rect.x < temp.arrow.rect.x) {
+                                door newd;
+                                newd.arrow = placeBlock;
+                                newd.place = "Arrives From\0";
+                                newd.placeSize = 12;
+                                StartLines.insert(StartLines.begin() + i, newd);
                                 sucess = true;
                                 break;
                             }
@@ -1078,9 +1128,11 @@ void Play::EditLevel(std::string name) {
                         i++;
                     }
                     if (!sucess) {
-                        StartLines.insert(StartLines.begin() + i, placeBlock);
-                        StartLinesDestination.insert(StartLinesDestination.begin() + i, "Arrives From\0");
-                        SLDsize.insert(SLDsize.begin() + i, 12);
+                        door newd;
+                        newd.arrow = placeBlock;
+                        newd.place = "Arrives From\0";
+                        newd.placeSize = 12;
+                        StartLines.insert(StartLines.begin() + i, newd);
                     }
                 }
             } else if (Menu == 2) {
@@ -1258,13 +1310,13 @@ void Play::EditLevel(std::string name) {
                 DrawText(TextFormat("Exit %d: ", i+1), FinishRect.x-90, FinishRect.y+5+i*30, 15, BLACK);
                 DrawRectangle(FinishRect.x-2, FinishRect.y-2+i*30, FinishRect.width+4, FinishRect.height+4, BLACK);
                 DrawRectangle(FinishRect.x, FinishRect.y+i*30, FinishRect.width, FinishRect.height, LIGHTGRAY);
-                char* temp = strdup(FinishLinesDestination[i].c_str());
+                char* temp = strdup(FinishLines[i].place.c_str());
                 DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON); // so scarlet, it was... MAROON
 
 
 
                 if (FLFocus-1 == i) { // Tive que botar essa parte aqui dentro porque POR ALGUM MOTIVO NÃO FUNCIONA LA EM BAIXO, AAAAAAAAAAAAAAAAAAAA RAIVA
-                    int LNCount = FLDsize[FLFocus-1];
+                    int LNCount = FinishLines[i].placeSize;
                     int key = GetCharPressed();
                     while (key > 0) {
                         if ((key >= 32) && (key <= 125) && (LNCount < MAX_CHARS)) {
@@ -1282,8 +1334,8 @@ void Play::EditLevel(std::string name) {
                         }
                         temp[LNCount] = '\0';
                     }
-                    FinishLinesDestination[FLFocus-1] = (std::string)temp;
-                    FLDsize[FLFocus-1] = LNCount;
+                    FinishLines[i].place = (std::string)temp;
+                    FinishLines[i].placeSize = LNCount;
                 }
             }
 
@@ -1292,14 +1344,13 @@ void Play::EditLevel(std::string name) {
                 DrawText(TextFormat("Entrance %d: ", j+1), FinishRect.x-90, FinishRect.y+5+i*30, 15, BLACK);
                 DrawRectangle(FinishRect.x-2, FinishRect.y-2+i*30, FinishRect.width+4, FinishRect.height+4, BLACK);
                 DrawRectangle(FinishRect.x, FinishRect.y+i*30, FinishRect.width, FinishRect.height, LIGHTGRAY);
-                char* temp = strdup(StartLinesDestination[j].c_str());
-                // strcpy(temp, StartLinesDestination[i].c_str()); <- essa linha simplesmente parou de funcionar e eu n sei pq...
+                char* temp = strdup(StartLines[j].place.c_str());
                 DrawText(temp, (int)FinishRect.x + 5, (int)FinishRect.y + 4+i*30, 20, MAROON);
 
 
 
                 if (SLFocus-1 == j) {
-                    int LNCount = SLDsize[SLFocus-1];
+                    int LNCount = StartLines[j].placeSize;
                     int key = GetCharPressed();
                     while (key > 0) {
                         if ((key >= 32) && (key <= 125) && (LNCount < MAX_CHARS)) {
@@ -1316,25 +1367,11 @@ void Play::EditLevel(std::string name) {
                         }
                         temp[LNCount] = '\0';
                     }
-                    StartLinesDestination[SLFocus-1] = (std::string)temp;
-                    SLDsize[SLFocus-1] = LNCount;
+                    StartLines[j].place = (std::string)temp;
+                    StartLines[j].placeSize = LNCount;
                 }
                 i++;
             }
-
-
-
-            // DrawText(TextFormat("Debug Signal 1 = %d: ", Debug1), 50, 50, 25, RED);
-            // DrawText(TextFormat("Debug Signal 2 = %d: ", Debug2), 50, 90, 25, RED);
-            // DrawText(TextFormat("Debug Signal 3 = %d: ", Debug3), 50, 130, 25, RED);
-            // DrawText(TextFormat("Debug Signal 4 = %d: ", Debug4), 50, 170, 25, RED);
-
-            // if (FLFocus > 0) {
-            //     int key = GetCharPressed();
-            //     char* temp;
-            //     strcpy(temp, FinishLinesDestination[FLFocus-1].c_str());
-                
-            // }
         }
 
 
@@ -1437,11 +1474,12 @@ void Play::HubLevelSelect() {
 }
 
 std::string Play::PlayLevel(std::string levelname, std::string entrance) {
-    Map Level = loader->LoadLevel(levelname);
+    Level Level = loader->LoadLevel(levelname);
     if (Level.time == -1) {
         return "";
     }
-    Blocks = Level.Blocks;
+    FrontBlocksMap = Level.FrontBlocksMap;
+    BackBlocksMap = Level.BackBlocksMap;
     itens = Level.itens;
     enemies = Level.enemies;
     seconds = Level.time;
@@ -1451,26 +1489,29 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
     
     int trueEntrance = 0;
     if (entrance != "") {
-        for (std::string option : Level.entrances) {
-            if (option == entrance) {
+        for (door option : Level.entrances) {
+            if (option.place == entrance) {
                 break;
             }
             trueEntrance++;
         }
     }
-    for (Block temp : Blocks) {
-        if (temp.name == "startLevel") {
-            if (trueEntrance == 0) {
-                player->rect.x = temp.rect.x+SCALE;
-                player->rect.y = temp.rect.y-SCALE;
-            } else {
-                trueEntrance--;
+    
+    for(auto & line : FrontBlocksMap) {
+        for(auto & column : line.second) {
+            Block temp = column.second;
+            if (temp.name == "startLevel") {
+                if (trueEntrance == 0) {
+                    player->rect.x = temp.rect.x+SCALE;
+                    player->rect.y = temp.rect.y;
+                } else {
+                    trueEntrance--;
+                }
+            } else if (temp.name == "cage") {
+                int color = ((int)temp.rect.x+(int)temp.rect.y) % 5;
+                player->birdsToSave[color] += 1;
             }
-        } else if (temp.name == "cage") {
-            int color = ((int)temp.rect.x+(int)temp.rect.y) % 5;
-            player->birdsToSave[color] += 1;
         }
-
     }
 
 
@@ -1482,7 +1523,7 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
 
 
     Music LevelTheme = LoadMusicStream(Level.levelTheme);
-    int saida = mainLoop(LevelTheme);
+    mainLoop(LevelTheme);
     UnloadMusicStream(LevelTheme);
 
 
@@ -1494,17 +1535,23 @@ std::string Play::PlayLevel(std::string levelname, std::string entrance) {
 
 
 
-    if (saida == -1) {
+    if (saida.SCALE == 10) {
         return "";
     }
 
-    std::string nextLevel = Level.exits[saida];
+    std::string nextLevel = "";
+    for (auto pair : Level.exits) {
+        if (pair.arrow.rect.x == saida.rect.x and pair.arrow.rect.y == saida.rect.y) {
+            nextLevel = pair.place;
+        }
+    }
+
 
 
     return nextLevel;
 }
 
-int Play::mainLoop(Music LevelTheme) {
+void Play::mainLoop(Music LevelTheme) {
     SetTargetFPS(30);
     // SetTargetFPS(2);
     player->vx = 0;
@@ -1515,7 +1562,7 @@ int Play::mainLoop(Music LevelTheme) {
     PlayMusicStream(LevelTheme);
     Vector2 mousePosition;
     tick = 1;
-    saida = -1;
+    saida = Block();
 
     Vector2 relativePos;
     cameraCenter = {WT/2, HT/2, player->rect.width, player->rect.height};
@@ -1536,8 +1583,10 @@ int Play::mainLoop(Music LevelTheme) {
     Texture2D birdO = LoadTexture("assets/images/bird-flying-orange.png");
 
     ItemHandler itemTaker = ItemHandler(itens);
-    BlockHandler blockTaker = BlockHandler(Blocks, this);
-
+    Level tempLevel;
+    tempLevel.FrontBlocksMap = FrontBlocksMap;
+    tempLevel.BackBlocksMap = BackBlocksMap;
+    BlockRenderer blockTaker = BlockRenderer(tempLevel, this);
     
     Vector2 posEffect = {(float)GetScreenWidth()/2-100, (float)GetScreenHeight()/2-100}, dirEffect = {-5, -5};
     // posEffect.x += -cameraCenter.x +relativeCameraCenter.x;
@@ -1546,11 +1595,13 @@ int Play::mainLoop(Music LevelTheme) {
     effects.push_back(Effect(posEffect, dirEffect, 500, 6, dmg, SCALE));
 
 
+
+
+
     while (!WindowShouldClose()) {
         if (fadeout == 0) {
             UpdateMusicStream(LevelTheme);
         }
-        sizeB = Blocks.size();
         sizeE = enemies.size();
         sizeD = dusts.size();
         sizeS = effects.size();
@@ -1560,10 +1611,10 @@ int Play::mainLoop(Music LevelTheme) {
 
             // Entities Updates
             for (int i = 0; i < sizeE; i++) {
-                enemies[i].update(Blocks, player.get(), effects);
+                enemies[i].update(FrontBlocksMap, player.get(), effects);
             }
 
-            player->update(Blocks, itens, enemies, effects);
+            player->update(FrontBlocksMap, BackBlocksMap, itens, enemies, effects);
             
             if (player->isBoost) {
                 float posY = player->rect.y + RNG100(rng)*player->rect.height/100;
@@ -1591,13 +1642,17 @@ int Play::mainLoop(Music LevelTheme) {
                 if (effects[i].id == 4 and effects[i].tick % 60 == 0) {
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true, "Thank you!");
                 }
-                if (effects[i].update(Blocks, player.get(), itens, enemies)) {
+                if (effects[i].update(FrontBlocksMap, player.get(), itens, enemies)) {
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
 
                     if (effects[i].id == 6) {
-                        player->Health(7, 'H');
+                        player->pHH += 70;
+                        while (player->pHH > player->PHH) {
+                            player->Health(1, 'H');
+                            player->pHH -= player->PHH;
+                        }
                     }
 
                     auto it = std::next(effects.begin(), i);
@@ -1631,7 +1686,7 @@ int Play::mainLoop(Music LevelTheme) {
             }
             sizeS = effects.size();
             for (int i = 0; i < sizeS; i++) {
-                if (effects[i].id == 5 and effects[i].update(Blocks, player.get(), itens, enemies)) {
+                if (effects[i].id == 5 and effects[i].update(FrontBlocksMap, player.get(), itens, enemies)) {
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
                     DustBringer(effects[i].cx, effects[i].cy, BLACK, RNG100(rng), true);
@@ -1639,7 +1694,11 @@ int Play::mainLoop(Music LevelTheme) {
                     auto it = std::next(effects.begin(), i);
                     effects.erase(it);
                     i--;
-                    player->Health(1, 'W');
+                    player->pWH += 15;
+                    if (player->pWH >= player->PWH) {
+                        player->pWH -= player->PWH;
+                        player->Health(1, 'W');
+                    }
                 }
             }
         }
@@ -1683,27 +1742,31 @@ int Play::mainLoop(Music LevelTheme) {
         
         bool SwitchGreen = false;
         int cont = 0;
-        for (Block& temp : Blocks) {
-            if (temp.name == "switch_green") {
-                if (temp.parameter > 0) {
-                    SwitchGreen = true;
-                    temp.parameter = 0;
-                    break;
+        for(auto & line : FrontBlocksMap) {
+            for(auto & column : line.second) {
+                Block temp = column.second;
+                if (temp.name == "switch_green") {
+                    if (temp.parameter > 0) {
+                        SwitchGreen = true;
+                        temp.parameter = 0;
+                        break;
+                    }
+                } else if (temp.name == "energy") {
+                    temp.parameter -= 1;
+                    if (temp.parameter <= 0) {
+                        line.second.erase(column.first);
+                    }
                 }
-            } else if (temp.name == "energy") {
-                temp.parameter -= 1;
-                if (temp.parameter <= 0) {
-                    auto it = std::next(Blocks.begin(), cont);
-                    Blocks.erase(it);
-                    sizeB--;
-                }
+                cont++;
             }
-            cont++;
-        }
-        if (SwitchGreen) {
-            for (Block& temp : Blocks) {
-                if (temp.name == "green") {
-                    temp.background = !temp.background;
+            if (SwitchGreen) {
+                for(auto & line : FrontBlocksMap) {
+                    for(auto & column : line.second) {
+                        Block temp2 = column.second;
+                        if (temp2.name == "green") {
+                            temp2.background = !temp2.background;
+                        }
+                    }
                 }
             }
         }
@@ -1727,7 +1790,7 @@ int Play::mainLoop(Music LevelTheme) {
 
 
         // Desenhando blocos Background
-        blockTaker.DrawBlocks(Blocks, cameraCenter, relativeCameraCenter, SCALE, true, false);
+        blockTaker.DrawBlocks(BackBlocksMap, cameraCenter, relativeCameraCenter, SCALE, true, false);
 
 
 
@@ -1810,7 +1873,7 @@ int Play::mainLoop(Music LevelTheme) {
         itemTaker.DrawItens(itens, cameraCenter, relativeCameraCenter, SCALE);
 
         // Desenhando blocos Ground
-        blockTaker.DrawBlocks(Blocks, cameraCenter, relativeCameraCenter, SCALE, false, false);
+        blockTaker.DrawBlocks(FrontBlocksMap, cameraCenter, relativeCameraCenter, SCALE, false, false);
 
         // Desenhando Efeitos
         for (int i = 0; i < sizeS; i++) {
@@ -2104,6 +2167,30 @@ int Play::mainLoop(Music LevelTheme) {
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // int SizeDebug = enemies.size();
+        // DrawText(TextFormat("Inimigos: %d", SizeDebug), GetScreenWidth()/2, 70, 20, RED);
+        // SizeDebug = dusts.size();
+        // DrawText(TextFormat("dusts: %d", SizeDebug), GetScreenWidth()/2, 100, 20, RED);
+        // SizeDebug = itens.size();
+        // DrawText(TextFormat("itens: %d", SizeDebug), GetScreenWidth()/2, 130, 20, RED);
+        // SizeDebug = effects.size();
+        // DrawText(TextFormat("effects: %d", SizeDebug), GetScreenWidth()/2, 160, 20, RED);
+
+
         if (DEBUG) {
             // DrawText(TextFormat("X=%02.02f, Y=%02.02f, W=%02.02f, H=%02.02f", player->groundBlock.rect.x, player->groundBlock.rect.y, player->groundBlock.rect.width, player->groundBlock.rect.height), GetScreenWidth()/2 - 200, 100, 30, WHITE);
             
@@ -2126,13 +2213,56 @@ int Play::mainLoop(Music LevelTheme) {
             DrawCircle(relativePos.x, relativePos.y, 5, PURPLE);
 
 
-            int sizeCB = player->CBs.size();
-            for (int i = 0; i < sizeCB; i++) {
-                Block temp = Blocks[player->CBs[i]];
-                relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
-                relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
-                DrawRectangle(relativePos.x, relativePos.y, temp.rect.width, temp.rect.height, GRAY);
+            int Gx = player->cx/(BS-SCALE);
+            int Gy = player->cy/(BS-SCALE);
+
+
+            
+
+            // int qtd = 0;
+            // for(auto & line : FrontBlocksMap) {
+            //     for(auto & column : line.second) {
+            //         qtd++;
+            //     }
+            // }
+            // DrawText(TextFormat("Memory Leak check: %d", qtd), 450, 100, 30, RED);
+
+
+
+
+
+            for (int i = -2; i <= 2; i++) {
+                for (int j = -2; j <= 2; j++) {
+                    if (FrontBlocksMap.count(Gy+i) > 0 and FrontBlocksMap[Gy+i].count(Gx+j) > 0) {
+                        Block temp = FrontBlocksMap[Gy+i][Gx+j];
+                        relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
+                        relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+                        DrawRectangle(relativePos.x, relativePos.y, temp.rect.width, temp.rect.height, GRAY);
+                        DrawText(TextFormat("(%d, %d)", Gy+i, Gx+j), relativePos.x + 3, relativePos.y + 3, 15, BLACK);
+                    }
+                }
             }
+            DrawText(TextFormat("(%d, %d)", Gy, Gx), 200, 100, 30, YELLOW);
+
+            int blockqtd = 0;
+            if (tick % 120 == 0) {
+                for(auto & line : FrontBlocksMap) {
+                    for(auto & column : line.second) {
+                        blockqtd++;
+                    }
+                }
+            }
+            
+            DrawText(TextFormat("(%d, %d)", Gx, Gy), 200, 100, 30, YELLOW);
+
+
+            // int sizeCB = player->CBs.size();
+            // for (int i = 0; i < sizeCB; i++) {
+            //     Block temp = Blocks[player->CBs[i]];
+            //     relativePos.x = cameraCenter.x +temp.rect.x -relativeCameraCenter.x;
+            //     relativePos.y = cameraCenter.y +temp.rect.y -relativeCameraCenter.y;
+            //     DrawRectangle(relativePos.x, relativePos.y, temp.rect.width, temp.rect.height, GRAY);
+            // }
             for (int i = 0; i < sizeE; i++) {
                 // relativePos.x = cameraCenter.x +enemies[i].rect.x -relativeCameraCenter.x;
                 // relativePos.y = cameraCenter.y +enemies[i].rect.y -relativeCameraCenter.y;
@@ -2232,23 +2362,7 @@ int Play::mainLoop(Music LevelTheme) {
 
 
     tick -= 180;
-    if (saida == -1) {
-        return -1;
-    }
-
     player->score += 50 * (seconds/10);
-
-    int trueSaida = 0;
-    for (int i = 0; i < sizeB; i++) {
-        if (Blocks[i].name == "nextLevel") {
-            if (i == saida) {
-                break;
-            }
-            trueSaida += 1;
-        }
-    }
-
-    return trueSaida;
 }
 
 void Play::DesenharHeart() {
@@ -2517,66 +2631,39 @@ void Play::DesenharPearl() {
         }
     }
 
-void Play::DesenharBlocos(bool background, bool showSecret) {
-    int sizeB = Blocks.size();
-    Vector2 relativePos;
-    for (int i = 0; i < sizeB; i++) {
-        Block temp = Blocks[i];
-        if (temp.background != background) {
-            continue;
-        }
-        if (Blocks[i].name == "nextLevel" and fadeout == 0) {
-            if (GenericColision(player->rect, Blocks[i].rect)) {
-                fadeout = 1;
-                saida = i;
-                PlaySound(finish);
+
+
+void Play::revealSecret(Block temp, int Bx, int By) {
+    if (Bx == 0 and By == 0) {
+        for(auto & line : FrontBlocksMap) {
+            for(auto & column : line.second) {
+                Block temp2 = column.second;
+                if (temp.rect.x == temp2.rect.x and temp.rect.y == temp2.rect.y) {
+                    Bx = line.first;
+                    By = column.first;
+                    break;
+                }
             }
-        }
-
-        relativePos.x = WT/2 +temp.rect.x -relativeCameraCenter.x;
-        relativePos.y = HT/2 +temp.rect.y -relativeCameraCenter.y;
-        if (temp.direction != 0) {
-            if (temp.direction == 1) {
-                relativePos.y += temp.rect.height;
-            } else if (temp.direction == 2) {
-                relativePos.x += temp.rect.width;
-                relativePos.y += temp.rect.height;
-            } else if (temp.direction == 3) {
-                relativePos.x += temp.rect.width;
-            }
-        }
-
-        Color transparency;
-        if (temp.background) {
-            transparency = GRAY;
-        } else {
-            transparency = WHITE;
-        }
-
-        if (temp.name == "cage") {
-            Rectangle source, dest;
-            if ((tick+(int)temp.rect.x+(int)temp.rect.y) % 20 < 10) {
-                source.x = 12;
-            } else {
-                source.x = 0;
-            }
-            source.y = 0;
-            source.width = temp.rectImage.width;
-            source.height = temp.rectImage.height;
-
-            dest.x = relativePos.x;
-            dest.y = relativePos.y;
-            dest.width = temp.rect.width;
-            dest.height = temp.rect.height;
-
-            DrawTexturePro(temp.image, source, dest, {0, 0}, temp.direction*-90, transparency);
-        } else {
-            DrawTextureEx(temp.image, relativePos, temp.direction*-90, SCALE, transparency);
         }
     }
+
+    Block temp3 = FrontBlocksMap[Bx][By];
+    temp3.secret = false;
+    temp3.background = true;
+    FrontBlocksMap[Bx].erase(By);
+    BackBlocksMap[Bx][By] = temp3;
+
+    if (FrontBlocksMap.count(Bx) and FrontBlocksMap[Bx].count(By+1) and FrontBlocksMap[Bx][By+1].secret) {
+        revealSecret(FrontBlocksMap[Bx][By+1], Bx, By+1);
+    }
+    if (FrontBlocksMap.count(Bx) and FrontBlocksMap[Bx].count(By-1) and FrontBlocksMap[Bx][By-1].secret) {
+        revealSecret(FrontBlocksMap[Bx][By-1], Bx, By-1);
+    }
+    if (FrontBlocksMap.count(Bx+1) and FrontBlocksMap[Bx+1].count(By) and FrontBlocksMap[Bx+1][By].secret) {
+        revealSecret(FrontBlocksMap[Bx+1][By], Bx+1, By);
+    }
+    if (FrontBlocksMap.count(Bx-1) and FrontBlocksMap[Bx-1].count(By) and FrontBlocksMap[Bx-1][By].secret) {
+        revealSecret(FrontBlocksMap[Bx-1][By], Bx-1, By);
+    }
 }
-
-
-
-
 

@@ -40,7 +40,7 @@ public:
     Block border2;
 
     // Snail
-    std::vector<int> closeBlocks;
+    std::vector<Block> closeBlocks;
     Rectangle HBFeet, vision;
     Block ground;
 
@@ -55,19 +55,19 @@ public:
 
     Enemy();
 
-    void update(std::vector<Block> Blocks, Flamingo* player, std::vector<Effect> &effects);
+    void update(std::map<int, std::map<int, Block>> Blocks, Flamingo* player, std::vector<Effect> &effects);
 
     void bee();
 
-    void snail(std::vector<Block> Blocks);
+    void snail(std::map<int, std::map<int, Block>> Blocks);
 
-    void butterfly(std::vector<Block> Blocks, Flamingo* player);
+    void butterfly(std::map<int, std::map<int, Block>>, Flamingo* player);
 
     void crab(Flamingo* player);
     
     void meldrop(Flamingo* player, std::vector<Effect> &effects);
 
-    void getCloseBlocks(std::vector<Block> Blocks);
+    void getCloseBlocks(std::map<int, std::map<int, Block>> Blocks);
 };
 
 // class Bee : Enemy {

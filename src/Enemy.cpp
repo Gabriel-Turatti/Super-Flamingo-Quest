@@ -46,7 +46,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             if (Blocks.count(i) > 0) {
                 for (int k = j; k > 0; k--) {
-                    if (Blocks[i].count(k) > 0 and !Blocks[i][k].background and Blocks[i][k].rect.x+Blocks[i][k].rect.width > patrol1) {
+                    if (Blocks[i].count(k) > 0 and Blocks[i][k].rect.x+Blocks[i][k].rect.width > patrol1) {
                         border1 = Blocks[i][k];
                         patrol1 = border1.rect.x+border1.rect.width-SCALE;
                         break;
@@ -55,7 +55,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             }
             if (Blocks.count(i-1) > 0) {
                 for (int k = j; k > 0; k--) {
-                    if (Blocks[i-1].count(k) > 0 and !Blocks[i-1][k].background and Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width > patrol1) {
+                    if (Blocks[i-1].count(k) > 0 and Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width > patrol1) {
                         border1 = Blocks[i-1][k];
                         patrol1 = border1.rect.x+border1.rect.width;
                         break;
@@ -66,7 +66,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             if (Blocks.count(i) > 0) {
                 int sizeB = Blocks[i].size();
                 for (int k = j+1; sizeB > 0; k++) {
-                    if (Blocks[i].count(k) > 0 and !Blocks[i][k].background and Blocks[i][k].rect.x < patrol2) {
+                    if (Blocks[i].count(k) > 0 and Blocks[i][k].rect.x < patrol2) {
                         border2 = Blocks[i][k];
                         patrol2 = border2.rect.x;
                         break;
@@ -77,7 +77,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             if (Blocks.count(i-1) > 0) {
                 int sizeB = Blocks[i-1].size();
                 for (int k = j+1; sizeB > 0; k++) {
-                    if (Blocks[i-1].count(k) > 0 and !Blocks[i-1][k].background and Blocks[i-1][k].rect.x < patrol2) {
+                    if (Blocks[i-1].count(k) > 0 and Blocks[i-1][k].rect.x < patrol2) {
                         border2 = Blocks[i-1][k];
                         patrol2 = border2.rect.x;
                         break;
@@ -141,11 +141,11 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             border1 = Blocks[i+1][j];
             for (int k = j; k >= 0; k--) {
-                if (Blocks[i+1].count(k) > 0 and !Blocks[i+1][k].background) {
+                if (Blocks[i+1].count(k) > 0) {
                     border1 = Blocks[i+1][k];
                     continue;
                 }
-                if (Blocks[i+1].count(k-1) and Blocks[i+1][k-1].rect.x+Blocks[i+1][k-1].rect.width > border1.rect.x and !Blocks[i+1][k-1].background) {
+                if (Blocks[i+1].count(k-1) and Blocks[i+1][k-1].rect.x+Blocks[i+1][k-1].rect.width > border1.rect.x) {
                     border1 = Blocks[i+1][k-1];
                     k--;
                     continue;
@@ -155,12 +155,12 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             border2 = Blocks[i+1][j];
             int k = j;
             while (true) {
-                if (Blocks[i+1].count(k) > 0 and !Blocks[i+1][k].background) {
+                if (Blocks[i+1].count(k) > 0) {
                     border2 = Blocks[i+1][k];
                     k++;
                     continue;
                 }
-                if (Blocks[i+1].count(k+1) > 0 and border2.rect.x+border2.rect.width > Blocks[i+1][k+1].rect.x and !Blocks[i+1][k+1].background) {
+                if (Blocks[i+1].count(k+1) > 0 and border2.rect.x+border2.rect.width > Blocks[i+1][k+1].rect.x) {
                     k++;
                     continue;
                 }
@@ -175,7 +175,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             for(auto const &ent1 : Blocks[i]) {
                 if (ent1.first > j) {
-                    if (ent1.second.rect.x < patrol2 and !ent1.second.background) {
+                    if (ent1.second.rect.x < patrol2) {
                         patrol2 = ent1.second.rect.x;
                         break;
                     }
@@ -185,7 +185,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
             if (Blocks.count(i-1)) {
                 for(auto const &ent1 : Blocks[i-1]) {
                     if (ent1.first > j) {
-                        if (ent1.second.rect.x < patrol2 and !ent1.second.background and ent1.second.rect.y+ent1.second.rect.height > border2.rect.y) {
+                        if (ent1.second.rect.x < patrol2 and ent1.second.rect.y+ent1.second.rect.height > border2.rect.y) {
                             patrol2 = ent1.second.rect.x;
                             break;
                         }
@@ -198,7 +198,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             if (Blocks.count(i) > 0) {
                 for (k = j; k >= 0; k--) {
-                    if (Blocks[i].count(k) > 0 and !Blocks[i][k].background) {
+                    if (Blocks[i].count(k) > 0) {
                         if (Blocks[i][k].rect.x+Blocks[i][k].rect.width > patrol1) {
                             patrol1 = Blocks[i][k].rect.x+Blocks[i][k].rect.width;
                             break;
@@ -213,7 +213,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
             if (Blocks.count(i-1) > 0) {
                 for (k = j; k >= 0; k--) {
-                    if (Blocks[i-1].count(k) > 0 and Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width > patrol1 and Blocks[i-1][k].rect.y+Blocks[i-1][k].rect.height > rect.y and !Blocks[i-1][k].background) {
+                    if (Blocks[i-1].count(k) > 0 and Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width > patrol1 and Blocks[i-1][k].rect.y+Blocks[i-1][k].rect.height > rect.y) {
                         patrol1 = Blocks[i-1][k].rect.x+Blocks[i-1][k].rect.width;
                         break;
                     }
@@ -245,7 +245,7 @@ Enemy::Enemy(float x, float y, std::string namer, int imagescale, std::map<int, 
 
 Enemy::Enemy() {SCALE = 0;}
 
-void Enemy::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Effect> &effects) {
+void Enemy::update(std::map<int, std::map<int, Block>> Blocks, Flamingo* player, std::vector<Effect> &effects) {
     if (tick == 0) {
         return;
     }
@@ -285,7 +285,7 @@ void Enemy::bee() {
     cx += vx;
 }
 
-void Enemy::snail(std::vector<Block> Blocks) {
+void Enemy::snail(std::map<int, std::map<int, Block>> Blocks) {
     getCloseBlocks(Blocks);
     cx = rect.x+rect.width/2;
     cy = rect.y+rect.height/2;
@@ -315,10 +315,8 @@ void Enemy::snail(std::vector<Block> Blocks) {
         vision.y = rect.y+(rect.width+SCALE);
     }
 
-    int sizeB = closeBlocks.size();
-    for (int i = 0; i < sizeB; i++) {
-        Block temp = Blocks[closeBlocks[i]];
-        if (temp.name == "spike" or temp.background or temp.secret) {
+    for (Block temp : closeBlocks) {
+        if (temp.name == "spike" or temp.secret) {
             continue;
         }
         if (GenericColision(vision, temp.rect)) {
@@ -372,7 +370,7 @@ void Enemy::snail(std::vector<Block> Blocks) {
 
 }
 
-void Enemy::butterfly(std::vector<Block> Blocks, Flamingo* player) {
+void Enemy::butterfly(std::map<int, std::map<int, Block>> Blocks, Flamingo* player) {
     getCloseBlocks(Blocks);
     if (behavior == 0) {
         angle += 3;
@@ -385,9 +383,8 @@ void Enemy::butterfly(std::vector<Block> Blocks, Flamingo* player) {
         cx = rect.x + rect.width*SCALE/2;
         cy = rect.y + rect.height*SCALE/2;
 
-        int sizeB = closeBlocks.size();
-        for (int i = 0; i < sizeB; i++) {
-            if (GenericColision(Blocks[closeBlocks[i]].rect, rect)) {
+        for (Block temp : closeBlocks) {
+            if (GenericColision(temp.rect, rect)) {
                 orbit.x -= 1*SCALE*std::cos(radians);
                 orbit.y -= 1*SCALE*std::sin(radians);
             }
@@ -414,22 +411,21 @@ void Enemy::butterfly(std::vector<Block> Blocks, Flamingo* player) {
             vy = -3*SCALE;
         }
 
-        int sizeB = closeBlocks.size();
         rect.x += vx;
         cx += vx;
-        for (int i = 0; i < sizeB; i++) {
-            if (GenericColision(Blocks[closeBlocks[i]].rect, rect)) {
-                rect.x -= vx;
-                cx -= vx;
+        for (Block temp : closeBlocks) {
+            if (GenericColision(temp.rect, rect)) {
+                rect.x -= 2*vx;
+                cx -= 2*vx;
                 break;
             }
         }
         rect.y += vy;
         cy += vy;
-        for (int i = 0; i < sizeB; i++) {
-            if (GenericColision(Blocks[closeBlocks[i]].rect, rect)) {
-                rect.y -= vy;
-                cy -= vy;
+        for (Block temp : closeBlocks) {
+            if (GenericColision(temp.rect, rect)) {
+                rect.y -= 2*vy;
+                cy -= 2*vy;
                 break;
             }
         }
@@ -502,19 +498,18 @@ void Enemy::meldrop(Flamingo* player, std::vector<Effect> &effects) {
     }
 }
 
-void Enemy::getCloseBlocks(std::vector<Block> Blocks) {
+void Enemy::getCloseBlocks(std::map<int, std::map<int, Block>> Blocks) {
     if (tick % 5 == 0) {
         closeBlocks.clear();
-        int sizeB = Blocks.size();
-        for (int i = 0; i < sizeB; i++) {
-            if (Blocks[i].background) {
-                continue;
-            }
-            int dx = abs(Blocks[i].cx - cx);
-            if (dx < Blocks[i].rect.width*2) {
-                int dy = abs(Blocks[i].cy - cy);
-                if (dy < Blocks[i].rect.height*2) {
-                    closeBlocks.push_back(i);
+        for(auto & line : Blocks) {
+            for(auto & column : line.second) {
+                Block temp = column.second;
+                int dx = abs(temp.cx - cx);
+                if (dx < temp.rect.width*2) {
+                    int dy = abs(temp.cy - cy);
+                    if (dy < temp.rect.height*2) {
+                        closeBlocks.push_back(temp);
+                    }
                 }
             }
         }

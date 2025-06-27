@@ -51,11 +51,16 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
  
 
 
+// Resolvido muita coisa!! Gabriel shdushds
+// Agora vc precisa contabilizar os blocos pra ver se n ta sendo criado coisa, pq tem muita coordenada com o mesmo bloco
+// E um fedor de vazamento de memória que meu deus,
+// Boa sorte!
 
 
 ( ) 0.9 - Planes of Paris Update
-    (?) [B**] I'm gonna refactor collision and kill once and for all the mega-bug
-    ( ) [BC] Sometimes exiting a level crashes.
+    (X) [B**] I'm gonna refactor collision and kill once and for all the mega-bug
+    (?) [BC] Sometimes exiting a level crashes.
+    (X) [R] Changes Health and Mana regen systems
     (X) [B] Death coin no image in imageloader
     (X) [B] Can't crouch on platform
     (X) [B] Clipping on chest walk -> Jumping too high
@@ -69,7 +74,16 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [B] Ledge-head-jump
     (?) [B] Not accounting all time score.
 
-    ( ) [R] Collision -> Fixes all clip bugs
+    ( ) [R***] Collision -> Fixes all clip bugs
+        (X) Main Functioning
+        (X) [B] Doors not disappearing
+        ( ) [B] Wall check clipping
+        (X) [B] Don't Bounce anymore maybe? Let's try deactivating Bounce and see if the game gets better
+        (X) [B] Blocks not in the map!!
+        (X) [B] Bird Cage Crashing Game
+        (X) Flamingo nine point collision
+        (X) Better Enemy Collision
+        (X) 2x2 Blocks
     (X) [R] Remove ceil bounce
     (X) [R] Grassy Walks I Orange Key unreachable.
     (X) [R] Jumping more dynamic.

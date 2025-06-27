@@ -15,7 +15,7 @@
 #include "Functions.hpp"
 #include "MapLoader.hpp"
 #include "ItemHandler.hpp"
-#include "BlockHandler.hpp"
+#include "BlockRenderer.hpp"
 
 /*
 *   Class dedicated to running the game.
@@ -60,19 +60,21 @@ public:
     std::uniform_int_distribution<std::mt19937::result_type> RNGWidth;
     std::uniform_int_distribution<std::mt19937::result_type> RNGHeight;
 
-    std::vector<Block> Blocks;
+    std::map<int, std::map<int, Block>> FrontBlocksMap;
+    std::map<int, std::map<int, Block>> BackBlocksMap;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
     std::vector<Effect> effects;
     std::vector<Dust> dusts;
-    int sizeB;
+    int sizeFB;
+    int sizeBB;
     int sizeE;
     int sizeI;
     int sizeD;
     int sizeS;
 
     int fadeout = 0;
-    int saida = -1;
+    Block saida;
 
     float cx, cy;
 
@@ -94,11 +96,13 @@ public:
     int complexityCalc(Item temp);
     int complexityCalc(Enemy temp);
     std::string PlayLevel(std::string level, std::string entrance);
-    int mainLoop(Music LevelTheme);
+    void mainLoop(Music LevelTheme);
     void EditLevel(std::string level);
     void DesenharHeart();
     void DesenharPearl();
     void DesenharBlocos(bool Background, bool showSecret);
+
+    void revealSecret(Block, int, int);
 };
 
 #endif

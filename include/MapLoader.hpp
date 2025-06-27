@@ -26,7 +26,7 @@ public:
         Color cor;
         int timer;
     };
-    std::vector<Block> Blocks;
+    std::map<int, std::map<int, Block>> BlocksMap;
     std::vector<Item> itens;
     std::vector<Enemy> enemies;
     std::vector<Effect> effects;
@@ -39,10 +39,10 @@ public:
     MapLoader(int SCALER, int BSer, float width, float height);
     MapLoader();
 
-    void SaveLevel(Map level);
+    void SaveLevel(Level level);
     void SaveFlamingo(Flamingo* player);
     std::unique_ptr<Flamingo> LoadFlamingo();
-    Map LoadLevel(std::string name);
+    Level LoadLevel(std::string name);
 };
 
 #endif

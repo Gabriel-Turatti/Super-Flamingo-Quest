@@ -23,4 +23,10 @@ public:
     Block();
 };
 
+struct door {
+    std::string place;
+    int placeSize;
+    Block arrow;
+};
+
 #endif

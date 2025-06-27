@@ -75,7 +75,7 @@ Effect::Effect(Vector2 position, Vector2 direction, int lifespan, int identifica
     cy = rect.y + rect.height/2;
 }
 
-bool Effect::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies) {
+bool Effect::update(std::map<int, std::map<int, Block>> Blocks, Flamingo* player, std::vector<Item> &itens, std::vector<Enemy> &enemies) {
     bool value;
     switch(id) {
         case(1):
@@ -118,19 +118,19 @@ bool Effect::update(std::vector<Block> Blocks, Flamingo* player, std::vector<Ite
     return value;
 }
 
-bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo* player) {
+bool Effect::meldropShot(std::map<int, std::map<int, Block>> Blocks, Flamingo* player) {
     if (tick % 5 == 0) {
-        int sizeBT = Blocks.size();
         closeBlocks.clear();
-        for (int i = 0; i < sizeBT; i++) {
-            if (Blocks[i].background) {
-                continue;
-            }
-            int dx = abs(Blocks[i].cx - cx);
-            if (dx < Blocks[i].rect.width*2) {
-                int dy = abs(Blocks[i].cy - cy);
-                if (dy < Blocks[i].rect.height*2) {
-                    closeBlocks.push_back(i);
+        for(auto & line : Blocks) {
+            for(auto & column : line.second) {
+                Block temp = column.second;
+
+                int dx = abs(temp.cx - cx);
+                if (dx < temp.rect.width*2) {
+                    int dy = abs(temp.cy - cy);
+                    if (dy < temp.rect.height*2) {
+                        closeBlocks.push_back(temp);
+                    }
                 }
             }
         }
@@ -138,7 +138,7 @@ bool Effect::meldropShot(std::vector<Block> Blocks, Flamingo* player) {
 
     int sizeB = closeBlocks.size();
     for (int i = 0; i < sizeB; i++) {
-        if (GenericColision(rect, Blocks[closeBlocks[i]].rect)) {
+        if (GenericColision(rect, closeBlocks[i].rect)) {
             return true;
         }
     }

@@ -104,7 +104,7 @@ Block::Block(int x, int y, int w, int h, std::string namer, int SCALER, int rota
     }
 
     // If you're adding a new block, make sure to also add it to:
-    // BlockHandler
+    // BlockRenderer
     // editLevel
     // SaveFile
     // LoadFile
