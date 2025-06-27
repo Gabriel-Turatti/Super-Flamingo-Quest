@@ -491,10 +491,10 @@ void MapLoader::SaveFlamingo(Flamingo* player) {
 
     FlamFile << player->MHH << '-' << player->MRH << '-' << player->MPH << '-' << player->MCH << '-' << player->MWH << '*' << '\n';
     FlamFile << player->HH << '-' << player->RH << '-' << player->PH << '-' << player->CH << '-' << player->WH << '*' << '\n';
-    FlamFile << player->PHH << '-' << player->PRH << '-' << player->PPH << '-' << player->PCH << '-' << player->PWH << '*' << '\n';
+    FlamFile << player->SHH << '-' << player->SRH << '-' << player->SPH << '-' << player->SCH << '-' << player->SWH << '*' << '\n';
     FlamFile << player->MWP << '-' << player->MPP << '-' << player->MFP << '-' << player->MHP << '-' << player->MEP << '*' << '\n';
     FlamFile << player->WP << '-' << player->PP << '-' << player->FP << '-' << player->HP << '-' << player->EP << '*' << '\n';
-    FlamFile << player->PWP << '-' << player->PPP << '-' << player->PFP << '-' << player->PHP << '-' << player->PEP << '*' << '\n';
+    FlamFile << player->SWP << '-' << player->SPP << '-' << player->SFP << '-' << player->SHP << '-' << player->SEP << '*' << '\n';
     FlamFile << player->score << '*' << '\n';
     FlamFile << player->powers[0] << player->powers[1] << player->powers[2] << player->powers[3] << player->powers[4] << '*' << '\n';
 
@@ -581,19 +581,19 @@ std::unique_ptr<Flamingo> MapLoader::LoadFlamingo() {
         } else {
             switch(questCount) {
                 case 0:
-                    player->PHH = std::stoi(value);
+                    player->SHH = std::stoi(value);
                     break;
                 case 1:
-                    player->PRH = std::stoi(value);
+                    player->SRH = std::stoi(value);
                     break;
                 case 2:
-                    player->PPH = std::stoi(value);
+                    player->SPH = std::stoi(value);
                     break;
                 case 3:
-                    player->PCH = std::stoi(value);
+                    player->SCH = std::stoi(value);
                     break;
                 case 4:
-                    player->PWH = std::stoi(value);
+                    player->SWH = std::stoi(value);
                     break;
             }
             value = "";

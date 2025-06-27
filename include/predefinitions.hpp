@@ -5,6 +5,9 @@
 #include <random>
 #include <string.h>
 
+
+// #define OPERATIONALDEBUG;
+
 class Block;
 class Effect;
 class Enemy;

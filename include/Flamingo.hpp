@@ -37,27 +37,34 @@ public:
     Texture2D PearlGrid = LoadTexture("assets/images/pearl-mana.png"); // Pérolas de mana, cada pérola tem 7 pontos de mana
     // Health
     // Max
-    int MHH = 4*7; // Hope Health
-    int MRH = 3*7; // Resilience Health
-    int MPH = 2*7; // Power Health
-    int MCH = 2*7; // Courage Health
-    int MWH = 1*7; // Wisdom Health
+    int MHH = 4*7; // Maximum Hope Health
+    int MRH = 3*7; // Maximum Resilience Health
+    int MPH = 2*7; // Maximum Power Health
+    int MCH = 2*7; // Maximum Courage Health
+    int MWH = 1*7; // Maximum Wisdom Health
 
     // Current
-    int HH = 4*7;
-    int RH = 3*7;
-    int PH = 2*7;
-    int CH = 2*7;
-    int WH = 1*7;
+    int HH = 4*7; // Current Hope Health
+    int RH = 3*7; // Current Resilience Health
+    int PH = 2*7; // Current Power Health
+    int CH = 2*7; // Current Courage Health
+    int WH = 1*7; // Current Wisdom Health
 
-    // Partial Max
-    int PHH = 10;
+    // Health Shards, if it hits 3 you get a new container
+    int SHH = 0;
+    int SRH = 0;
+    int SPH = 0;
+    int SCH = 0;
+    int SWH = 0;
+
+    // Partial Max, used for healing
+    int PHH =  10;
     int PRH = 300;
-    int PPH = 24;
-    int PCH = 8;
-    int PWH = 15;
+    int PPH =  24;
+    int PCH =   8;
+    int PWH =  15;
 
-    // Partial Current
+    // Partial Current, if it hits the max, Flamingo heals 1 hit
     int pHH = 0;
     int pRH = 0;
     int pPH = 0;
@@ -80,6 +87,13 @@ public:
     int FP = 3*7;
     int HP = 1*7;
     int EP = 2*7;
+
+    // Mana Shard
+    int SWP = 0;
+    int SPP = 0;
+    int SFP = 0;
+    int SHP = 0;
+    int SEP = 0;
 
     // Partial Max
     int PWP = 8;

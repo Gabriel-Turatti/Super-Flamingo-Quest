@@ -89,24 +89,64 @@ void Flamingo::unload() {
 }
 
 void Flamingo::update(std::map<int, std::map<int, Block>> &Blocks, std::map<int, std::map<int, Block>> &BackBlocks, std::vector<Item> &itens, std::vector<Enemy> enemies, std::vector<Effect> &effects) {
+    
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation2("operationalFile", std::ios::app);
+    operation2 << "Flamingo Tries to update...\n";
+    operation2.close();
+    #endif
     keyPress(Blocks, effects);
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation3("operationalFile", std::ios::app);
+    operation3 << "Keypress is registered!\n";
+    operation3.close();
+    #endif
     CheckCloseObjects(itens, enemies);
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation4("operationalFile", std::ios::app);
+    operation4 << "Checking Close objects also work!\n";
+    operation4.close();
+    #endif
     gravity();
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation5("operationalFile", std::ios::app);
+    operation5 << "Flamingo is attracted to the Ground.\n";
+    operation5.close();
+    #endif
     Physics(Blocks, BackBlocks, effects);
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation6("operationalFile", std::ios::app);
+    operation6 << "Physics seems to work, which is impressive!\n";
+    operation6.close();
+    #endif
     ItemColision(itens);
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation7("operationalFile", std::ios::app);
+    operation7 << "flamingo tries to grab things and is sucessful!\n";
+    operation7.close();
+    #endif
     EnemyColision(enemies);
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation8("operationalFile", std::ios::app);
+    operation8 << "Enemies try to grab Flamingo and are sucessful...\n";
+    operation8.close();
+    #endif
 
     for(char type : {'H', 'R', 'P', 'C', 'W'}) {
         if (invincibility[type] > 0) {
             invincibility[type] -= 1;
         }
     }
-    
+
     // if (abs(player->vy) > 8 or abs(player->vx) > 8) {
     //     tickBlockUpdate = 1;
     // } else {
     //     tickBlockUpdate = 5;
     // }
+
+
+
+    tick += 1;
     if (tick % PRH == 0) {
         if (RH < MRH) {
             RH += 1;
@@ -115,7 +155,13 @@ void Flamingo::update(std::map<int, std::map<int, Block>> &Blocks, std::map<int,
             WP += 1;
         }
     }
-    tick += 1;
+
+    
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation("operationalFile", std::ios::app);
+    operation << "All of Flamingo's update function works!\n";
+    operation.close();
+    #endif
 }
 
 void Flamingo::CheckCloseObjects(std::vector<Item> &itens, std::vector<Enemy> enemies) {
@@ -528,130 +574,144 @@ int Flamingo::blockReaction(Rectangle HBox, Block &temp, bool vert, std::vector<
  
 void Flamingo::Physics(std::map<int, std::map<int, Block>> &Blocks, std::map<int, std::map<int, Block>> &BackBlocks, std::vector<Effect> &effects) { // Working on...
 
+    
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation("operationalFile", std::ios::app);
+    operation << "Physics start at least, right? \n";
+    operation.close();
+    #endif
 
     // Vertical Axis checking
-    rect.y += vy;
-    float oldVy = vy;
-    updateHitbox();
-     
-    int Gx = cx/(game->BS-SCALE);
-    int Gy = cy/(game->BS-SCALE);
+    float dy = vy/6;
+    float dx = vx/6;
+    for (int step = 1; step <= 6 and (vy != 0 or vx != 0); step++) {
+        rect.y += dy;
+        updateHitbox();
+        int Gx = cx/(game->BS-SCALE);
+        int Gy = cy/(game->BS-SCALE);
 
-    // float dy = vy/4
-    // for (int step = 1; step <= 4; step++) {
-    //     rect.y += dy
-    // }
-    for (int i = -2; i < 3; i++) {
-        for (int j = -2; j < 3; j++) {
-            if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
-                Block temp = Blocks[Gy+i][Gx+j];
-                int doColide = 0, returned = 0;
+        #ifdef OPERATIONALDEBUG
+        std::ofstream operation2("operationalFile", std::ios::app);
+        operation2 << "Steps also start? \n";
+        operation2.close();
+        #endif
 
-                if (crouch) {
-                    doColide = blockReaction(HitboxA, temp, true, effects);
-                } else {
-                    doColide = blockReaction(Hitbox3, temp, true, effects);
-                    returned = blockReaction(Hitbox2, temp, true, effects);
-                    if (returned > doColide) {
-                        doColide = returned;
-                    }
-                    returned = blockReaction(Hitbox1, temp, true, effects);
-                    if (returned > doColide) {
-                        doColide = returned;
-                    }
-                }
-                if (doColide == 1) {
-                    Blocks[Gy+i][Gx+j] = temp;
-                    continue;
-                } else if (doColide == 2) {
-                    // break;
-                } else if (doColide == 3) {
-                    Blocks[Gy+i].erase(Gx+j);
-                    BackBlocks[Gy+i][Gx+j] = temp;
-                    break;
-                } else if (doColide == 4) {
-                    break;
-                } else if (doColide == 5) {
-                    Blocks[Gy+i].erase(Gx+j);
-                    continue;
-                }
-                // for (int m = 0; m < 4 and doColide != 0; m++) {
-                if (doColide != 0) {
-                    rect.y -= oldVy;// /4;
-                    updateHitbox();
-                    vy = 0;
-                }
-                    // doColide = blockReaction(Hitbox1, temp, true, effects) + blockReaction(Hitbox2, temp, true, effects) + blockReaction(Hitbox3, temp, true, effects);
-                // }
-            }
-        }
-    }
-
-
-    ground = false;
+        for (int i = -2; i < 3 and vy != 0; i++) {
+            for (int j = -2; j < 3 and vy != 0; j++) {
+                if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
+                    Block temp = Blocks[Gy+i][Gx+j];
+                    int doColide = 0, returned = 0;
     
-    for (int i = -2; i < 3; i++) {
-        for (int j = -2; j < 3; j++) {
-            if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
-                Block temp = Blocks[Gy+i][Gx+j];
-                if (groundCheck(temp)) {
-                ground = true;
-                groundBlock = temp;
-                break;
-            }
-            }
-        }
-    }
-
-
-
-
-    // Horizontal Axis checing
-    rect.x += vx;
-    float oldVx = vx;
-    updateHitbox();
-    for (int i = -2; i < 3; i++) {
-        for (int j = -2; j < 3; j++) {
-            if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
-                Block temp = Blocks[Gy+i][Gx+j];
-                int doColide = 0, returned = 0;
-
-                if (crouch) {
-                    doColide = blockReaction(HitboxA, temp, false, effects);
-                } else {
-                    doColide = blockReaction(Hitbox3, temp, false, effects);
-                    returned = blockReaction(Hitbox2, temp, false, effects);
-                    if (returned > doColide) {
-                        doColide = returned;
+                    if (crouch) {
+                        doColide = blockReaction(HitboxA, temp, true, effects);
+                    } else {
+                        doColide = blockReaction(Hitbox3, temp, true, effects);
+                        returned = blockReaction(Hitbox2, temp, true, effects);
+                        if (returned > doColide) {
+                            doColide = returned;
+                        }
+                        returned = blockReaction(Hitbox1, temp, true, effects);
+                        if (returned > doColide) {
+                            doColide = returned;
+                        }
                     }
-                    returned = blockReaction(Hitbox1, temp, false, effects);
-                    if (returned > doColide) {
-                        doColide = returned;
+                    if (doColide == 1) {
+                        Blocks[Gy+i][Gx+j] = temp;
+                        continue;
+                    } else if (doColide == 2) {
+                        // break;
+                    } else if (doColide == 3) {
+                        Blocks[Gy+i].erase(Gx+j);
+                        BackBlocks[Gy+i][Gx+j] = temp;
+                        break;
+                    } else if (doColide == 4) {
+                        break;
+                    } else if (doColide == 5) {
+                        Blocks[Gy+i].erase(Gx+j);
+                        continue;
                     }
-                }
-                if (doColide == 1) {
-                    Blocks[Gy+i][Gx+j] = temp;
-                    continue;
-                } else if (doColide == 2) {
-                    // break;
-                } else if (doColide == 3) {
-                    Blocks[Gy+i].erase(Gx+j);
-                    BackBlocks[Gy+i][Gx+j] = temp;
-                    break;
-                } else if (doColide == 4) {
-                    break;
-                } else if (doColide == 5) {
-                    Blocks[Gy+i].erase(Gx+j);
-                    break;
-                }
-                if (doColide != 0) {
-                    rect.x -= oldVx;
-                    updateHitbox();
-                    vx = 0;
+                    // for (int m = 0; m < 4 and doColide != 0; m++) {
+                    if (doColide != 0) {
+                        rect.y -= dy;
+                        updateHitbox();
+                        dy = 0;
+                        vy = 0;
+                    }
+                        // doColide = blockReaction(Hitbox1, temp, true, effects) + blockReaction(Hitbox2, temp, true, effects) + blockReaction(Hitbox3, temp, true, effects);
+                    // }
                 }
             }
         }
+        ground = false;
+        
+        for (int i = -2; i < 3; i++) {
+            for (int j = -2; j < 3; j++) {
+                if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
+                    Block temp = Blocks[Gy+i][Gx+j];
+                    if (groundCheck(temp)) {
+                        ground = true;
+                        groundBlock = temp;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
+        
+        // Horizontal Axis checing
+        rect.x += dx;
+        updateHitbox();
+        for (int i = -2; i < 3 and vx != 0; i++) {
+            for (int j = -2; j < 3 and vx != 0; j++) {
+                if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
+                    Block temp = Blocks[Gy+i][Gx+j];
+                    int doColide = 0, returned = 0;
+    
+                    if (crouch) {
+                        doColide = blockReaction(HitboxA, temp, false, effects);
+                    } else {
+                        doColide = blockReaction(Hitbox3, temp, false, effects);
+                        returned = blockReaction(Hitbox2, temp, false, effects);
+                        if (returned > doColide) {
+                            doColide = returned;
+                        }
+                        returned = blockReaction(Hitbox1, temp, false, effects);
+                        if (returned > doColide) {
+                            doColide = returned;
+                        }
+                    }
+                    if (doColide == 1) {
+                        Blocks[Gy+i][Gx+j] = temp;
+                        continue;
+                    } else if (doColide == 2) {
+                        // break;
+                    } else if (doColide == 3) {
+                        Blocks[Gy+i].erase(Gx+j);
+                        BackBlocks[Gy+i][Gx+j] = temp;
+                        break;
+                    } else if (doColide == 4) {
+                        break;
+                    } else if (doColide == 5) {
+                        Blocks[Gy+i].erase(Gx+j);
+                        break;
+                    }
+                    if (doColide != 0) {
+                        rect.x -= dx;
+                        updateHitbox();
+                        dx = 0;
+                        vx = 0;
+                    }
+                }
+            }
+        }
     }
+     
+    
+
+
 
     if (crouch) {
         imageCount = 5;
@@ -671,6 +731,13 @@ void Flamingo::Physics(std::map<int, std::map<int, Block>> &Blocks, std::map<int
             }
         }
     }
+
+    
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation2("operationalFile", std::ios::app);
+    operation2 << "All of Physics work!\n";
+    operation2.close();
+    #endif
 }
 
 void Flamingo::updateHitbox() {
@@ -806,18 +873,18 @@ void Flamingo::collect(Item item) {
             pEP -= PEP;
         }
     } else if (item.name == "Hshard-hope") {
-        PHH += 1;
-        if (PHH == 3) {
+        SHH += 1;
+        if (SHH == 3) {
             MHH += 7;
             HH += 7;
-            PHH = 0;
+            SHH = 0;
         }
     } else if (item.name == "Hshard-resilience") {
-        PRH += 1;
-        if (PRH == 3) {
+        SRH += 1;
+        if (SRH == 3) {
             MRH += 7;
             RH += 7;
-            PRH = 0;
+            SRH = 0;
         }
     } else if (item.name == "Hshard-power") {
         PPH += 1;
@@ -827,53 +894,53 @@ void Flamingo::collect(Item item) {
             PPH = 0;
         }
     } else if (item.name == "Hshard-courage") {
-        PCH += 1;
-        if (PCH == 3) {
+        SCH += 1;
+        if (SCH == 3) {
             MCH += 7;
             CH += 7;
-            PCH = 0;
+            SCH = 0;
         }
     } else if (item.name == "Hshard-wisdom") {
-        PWH += 1;
-        if (PWH == 3) {
+        SWH += 1;
+        if (SWH == 3) {
             MWH += 7;
             WH += 7;
-            PWH = 0;
+            SWH = 0;
         }
     } else if (item.name == "Pshard-wind") {
-        PWP += 1;
-        if (PWP == 3) {
+        SWP += 1;
+        if (SWP == 3) {
             MWP += 7;
             WP += 7;
-            PWP = 0;
+            SWP = 0;
         }
     } else if (item.name == "Pshard-party") {
-        PPP += 1;
-        if (PPP == 3) {
+        SPP += 1;
+        if (SPP == 3) {
             MPP += 7;
             PP += 7;
-            PPP = 0;
+            SPP = 0;
         }
     } else if (item.name == "Pshard-fun") {
-        PFP += 1;
-        if (PFP == 3) {
+        SFP += 1;
+        if (SFP == 3) {
             MFP += 7;
             FP += 7;
-            PFP = 0;
+            SFP = 0;
         }
     } else if (item.name == "Pshard-hard") {
-        PHP += 1;
-        if (PHP == 3) {
+        SHP += 1;
+        if (SHP == 3) {
             MHP += 7;
             HP += 7;
-            PHP = 0;
+            SHP = 0;
         }
     } else if (item.name == "Pshard-eloise") {
-        PEP += 1;
-        if (PEP == 3) {
+        SEP += 1;
+        if (SEP == 3) {
             MEP += 7;
             EP += 7;
-            PEP = 0;
+            SEP = 0;
         }
     } else if (item.name == "key-hope") {
         keyHope += 1;
@@ -1034,9 +1101,8 @@ bool Flamingo::CheckMirror(std::map<int, std::map<int, Block>> &Blocks) {
     if (crouch) {
         return true;
     } else {
-        bool returning;
         int Gx = cx/(game->BS-SCALE);
-        int Gy = cx/(game->BS-SCALE);
+        int Gy = cy/(game->BS-SCALE);
         if (lookingRight) {
             Hitbox1.x = rect.x+7*SCALE;
             Hitbox2.x = rect.x+4*SCALE;
@@ -1054,8 +1120,8 @@ bool Flamingo::CheckMirror(std::map<int, std::map<int, Block>> &Blocks) {
                             return false;
                         }
                         if (GenericColision(Hitbox3, temp.rect)) {
-                        return false;
-                    }
+                            return false;
+                        }
                     }
                 }
             }
@@ -1067,7 +1133,7 @@ bool Flamingo::CheckMirror(std::map<int, std::map<int, Block>> &Blocks) {
             Hitbox1.x = rect.x+5*SCALE;
             Hitbox2.x = rect.x+3*SCALE;
             Hitbox3.x = rect.x+9*SCALE;
-            
+
             for (int i = -2; i < 3; i++) {
                 for (int j = -2; j < 3; j++) {
                     if (Blocks.count(Gy+i) > 0 and Blocks[Gy+i].count(Gx+j) > 0) {
@@ -1080,12 +1146,12 @@ bool Flamingo::CheckMirror(std::map<int, std::map<int, Block>> &Blocks) {
                             return false;
                         }
                         if (GenericColision(Hitbox3, temp.rect)) {
-                        return false;
-                    }
+                            return false;
+                        }
                     }
                 }
             }
-            
+
             Hitbox1.x = rect.x+7*SCALE;
             Hitbox2.x = rect.x+4*SCALE;
             Hitbox3.x = rect.x;
@@ -1097,7 +1163,7 @@ bool Flamingo::CheckMirror(std::map<int, std::map<int, Block>> &Blocks) {
 bool Flamingo::CrouchCheck(std::map<int, std::map<int, Block>> &Blocks) {
     bool returned = true;
     int Gx = cx/(game->BS-SCALE);
-    int Gy = cx/(game->BS-SCALE);
+    int Gy = cy/(game->BS-SCALE);
     if (crouch) {
         rect.y -= 13*SCALE;
         updateHitbox();

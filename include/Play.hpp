@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#include "predefinitions.hpp"
 #include "Block.hpp"
 #include "Effect.hpp"
 #include "Item.hpp"

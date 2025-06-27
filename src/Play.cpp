@@ -58,6 +58,15 @@ void Play::Hub() {
     Rectangle editorRect = {midX - 200, midY, sizeOptions, sizeOptions};
     Rectangle iconRect = {midX + 200, midY, sizeOptions, sizeOptions};
 
+
+    
+    #ifdef OPERATIONALDEBUG
+    std::ofstream operation("operationalFile", std::ios::app);
+    operation << "Hub Preamble worked! \n";
+    operation.close();
+    #endif
+
+
     while (!WindowShouldClose()) {
         UpdateMusicStream(theme);
         mousePosition = GetMousePosition();
@@ -2385,8 +2394,8 @@ void Play::DesenharHeart() {
         PHud.x += 12*SCALE;
         HHEmptyTemp--;
     }
-    if (player->PHH > 0) {
-        DrawText(TextFormat("+%d", player->PHH), PHud.x, PHud.y, 35, YELLOW);
+    if (player->SHH > 0) {
+        DrawText(TextFormat("+%d", player->SHH), PHud.x, PHud.y, 35, YELLOW);
     }
 
     PHud.x = 10.0f;
@@ -2412,8 +2421,8 @@ void Play::DesenharHeart() {
         PHud.x += 12*SCALE;
         RHEmptyTemp--;
     }
-    if (player->PRH > 0) {
-        DrawText(TextFormat("+%d", player->PRH), PHud.x, PHud.y, 35, GREEN);
+    if (player->SRH > 0) {
+        DrawText(TextFormat("+%d", player->SRH), PHud.x, PHud.y, 35, GREEN);
     }
 
     PHud.x = 10.0f;
@@ -2439,8 +2448,8 @@ void Play::DesenharHeart() {
         PHud.x += 12*SCALE;
         PHEmptyTemp--;
     }
-    if (player->PPH > 0) {
-        DrawText(TextFormat("+%d", player->PPH), PHud.x, PHud.y, 35, DARKBLUE);
+    if (player->SPH > 0) {
+        DrawText(TextFormat("+%d", player->SPH), PHud.x, PHud.y, 35, DARKBLUE);
     }
 
     PHud.x = 10.0f;
@@ -2466,8 +2475,8 @@ void Play::DesenharHeart() {
         PHud.x += 12*SCALE;
         CHEmptyTemp--;
     }
-    if (player->PCH > 0) {
-        DrawText(TextFormat("+%d", player->PCH), PHud.x, PHud.y, 35, RED);
+    if (player->SCH > 0) {
+        DrawText(TextFormat("+%d", player->SCH), PHud.x, PHud.y, 35, RED);
     }
 
     PHud.x = 10.0f;
@@ -2493,8 +2502,8 @@ void Play::DesenharHeart() {
         PHud.x += 12*SCALE;
         WHEmptyTemp--;
     }
-    if (player->PWH > 0) {
-        DrawText(TextFormat("+%d", player->PWH), PHud.x, PHud.y, 35, ORANGE);
+    if (player->SWH > 0) {
+        DrawText(TextFormat("+%d", player->SWH), PHud.x, PHud.y, 35, ORANGE);
     }
 }
 
@@ -2518,8 +2527,8 @@ void Play::DesenharPearl() {
             PHud.x -= 12*SCALE;
             WPEmptyTemp--;
         }
-        if (player->PWP > 0) {
-            DrawText(TextFormat("%d+", player->PWP), PHud.x, PHud.y, 35, {223, 245, 0, 255});
+        if (player->SWP > 0) {
+            DrawText(TextFormat("%d+", player->SWP), PHud.x, PHud.y, 35, {223, 245, 0, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2545,8 +2554,8 @@ void Play::DesenharPearl() {
             PHud.x -= 12*SCALE;
             PPEmptyTemp--;
         }
-        if (player->PPP > 0) {
-            DrawText(TextFormat("%d+", player->PPP), PHud.x, PHud.y, 35, {133, 255, 0, 255});
+        if (player->SPP > 0) {
+            DrawText(TextFormat("%d+", player->SPP), PHud.x, PHud.y, 35, {133, 255, 0, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2572,8 +2581,8 @@ void Play::DesenharPearl() {
             PHud.x -= 12*SCALE;
             FPEmptyTemp--;
         }
-        if (player->PFP > 0) {
-            DrawText(TextFormat("%d+", player->PFP), PHud.x, PHud.y, 35, {30, 235, 210, 255});
+        if (player->SFP > 0) {
+            DrawText(TextFormat("%d+", player->SFP), PHud.x, PHud.y, 35, {30, 235, 210, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2599,8 +2608,8 @@ void Play::DesenharPearl() {
             PHud.x -= 12*SCALE;
             HPEmptyTemp--;
         }
-        if (player->PHP > 0) {
-            DrawText(TextFormat("%d+", player->PHP), PHud.x, PHud.y, 35, {253, 105, 150, 255});
+        if (player->SHP > 0) {
+            DrawText(TextFormat("%d+", player->SHP), PHud.x, PHud.y, 35, {253, 105, 150, 255});
         }
 
         PHud.x = GetScreenWidth() - 20.0f*SCALE;
@@ -2626,8 +2635,8 @@ void Play::DesenharPearl() {
             PHud.x -= 12*SCALE;
             EPEmptyTemp--;
         }
-        if (player->PEP > 0) {
-            DrawText(TextFormat("%d+", player->PEP), PHud.x, PHud.y, 35, {255, 150, 150, 255});
+        if (player->SEP > 0) {
+            DrawText(TextFormat("%d+", player->SEP), PHud.x, PHud.y, 35, {255, 150, 150, 255});
         }
     }
 

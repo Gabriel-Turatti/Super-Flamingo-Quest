@@ -29,6 +29,12 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     ( ) [+] Transmute birds
     ( ) [+] Break cages with spear
     ( ) [+] Music not playing constantly
+    ( ) [+] Second Generation Powers: 
+        ( ) Wind - Converts horizontal speed into upwards speed
+        ( ) Party - Shield
+        ( ) Fun - Allows grabbing wall and getting stuck (use the bug)
+        ( ) Hard - Lock Destroyer
+        ( ) Eloise - Voice/World Transmutator
 
     ( ) [+] Add different save files for players, and for completed levels
     ( ) [+] Add challenge modes: Invisible walls, Upside down
@@ -36,30 +42,27 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
 
 ## Refatoração
     ## Quality of code
-    ( ) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
+    (X) [R] Estudar possibilidade de tranformar vetor de blocos em dicionário de dicionários (matriz de posições)
     ( ) [R] Não renderizar itens fora da tela (usar o quad-tree do Eric).
-    ( ) [R] Usar objetos externos para controle de schedule ao invés de divisão
-    ( ) [R] change FPS handling to VSYNC
+    ( ) [R] Usar objetos externos para controle de schedule ao invés de divisão, melhor 200 ifs que divisão
+    ( ) [R] Change FPS handling to VSYNC
     ( ) [R] Unite Ground and Background save/load file
     ( ) [R] Create temporary textures of hud with all details that can be printed without calculations, and updated when change happens
     ## Quality of life
-    ( ) [R] Better precision of slow movement
+    ( ) [R!] Better precision of slow movement
     ( ) [R] Melhorar as animações de caminhada (eu n sei desenhar)
     ( ) [R] Mudar o jeito como imagem e texture é processado para que o flamingo possa ter coloração amarela (oposta ao rosa) quando levar Hope damage
     ( ) [R] Fitting Flamingo in holes.
     ( ) [R] Time warning
+    ( ) [R] Get the jump distance right for each quantity of blocks so it feels satisfying to play
  
 
 
-// Resolvido muita coisa!! Gabriel shdushds
-// Agora vc precisa contabilizar os blocos pra ver se n ta sendo criado coisa, pq tem muita coordenada com o mesmo bloco
-// E um fedor de vazamento de memória que meu deus,
-// Boa sorte!
 
 
-( ) 0.9 - Planes of Paris Update
+(X) 0.9 - Planes of Paris Update
     (X) [B**] I'm gonna refactor collision and kill once and for all the mega-bug
-    (?) [BC] Sometimes exiting a level crashes.
+    (X) [BC] Sometimes exiting a level crashes.
     (X) [R] Changes Health and Mana regen systems
     (X) [B] Death coin no image in imageloader
     (X) [B] Can't crouch on platform
@@ -74,10 +77,10 @@ Se está dando bug, já tentou ver se você não confundiu as variáveis de Heig
     (X) [B] Ledge-head-jump
     (?) [B] Not accounting all time score.
 
-    ( ) [R***] Collision -> Fixes all clip bugs
+    (X) [R***] Collision -> Fixes all clip bugs
         (X) Main Functioning
         (X) [B] Doors not disappearing
-        ( ) [B] Wall check clipping
+        (X) [B] Wall check clipping
         (X) [B] Don't Bounce anymore maybe? Let's try deactivating Bounce and see if the game gets better
         (X) [B] Blocks not in the map!!
         (X) [B] Bird Cage Crashing Game
